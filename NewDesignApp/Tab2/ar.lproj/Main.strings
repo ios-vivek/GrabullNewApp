@@ -1,0 +1,237 @@
+
+/* Class = "UILabel"; text = "It looks like we don't have any restaurants in your area. We always expanding to new areas, try checking back soon!"; ObjectID = "1a5-0m-L51"; */
+"1a5-0m-L51.text" = "It looks like we don't have any restaurants in your area. We always expanding to new areas, try checking back soon!";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "3RQ-sz-DkF"; */
+"3RQ-sz-DkF.text" = "Label";
+
+/* Class = "UILabel"; text = "North Indian, Chinese"; ObjectID = "3VA-PN-wwW"; */
+"3VA-PN-wwW.text" = "North Indian, Chinese";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "6GS-mh-Y9W"; */
+"6GS-mh-Y9W.text" = "Label";
+
+/* Class = "UIButton"; configuration.title = " "; ObjectID = "74G-e6-R1h"; */
+"74G-e6-R1h.configuration.title" = " ";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "74G-e6-R1h"; */
+"74G-e6-R1h.normalTitle" = "Button";
+
+/* Class = "UILabel"; text = "North Indian, Chinese"; ObjectID = "A2Y-eo-IqN"; */
+"A2Y-eo-IqN.text" = "North Indian, Chinese";
+
+/* Class = "UILabel"; text = "What's on your mind?"; ObjectID = "D0e-dN-eh7"; */
+"D0e-dN-eh7.text" = "What's on your mind?";
+
+/* Class = "UILabel"; text = "It looks like we don't have any restaurants in your area. We always expanding to new areas, try checking back soon!"; ObjectID = "Dc8-vz-WJ1"; */
+"Dc8-vz-WJ1.text" = "It looks like we don't have any restaurants in your area. We always expanding to new areas, try checking back soon!";
+
+/* Class = "UIButton"; normalTitle = "+"; ObjectID = "DkJ-py-pSg"; */
+"DkJ-py-pSg.normalTitle" = "+";
+
+/* Class = "UIButton"; configuration.title = " "; ObjectID = "E14-WF-AKY"; */
+"E14-WF-AKY.configuration.title" = " ";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "E14-WF-AKY"; */
+"E14-WF-AKY.normalTitle" = "Button";
+
+/* Class = "UILabel"; text = "North Indian, Chinese"; ObjectID = "E42-8x-AUG"; */
+"E42-8x-AUG.text" = "North Indian, Chinese";
+
+/* Class = "UILabel"; text = "Gallery"; ObjectID = "ESQ-RE-G0Y"; */
+"ESQ-RE-G0Y.text" = "Gallery";
+
+/* Class = "UILabel"; text = "North Indian, Chinese"; ObjectID = "ISq-sy-aWN"; */
+"ISq-sy-aWN.text" = "North Indian, Chinese";
+
+/* Class = "UILabel"; text = "Hide this restaurant"; ObjectID = "IVy-V3-sCU"; */
+"IVy-V3-sCU.text" = "Hide this restaurant";
+
+/* Class = "UILabel"; text = "Sorry, our services are currently unavailable at this location. We hope to serve you in future."; ObjectID = "JK4-L6-JZv"; */
+"JK4-L6-JZv.text" = "Sorry, our services are currently unavailable at this location. We hope to serve you in future.";
+
+/* Class = "UIButton"; configuration.title = "Continue"; ObjectID = "JXD-Gk-Qkr"; */
+"JXD-Gk-Qkr.configuration.title" = "Continue";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "JXD-Gk-Qkr"; */
+"JXD-Gk-Qkr.normalTitle" = "Button";
+
+/* Class = "UILabel"; text = "Kwality Walls Fro"; ObjectID = "KQu-8t-ETh"; */
+"KQu-8t-ETh.text" = "Kwality Walls Fro";
+
+/* Class = "UILabel"; text = "Restaurants"; ObjectID = "M2v-q5-Fef"; */
+"M2v-q5-Fef.text" = "Restaurants";
+
+/* Class = "UILabel"; text = "45-27 mins"; ObjectID = "NOw-NL-42k"; */
+"NOw-NL-42k.text" = "45-27 mins";
+
+/* Class = "UILabel"; text = "Sector 15 . 0.8 km"; ObjectID = "NXQ-3E-Pip"; */
+"NXQ-3E-Pip.text" = "Sector 15 . 0.8 km";
+
+/* Class = "UILabel"; text = "Panjabi Angithi"; ObjectID = "O79-ED-1ug"; */
+"O79-ED-1ug.text" = "Panjabi Angithi";
+
+/* Class = "UILabel"; text = "Panjabi Angithi"; ObjectID = "OK9-hj-eIN"; */
+"OK9-hj-eIN.text" = "Panjabi Angithi";
+
+/* Class = "UILabel"; text = "North Indian, Chinese"; ObjectID = "ORk-78-kEm"; */
+"ORk-78-kEm.text" = "North Indian, Chinese";
+
+/* Class = "UIButton"; normalTitle = "ADD"; ObjectID = "OZm-pf-a3L"; */
+"OZm-pf-a3L.normalTitle" = "ADD";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "Ppi-mQ-4wR"; */
+"Ppi-mQ-4wR.text" = "Label";
+
+/* Class = "UILabel"; text = "Search for "; ObjectID = "RpR-Sp-tuP"; */
+"RpR-Sp-tuP.text" = "Search for ";
+
+/* Class = "UILabel"; text = "omega IV, Greater Noida, Uttar Pradesh 201310,India"; ObjectID = "T4b-9U-rFi"; */
+"T4b-9U-rFi.text" = "omega IV, Greater Noida, Uttar Pradesh 201310,India";
+
+/* Class = "UIButton"; configuration.title = " "; ObjectID = "TlA-9S-98I"; */
+"TlA-9S-98I.configuration.title" = " ";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "TlA-9S-98I"; */
+"TlA-9S-98I.normalTitle" = "Button";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "Tmj-Le-t0n"; */
+"Tmj-Le-t0n.text" = "Label";
+
+/* Class = "UILabel"; text = "45-27 mins"; ObjectID = "WFv-oQ-aJA"; */
+"WFv-oQ-aJA.text" = "45-27 mins";
+
+/* Class = "UILabel"; text = "What's your location?"; ObjectID = "WGd-qA-B2P"; */
+"WGd-qA-B2P.text" = "What's your location?";
+
+/* Class = "UILabel"; text = "Butter scoctch pesty"; ObjectID = "WdK-nV-qGd"; */
+"WdK-nV-qGd.text" = "Butter scoctch pesty";
+
+/* Class = "UILabel"; text = "North Indian, Chinese"; ObjectID = "YUy-WM-DFd"; */
+"YUy-WM-DFd.text" = "North Indian, Chinese";
+
+/* Class = "UILabel"; text = "45-27 mins"; ObjectID = "ZSb-GS-IiD"; */
+"ZSb-GS-IiD.text" = "45-27 mins";
+
+/* Class = "UITextField"; text = "search for restaurant, item or more"; ObjectID = "dMc-rH-GDY"; */
+"dMc-rH-GDY.text" = "search for restaurant, item or more";
+
+/* Class = "UILabel"; text = "We need your location to show available restaurants & products."; ObjectID = "ddE-Q7-9p7"; */
+"ddE-Q7-9p7.text" = "We need your location to show available restaurants & products.";
+
+/* Class = "UILabel"; text = "Similar Restaurant"; ObjectID = "dtt-y4-LKW"; */
+"dtt-y4-LKW.text" = "Similar Restaurant";
+
+/* Class = "UILabel"; text = "Add to favourites"; ObjectID = "eWM-v2-23W"; */
+"eWM-v2-23W.text" = "Add to favourites";
+
+/* Class = "UILabel"; text = "We're not there yet!"; ObjectID = "fJj-x6-Axh"; */
+"fJj-x6-Axh.text" = "We're not there yet!";
+
+/* Class = "UILabel"; text = "189"; ObjectID = "fgE-Sd-xPM"; */
+"fgE-Sd-xPM.text" = "189";
+
+/* Class = "UILabel"; text = "Pizza"; ObjectID = "gZl-l8-bOa"; */
+"gZl-l8-bOa.text" = "Pizza";
+
+/* Class = "UILabel"; text = "North Indian, Chinese"; ObjectID = "giz-6I-IGx"; */
+"giz-6I-IGx.text" = "North Indian, Chinese";
+
+/* Class = "UILabel"; text = "No restaurants found nearby"; ObjectID = "gs8-Mi-PCy"; */
+"gs8-Mi-PCy.text" = "No restaurants found nearby";
+
+/* Class = "UILabel"; text = "What's on your mind?"; ObjectID = "hl1-12-Y8k"; */
+"hl1-12-Y8k.text" = "What's on your mind?";
+
+/* Class = "UITextField"; text = "search for restaurant, item or more"; ObjectID = "i4Q-Wc-Mrt"; */
+"i4Q-Wc-Mrt.text" = "search for restaurant, item or more";
+
+/* Class = "UILabel"; text = "Hi, I'm listing. Try saying"; ObjectID = "iDs-qI-z8w"; */
+"iDs-qI-z8w.text" = "Hi, I'm listing. Try saying";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "jg4-3h-TBp"; */
+"jg4-3h-TBp.text" = "Label";
+
+/* Class = "UILabel"; text = "Kwality Walls Fro"; ObjectID = "kOP-3Z-3Ya"; */
+"kOP-3Z-3Ya.text" = "Kwality Walls Fro";
+
+/* Class = "UILabel"; text = "North Indian, Chinese"; ObjectID = "liq-Kb-b8F"; */
+"liq-Kb-b8F.text" = "North Indian, Chinese";
+
+/* Class = "UILabel"; text = "+"; ObjectID = "mB7-k9-nfe"; */
+"mB7-k9-nfe.text" = "+";
+
+/* Class = "UILabel"; text = "0.8 km"; ObjectID = "n4e-vd-5ey"; */
+"n4e-vd-5ey.text" = "0.8 km";
+
+/* Class = "UILabel"; text = "5"; ObjectID = "nFr-CX-0ta"; */
+"nFr-CX-0ta.text" = "5";
+
+/* Class = "UILabel"; text = "Sector 15 . 0.8 km"; ObjectID = "nwE-jW-r2m"; */
+"nwE-jW-r2m.text" = "Sector 15 . 0.8 km";
+
+/* Class = "UILabel"; text = "What's on your mind?"; ObjectID = "oSL-uk-l3V"; */
+"oSL-uk-l3V.text" = "What's on your mind?";
+
+/* Class = "UILabel"; text = "North Indian, Chinese"; ObjectID = "pxN-ix-znD"; */
+"pxN-ix-znD.text" = "North Indian, Chinese";
+
+/* Class = "UILabel"; text = "Show similar restaurants"; ObjectID = "q5J-iI-Gn1"; */
+"q5J-iI-Gn1.text" = "Show similar restaurants";
+
+/* Class = "UILabel"; text = "100"; ObjectID = "q63-2l-HlB"; */
+"q63-2l-HlB.text" = "100";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "rMW-I4-Ts8"; */
+"rMW-I4-Ts8.text" = "Label";
+
+/* Class = "UILabel"; text = "45-27 mins"; ObjectID = "rr3-5W-WTc"; */
+"rr3-5W-WTc.text" = "45-27 mins";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "rtZ-7H-Va7"; */
+"rtZ-7H-Va7.text" = "Label";
+
+/* Class = "UILabel"; text = "Search"; ObjectID = "siQ-1v-I6R"; */
+"siQ-1v-I6R.text" = "Search";
+
+/* Class = "UIButton"; normalTitle = "Awho Twin Tower B-Tower "; ObjectID = "sx5-JE-iml"; */
+"sx5-JE-iml.normalTitle" = "Awho Twin Tower B-Tower ";
+
+/* Class = "UILabel"; text = "Label"; ObjectID = "tQa-hQ-yD7"; */
+"tQa-hQ-yD7.text" = "Label";
+
+/* Class = "UIButton"; configuration.title = " "; ObjectID = "tiG-ks-Bie"; */
+"tiG-ks-Bie.configuration.title" = " ";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "tiG-ks-Bie"; */
+"tiG-ks-Bie.normalTitle" = "Button";
+
+/* Class = "UILabel"; text = "North Indian, Chinese"; ObjectID = "tq3-DG-jbt"; */
+"tq3-DG-jbt.text" = "North Indian, Chinese";
+
+/* Class = "UILabel"; text = "North Indian, Chinese"; ObjectID = "ttA-2c-CaV"; */
+"ttA-2c-CaV.text" = "North Indian, Chinese";
+
+/* Class = "UILabel"; text = "189"; ObjectID = "u2d-ji-7Nc"; */
+"u2d-ji-7Nc.text" = "189";
+
+/* Class = "UIButton"; normalTitle = "-"; ObjectID = "vS8-1l-Wmg"; */
+"vS8-1l-Wmg.normalTitle" = "-";
+
+/* Class = "UILabel"; text = "No restaurants found nearby"; ObjectID = "w8H-ap-ml5"; */
+"w8H-ap-ml5.text" = "No restaurants found nearby";
+
+/* Class = "UILabel"; text = "What's on your mind?"; ObjectID = "xji-4C-O2o"; */
+"xji-4C-O2o.text" = "What's on your mind?";
+
+/* Class = "UIButton"; configuration.title = " "; ObjectID = "y4i-Q3-Igp"; */
+"y4i-Q3-Igp.configuration.title" = " ";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "y4i-Q3-Igp"; */
+"y4i-Q3-Igp.normalTitle" = "Button";
+
+/* Class = "UILabel"; text = "45-27 mins"; ObjectID = "yEV-Qs-ZaM"; */
+"yEV-Qs-ZaM.text" = "45-27 mins";
+
+/* Class = "UILabel"; text = "Panjabi Angithi"; ObjectID = "zAS-hB-4SE"; */
+"zAS-hB-4SE.text" = "Panjabi Angithi";

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Dine In ReservationVC-->
+        <scene sceneID="A9y-oV-MUh">
+            <objects>
+                <viewController storyboardIdentifier="DineInReservationVC" useStoryboardIdentifierAsRestorationIdentifier="YES" id="3Bw-6Y-Wsh" customClass="DineInReservationVC" customModule="Grabull" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="iCg-Aw-yG2">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NSd-Ae-D5o">
+                                <rect key="frame" x="0.0" y="44" width="393" height="40"/>
+                                <subviews>
+                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pnO-st-vdG">
+                                        <rect key="frame" x="0.0" y="2.6666666666666643" width="60" height="35"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="60" id="fHg-mR-iJA"/>
+                                            <constraint firstAttribute="height" constant="35" id="iPc-zl-Qd7"/>
+                                        </constraints>
+                                        <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <state key="normal" title="Button"/>
+                                        <buttonConfiguration key="configuration" style="plain" image="arrow.backward" catalog="system" title=" "/>
+                                        <connections>
+                                            <action selector="backAction" destination="3Bw-6Y-Wsh" eventType="touchUpInside" id="Lbd-Hh-bhH"/>
+                                        </connections>
+                                    </button>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="DINE IN" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZKV-OE-xMh">
+                                        <rect key="frame" x="121.66666666666669" y="9.6666666666666643" width="150" height="21"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="150" id="o3R-0u-bzv"/>
+                                            <constraint firstAttribute="height" constant="21" id="woQ-ea-Liv"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="16"/>
+                                        <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                </subviews>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="ZKV-OE-xMh" firstAttribute="centerX" secondItem="NSd-Ae-D5o" secondAttribute="centerX" id="6Ll-iy-YI6"/>
+                                    <constraint firstItem="pnO-st-vdG" firstAttribute="centerY" secondItem="NSd-Ae-D5o" secondAttribute="centerY" id="EnC-ok-ixe"/>
+                                    <constraint firstItem="pnO-st-vdG" firstAttribute="leading" secondItem="NSd-Ae-D5o" secondAttribute="leading" id="qAh-GU-QFd"/>
+                                    <constraint firstAttribute="height" constant="40" id="twW-ss-AHO"/>
+                                    <constraint firstItem="ZKV-OE-xMh" firstAttribute="centerY" secondItem="NSd-Ae-D5o" secondAttribute="centerY" id="vWX-HI-9Gb"/>
+                                </constraints>
+                            </view>
+                            <wkWebView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="pIo-aS-Ow1">
+                                <rect key="frame" x="0.0" y="84" width="393" height="768"/>
+                                <color key="backgroundColor" red="0.36078431370000003" green="0.38823529410000002" blue="0.4039215686" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <wkWebViewConfiguration key="configuration">
+                                    <audiovisualMediaTypes key="mediaTypesRequiringUserActionForPlayback" none="YES"/>
+                                    <wkPreferences key="preferences"/>
+                                </wkWebViewConfiguration>
+                            </wkWebView>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="3bP-ao-7Ka"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="pIo-aS-Ow1" firstAttribute="top" secondItem="NSd-Ae-D5o" secondAttribute="bottom" id="M2X-jZ-XqP"/>
+                            <constraint firstItem="NSd-Ae-D5o" firstAttribute="top" secondItem="iCg-Aw-yG2" secondAttribute="top" constant="44" id="MWL-Lk-w2o"/>
+                            <constraint firstItem="NSd-Ae-D5o" firstAttribute="trailing" secondItem="3bP-ao-7Ka" secondAttribute="trailing" id="R6q-iZ-8yn"/>
+                            <constraint firstItem="3bP-ao-7Ka" firstAttribute="trailing" secondItem="pIo-aS-Ow1" secondAttribute="trailing" id="SSP-vi-8Mp"/>
+                            <constraint firstItem="3bP-ao-7Ka" firstAttribute="bottom" secondItem="pIo-aS-Ow1" secondAttribute="bottom" constant="-34" id="TxO-Wx-tM2"/>
+                            <constraint firstItem="pIo-aS-Ow1" firstAttribute="leading" secondItem="3bP-ao-7Ka" secondAttribute="leading" id="iaA-CZ-ZE6"/>
+                            <constraint firstItem="NSd-Ae-D5o" firstAttribute="leading" secondItem="3bP-ao-7Ka" secondAttribute="leading" id="lfs-Oe-WVL"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="webView" destination="pIo-aS-Ow1" id="mtP-xR-CZf"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="6iL-BI-0nh" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="426.71755725190837" y="241.5492957746479"/>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="arrow.backward" catalog="system" width="128" height="95"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
