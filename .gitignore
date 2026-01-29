@@ -64,3 +64,4 @@ fastlane/test_output
 Pods
 *.xcworkspace
 Podfile.lock
+.android
