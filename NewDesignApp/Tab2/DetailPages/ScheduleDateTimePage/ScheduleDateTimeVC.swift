@@ -74,10 +74,10 @@ class ScheduleDateTimeVC: UIViewController {
         dateCollection.backgroundColor = .white
         dateSubmitButton.setRounded(cornerRadius: 8)
         getTimingFromApi(date: UtilsClass.getCurrentDateInString(date: Date()))
-         //   self.segmentedControl.setEnabled(Cart.shared.tempRestDetails.isRestaurantOpen, forSegmentAt: 0);
-//        if !Cart.shared.tempRestDetails.isRestaurantOpen {
-//            self.segmentedControl.selectedSegmentIndex = 1
-//        }
+            self.segmentedControl.setEnabled(Cart.shared.tempRestDetails.isRestaurantOpenToday, forSegmentAt: 0);
+        if !Cart.shared.tempRestDetails.isRestaurantOpenToday {
+            self.segmentedControl.selectedSegmentIndex = 1
+        }
         //print("today closed..\(UtilsClass.isRestaurantClosedToday(Cart.shared.tempRestDetails.stopyoday))")
        // segmentedControl.setEnabled(!UtilsClass.isRestaurantClosedToday(Cart.shared.tempRestDetails.stopyoday), forSegmentAt: 1);
         pickDeliveryControl.isHidden = isPickupDeliverySettingHide

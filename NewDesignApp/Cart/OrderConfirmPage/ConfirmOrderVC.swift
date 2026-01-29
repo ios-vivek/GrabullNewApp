@@ -139,112 +139,7 @@ class ConfirmOrderVC: UIViewController {
             recipientPhone: recipientPhone,
             transactionIdentifier: transactionIdentifier
         )
-      //  addOrder1(transactionIdentifier: transactionIdentifier)
     }
-    /*
-    func addOrder1(transactionIdentifier: String) {
-        
-
-        if !viewModel.validatePayment() {
-            return
-        }
-        var holddate = "\(Cart.shared.selectedTime.date)"
-        var holdTime = "\(Cart.shared.selectedTime.time)"
-        if Cart.shared.orderDate == .ASAP {
-            holddate = ""
-            holdTime = ""
-        }
-        if Cart.shared.orderType == .pickup {
-            let add = UserAdd.init(id: 0, street: "", add1: "", add2: "", type: "", city: "", state: "", zip: "", add3: "")
-            Cart.shared.userAddress = add
-        }
-        var donateAmount = Cart.shared.donateAmount
-        if !Cart.shared.isDonate {
-            donateAmount = 0.0
-        }
-        
-        let pricedetails: CheckoutPrice = Cart.shared.getAllPriceDeatils()
-        var parameters: [String: AnyObject] = [String: AnyObject]()
-        parameters["did"] = Cart.shared.orderNumber as AnyObject
-        parameters["api_id"] = AppConfig.API_ID as AnyObject
-        parameters["api_key"] = AppConfig.OldAPI_KEY  as AnyObject
-        parameters["customer_id"] = APPDELEGATE.userResponse?.customer.customerId as AnyObject
-        parameters["name"] = "\(APPDELEGATE.userResponse?.customer.fullName ?? "")" as AnyObject
-        parameters["email"] = APPDELEGATE.userResponse?.customer.email as AnyObject
-        parameters["phone"] = APPDELEGATE.userResponse?.customer.phone as AnyObject
-        parameters["restaurant_id"] = Cart.shared.restDetails.rid as AnyObject
-        parameters["order_type"] = "\(Cart.shared.orderType)".capitalized as AnyObject
-        parameters["add1"] = "\(Cart.shared.userAddress.add1)" as AnyObject
-        parameters["add2"] = "\(Cart.shared.userAddress.add2)" as AnyObject
-        parameters["city"] = "\(Cart.shared.userAddress.city)" as AnyObject
-        parameters["state"] = "\(Cart.shared.userAddress.state)" as AnyObject
-        parameters["zip"] = "\(Cart.shared.userAddress.zip)" as AnyObject
-        parameters["orderat"] = "\(Cart.shared.userAddress.type)" as AnyObject
-        parameters["pay_by"] = "\(self.payBy)" as AnyObject
-        parameters["coupon"] = "\(pricedetails.couponID)" as AnyObject
-        parameters["giftnumber"] = "\(self.viewModel.selectedPaymentType == 1 ? Cart.shared.giftNumber : "")" as AnyObject
-        parameters["cardno"] = "\(self.viewModel.selectedPaymentType == 0 ? Cart.shared.cardNumber : "")" as AnyObject
-        parameters["expiry"] = "\(self.viewModel.selectedPaymentType == 0 ? Cart.shared.cardExpiry : "")" as AnyObject
-        parameters["cvv"] = "\(self.viewModel.selectedPaymentType == 0 ? Cart.shared.cardCvv : "")" as AnyObject
-        parameters["billingzip"] = "\(self.viewModel.selectedPaymentType == 0 ? Cart.shared.cardZip : "")" as AnyObject
-        parameters["cardholder"] = "\(self.viewModel.selectedPaymentType == 0 ? Cart.shared.cardHolder : "")" as AnyObject
-        parameters["addcard"] = "No" as AnyObject
-        parameters["newcard"] = "New" as AnyObject
-        parameters["holdtime"] = "\(Cart.shared.orderDate == .ASAP ? "No" : "Yes")" as AnyObject
-        parameters["holddate"] = "\(holddate) \(holdTime)" as AnyObject
-        //parameters["holdtime"] = "\(holdTime)" as AnyObject//yyyy-mm-dd G:i:s
-        parameters["total"] = "\(pricedetails.total)" as AnyObject
-        parameters["tips"] = "\(Cart.shared.isTips ? "\(Cart.shared.tipsAmount)" : "0.0")" as AnyObject
-        parameters["rewards"] = "\(Cart.shared.isReward ? "\(Cart.shared.rewardAmount)" : "0.0")" as AnyObject
-        parameters["specialinstruction"] = "\(Cart.shared.specialInstructionText)"  as AnyObject
-        parameters["items"] = viewModel.buildItemList() as AnyObject
-        parameters["devicetype"] = AppConfig.DeviceType as AnyObject
-        parameters["scharge"] = "\(pricedetails.serviceCharge)" as AnyObject
-       // parameters["menutype"] = "\(Cart.shared.menuType)" as AnyObject//Catering / Menu
-        parameters["donate"] = "\(donateAmount)" as AnyObject//Catering / Menu
-        parameters["dcharge"] = "\(pricedetails.deliveryCharge)" as AnyObject//Catering / Menu
-        parameters["recipientname"] = "\(recipientfName) \(recipientlName)" as AnyObject
-        parameters["recipientphone"] = "\(recipientPhone)" as AnyObject
-        parameters["orderasGift"] = "\(self.viewModel.orderAsGift)" as AnyObject//Yes//No
-        parameters["transactionIdentifier"] = "\(transactionIdentifier)" as AnyObject
-        parameters["dbname"] = Cart.shared.dbname as AnyObject //details like 10% Discount / 5$ Discount
-        parameters["offerdetails"] = pricedetails.offerdetails as AnyObject
-        parameters["offeramount"] = pricedetails.offeramount as AnyObject
-
-
-
-
-        
-        
-        
-        print(parameters.json)
-        UtilsClass.showProgressHud(view: self.view)
-        /*
-        Cart.shared.orderNumber = "as! String"
-        Cart.shared.supportNumber = "success as! String"
-        let vc = self.viewController(viewController: FinalOrderPageVC.self, storyName: StoryName.CartFlow.rawValue) as! FinalOrderPageVC
-
-        self.navigationController?.pushViewController(vc, animated: true)
-        */
-        
-        WebServices.placeOrderService(parameters: parameters, successHandler: { (success) in
-            print(success)
-            UtilsClass.hideProgressHud(view: self.view)
-            Cart.shared.orderNumber = success["id"] as! String
-            Cart.shared.supportNumber = success["support"] as! String
-            let vc = self.viewController(viewController: FinalOrderPageVC.self, storyName: StoryName.CartFlow.rawValue) as! FinalOrderPageVC
-
-            self.navigationController?.pushViewController(vc, animated: true)
-
-            
-         }) { (error) in
-             UtilsClass.hideProgressHud(view: self.view)
-             //print(error)
-             self.showAlert(title: "Error", msg: error)
-                      }
-//        
-   }
-    */
 
 }
 
@@ -310,7 +205,7 @@ extension ConfirmOrderVC: UITableViewDelegate, UITableViewDataSource{
             }else {
                 cell.headingLbl.text = "Delivery At:"
                 let address = Cart.shared.userAddress
-                    add = "\(address!.add1) \(address!.add2), \(address!.city), \(address!.state), \(address!.zip)"
+                    add = "\(address!.add1 ?? "") \(address!.add2 ?? ""), \(address!.city ?? ""), \(address!.state ?? ""), \(address!.zip ?? "")"
                     cell.changeAddressBtn.isHidden = false
                     cell.changePhoneBtn.isHidden = false
                     cell.phoneLbl.text = "Phone: \(APPDELEGATE.userResponse?.customer.phone ?? "")"

@@ -30,18 +30,18 @@ class DineInTVCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
-    func updateUI(order: DineInOrder) {
+    func updateUI(order: BookingItem) {
         statusLbl.text = order.status
         bookingDateForLbl.attributedText = self.configureSplInstText(text1: "DineIn Time: ", text: "\(order.date)")
 
-        restaurantLbl.attributedText = self.configureSplInstText(text1: "Restaurant: ", text: "\(order.restaurant)")
+        restaurantLbl.attributedText = self.configureSplInstText(text1: "Restaurant: ", text: "\(order.restaurantName)")
         dateLbl.attributedText = self.configureSplInstText(text1: "Booking Time: ", text: "\(order.booking)")
 
-        peopleLbl.attributedText = self.configureSplInstText(text1: "Number Of People: ", text: "\(order.people)")
+        peopleLbl.attributedText = self.configureSplInstText(text1: "Number Of People: ", text: "\(order.peopleCount)")
 
         commentLbl.numberOfLines = 0
-        commentLbl.attributedText = self.configureSplInstText(text1: "Comment: ", text: "\(order.comment ?? "")")
-        resionCommentLbl.attributedText = self.configureSplInstText(text1: "Reason: ", text: "\(order.comment ?? "")")
+        commentLbl.attributedText = self.configureSplInstText(text1: "Comment: ", text: "\(order.reply ?? "")")
+        resionCommentLbl.attributedText = self.configureSplInstText(text1: "Reason: ", text: "\(order.reply ?? "")")
 
         resionCommentLbl.isHidden = true
 

@@ -48,8 +48,8 @@ extension ChooseAddressVC: UITableViewDelegate, UITableViewDataSource {
         cell.backgroundColor = .white
         let address = APPDELEGATE.userResponse!.customer.address[indexPath.row]
         let selectedAddress = Cart.shared.userAddress
-        let user = APPDELEGATE.userResponse!.customer
-        cell.addressLbl.text = "\(address.add1) \(address.add2), \(address.city), \(address.state), \(address.zip)"
+        //let user = APPDELEGATE.userResponse!.customer
+        cell.addressLbl.text = "\(address.add1 ?? "") \(address.add2 ?? ""), \(address.city ?? ""), \(address.state ?? ""), \(address.zip ?? "")"
         cell.addressTypeLbl.text = address.addtypes
         cell.updateUI(selected: selectedAddress?.id == address.id)
        // cell.phoneLbl.text = "Phone Number: \(user.phone)"

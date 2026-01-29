@@ -34,17 +34,16 @@ class CartVC: UIViewController {
             firstPart = ""
             fullText = "\(Cart.shared.restDetails.name)"
             secondPart = "\(Cart.shared.restDetails.name)"
-            /*
-            let deliveryZipsArray = Cart.shared.restDetails.deliveryzip.components(separatedBy: ",")
+            
             if Cart.shared.userAddress == nil && APPDELEGATE.userLoggedIn(){
-                for address in APPDELEGATE.userResponse!.customer.address! {
-                    if deliveryZipsArray.contains(address.zip) {
+                for address in APPDELEGATE.userResponse!.customer.address {
+                    if APPDELEGATE.selectedLocationAddress.zipcode == address.zip {
                         Cart.shared.userAddress = address
                         break
                     }
                 }
             }
-            */
+            
         }
         
         let attributedString = NSMutableAttributedString(string: fullText)
@@ -217,9 +216,28 @@ class CartVC: UIViewController {
         popupVC.modalTransitionStyle = .crossDissolve
         self.present(popupVC, animated: true)
     }
+    func getMenuTypesFromItems()-> String {
+        var menuType = "Regular"
+        if Cart.shared.orderType == .delivery {
+            let types = Set(
+                Cart.shared.cartData.compactMap {
+                    $0.restItemSizes.first?.menuType
+                }
+            )
+
+            if types.contains("Menu") {
+                menuType = "Regular"
+            } else if types.contains("Catering") {
+                menuType = "Catering"
+            } else if types.contains("Deals") {
+                menuType = "Regular"
+            }
+        }
+        return menuType
+    }
     @IBAction func proceedAction() {
         if Cart.shared.orderType == .delivery {
-            checkDeliveryAvailability(restID: Cart.shared.restDetails.rid, menuType: "Regular", address: Cart.shared.userAddress.fullAddress)
+            checkDeliveryAvailability(restID: Cart.shared.restDetails.rid, menuType: getMenuTypesFromItems(), address: Cart.shared.userAddress.fullAddress)
         } else {
             contionueAction()
         }
@@ -285,9 +303,10 @@ class CartVC: UIViewController {
                 showAlert(title: "Out of Delivery Area", msg: "\(data.data?.message ?? "Out of Delivery Area")")
             }
             
-        } ErrorHandler: { [weak self] _ in
-            guard let self = self else { return }
+        } ErrorHandler: { error in
+           // guard let self = self else { return }
             UtilsClass.hideProgressHud(view: self.view)
+            self.showAlert(title: "Out of Delivery Area", msg: "\(error)")
         }
     }
     
@@ -450,7 +469,7 @@ extension CartVC: UITableViewDelegate, UITableViewDataSource{
                 }else {
                     cell.headingLbl.text = "Delivery At:"
                     let address = Cart.shared.userAddress
-                    add = "\(address!.add1) \(address!.add2), \(address!.city), \(address!.state), \(address!.zip)"
+                    add = "\(address!.add1 ?? "") \(address!.add2 ?? ""), \(address!.city ?? ""), \(address!.state ?? ""), \(address!.zip ?? "")"
                     cell.changeAddressBtn.isHidden = false
                     cell.changePhoneBtn.isHidden = false
                     cell.phoneLbl.text = "Phone: \(APPDELEGATE.userResponse?.customer.phone ?? "")"

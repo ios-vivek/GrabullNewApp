@@ -42,7 +42,9 @@ struct OrderHistory: Codable {
 
         let details: String
         let orderItems: [OrderItem]
-        let addedItems: [String]
+        let addedItems: [OrderItem]
+    let recipientphone: String
+    let recipientname: String
 
         enum CodingKeys: String, CodingKey {
             case order
@@ -73,6 +75,8 @@ struct OrderHistory: Codable {
             case details
             case orderItems
             case addedItems
+            case recipientphone
+            case recipientname
         }
 }
 struct OrderItem: Codable {

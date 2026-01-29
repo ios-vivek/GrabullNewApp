@@ -93,6 +93,9 @@ struct CustomRestDetails: Codable {
     var isPickup: Bool {
         return self.pickup == "Yes"
     }
+    var isRestaurantOpenToday: Bool {
+        return self.openStatus.status == "Open Now"
+    }
 }
 
 // MARK: - Menu Category

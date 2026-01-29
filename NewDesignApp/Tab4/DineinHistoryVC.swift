@@ -23,7 +23,7 @@ class DineinHistoryVC: UIViewController {
 
     @IBOutlet weak var calendarStack: UIStackView!
     
-    var dineInList = [DineInOrder]()
+    var dineInList = [BookingItem]()
     private enum PickerMode {
         case month
         case year
@@ -86,7 +86,7 @@ class DineinHistoryVC: UIViewController {
         if APPDELEGATE.userLoggedIn() {
             self.callService()
         } else {
-            dineInList = [DineInOrder]()
+            dineInList = [BookingItem]()
             historyTblView.reloadData()
         }
     }
@@ -136,9 +136,9 @@ let montharr = ["01","02","03","04","05","06","07","08","09","10","11","12"]
         ]) { _, new in new }
         
         UtilsClass.showProgressHud(view: self.view)
-        WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.getDineInOrders, forModelType: DineInHistoryResponse.self) { success in
+        WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.getDineInOrders, forModelType: BookingHistoryResponse.self) { success in
             UtilsClass.hideProgressHud(view: self.view)
-            self.dineInList = success.data.dinein
+            self.dineInList = success.data.data
             self.historyTblView.reloadData()
             self.emptyView.isHidden = true
             if self.dineInList.count == 0 {
@@ -246,7 +246,7 @@ extension DineinHistoryVC: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "DineInTVCell", for: indexPath) as! DineInTVCell
             cell.selectionStyle = .none
             cell.backgroundColor = .clear
-            cell.updateUI(order: dineInList[indexPath.section])
+            cell.updateUI(order: dineInList[indexPath.row])
             return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
