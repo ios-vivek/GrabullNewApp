@@ -507,19 +507,19 @@ class Cart {
           //  }
         }
         if item.smp > 0 {
-            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.sm)", price: "\(item.smp.to2Decimal())", itemQty: item.minQty, sizeKey: "sm", isCatering: isCatering))
+            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.sm)", price: "\(item.smp.to2Decimal())", itemQty: item.minQty, sizeKey: "sm", isCatering: isCatering, serveTray: "\(item.tray == "Yes" ? "(serves \(item.traysm))" : "")"))
         }
         if item.mdp > 0 {
-            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.md)", price: "\(item.mdp.to2Decimal())", itemQty: item.minQty, sizeKey: "md", isCatering: isCatering))
+            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.md)", price: "\(item.mdp.to2Decimal())", itemQty: item.minQty, sizeKey: "md", isCatering: isCatering, serveTray: "\(item.tray == "Yes" ? "(serves \(item.traymd))" : "")"))
         }
         if item.lgp > 0 {
-            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.lg)", price: "\(item.lgp.to2Decimal())", itemQty: item.minQty, sizeKey: "lg", isCatering: isCatering))
+            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.lg)", price: "\(item.lgp.to2Decimal())", itemQty: item.minQty, sizeKey: "lg", isCatering: isCatering, serveTray: "\(item.tray == "Yes" ? "(serves \(item.traylg))" : "")"))
         }
         if item.exp > 0 {
-            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.ex)", price: "\(item.exp.to2Decimal())", itemQty: item.minQty, sizeKey: "ex", isCatering: isCatering))
+            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.ex)", price: "\(item.exp.to2Decimal())", itemQty: item.minQty, sizeKey: "ex", isCatering: isCatering, serveTray: "\(item.tray == "Yes" ? "(serves \(item.trayex))" : "")"))
         }
         if item.xlp > 0 {
-            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.xl)", price: "\(item.xlp.to2Decimal())", itemQty: item.minQty, sizeKey: "xl", isCatering: isCatering))
+            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.xl)", price: "\(item.xlp.to2Decimal())", itemQty: item.minQty, sizeKey: "xl", isCatering: isCatering, serveTray: "\(item.tray == "Yes" ? "(serves \(item.trayxl))" : "")"))
         }
         
         return arr

@@ -74,14 +74,24 @@ class ScheduleDateTimeVC: UIViewController {
         dateCollection.backgroundColor = .white
         dateSubmitButton.setRounded(cornerRadius: 8)
         getTimingFromApi(date: UtilsClass.getCurrentDateInString(date: Date()))
-            self.segmentedControl.setEnabled(Cart.shared.tempRestDetails.isRestaurantOpenToday, forSegmentAt: 0);
         if !Cart.shared.tempRestDetails.isRestaurantOpenToday {
             self.segmentedControl.selectedSegmentIndex = 1
         }
         //print("today closed..\(UtilsClass.isRestaurantClosedToday(Cart.shared.tempRestDetails.stopyoday))")
-       // segmentedControl.setEnabled(!UtilsClass.isRestaurantClosedToday(Cart.shared.tempRestDetails.stopyoday), forSegmentAt: 1);
+       //
         pickDeliveryControl.isHidden = isPickupDeliverySettingHide
         topConstrainsWarningLbl.constant = isPickupDeliverySettingHide ? 12 : 65
+    }
+    func checkTodayOpen() {
+        let d = datesList[selectedDateIndex]
+//yy-mm-dd
+        if d.currectDateInFormate == UtilsClass.getCurrentDateInString(date: Date()) {
+            let isOpen = timeList.count > 0 ? true : false
+            segmentedControl.setEnabled(isOpen, forSegmentAt: 1);
+            
+            let isAsapOpen = Cart.shared.tempRestDetails.isRestaurantOpenToday && isOpen
+            self.segmentedControl.setEnabled(isAsapOpen, forSegmentAt: 0);
+        }
     }
     @objc func cancelTap(_ sender: UITapGestureRecognizer? = nil) {
         // handling code
@@ -125,6 +135,7 @@ class ScheduleDateTimeVC: UIViewController {
                 self.calculateAvailableTime(time: time, date: "\(UtilsClass.getCurrentDateInString(date: Date()))")
             }
         }
+        checkTodayOpen()
     }
     func calculateAvailableTime(time: String, date: String) {
         let formatter = DateFormatter()
@@ -240,7 +251,7 @@ class ScheduleDateTimeVC: UIViewController {
             asapView.isHidden = true
             dateCollection.isHidden = false
             var convertedTime = ""
-            if selectedTimeIndex != -1 {
+            if selectedTimeIndex != -1 && self.timeList.count > 0 {
                 convertedTime = UtilsClass.getStringDateHHMMSS(stringTime: self.timeList[selectedTimeIndex])
             }
             let str = (selectedTimeIndex >= 0 && selectedDateIndex >= 0) ? "\(type) on \(self.datesList[selectedDateIndex].day), \(self.datesList[selectedDateIndex].date) \(convertedTime)" : "\(type)"
