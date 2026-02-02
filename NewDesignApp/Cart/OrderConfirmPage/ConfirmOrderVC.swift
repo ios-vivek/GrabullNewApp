@@ -6,6 +6,9 @@
 //
 
 import UIKit
+import Stripe
+import StripePaymentSheet
+
 //import PassKit
 enum PayBy {
     case Cash
@@ -28,6 +31,7 @@ enum CellTypeSelected: Int {
     case TotalRowsCount
 }
 class ConfirmOrderVC: UIViewController {
+    private var paymentSheet: PaymentSheet?
     @IBOutlet weak var cartTableView: UITableView!
 //let sectionArr = ["restname","deliveryto", "deliveryat", "SendAsGift", "Special","payment", "Redeem", "tips", "donate", "itemdetails", "totalprice"]
     private let viewModel = ConfirmOrderViewModel()
@@ -131,14 +135,37 @@ class ConfirmOrderVC: UIViewController {
         }
         
     }
-
+    func openStripPage(){
+        //var paymentSheet: PaymentSheet?
+             var configuration = PaymentSheet.Configuration()
+             configuration.merchantDisplayName = "UDS"
+             configuration.customer = .init(id: "19012412412921", ephemeralKeySecret: "empkey")
+             self.paymentSheet = PaymentSheet(paymentIntentClientSecret: "\("clientSecret")", configuration: configuration)
+        // MARK: Start the checkout process
+         paymentSheet?.present(from: self) { paymentResult in
+           // MARK: Handle the payment result
+           switch paymentResult {
+           case .completed:
+             print("Your order is confirmed")
+              // let tempamount = Int(amount)!/100
+              // self.confirmPaymentWS(orderid: orderid, amount: "\(tempamount)", intentID: intentID)
+           case .canceled:
+             print("Cancelled!")
+           // Alert.showDefaultAlert(for: self, message: "kPaymentCanceled")
+           case .failed(let error):
+             print("Payment failed: \n\(error.localizedDescription)")
+           // Alert.showDefaultAlert(for: self, message: error.localizedDescription)
+           }
+         }
+        }
     func addOrder(transactionIdentifier: String) {
-        viewModel.placeOrder(
-            recipientFName: recipientfName,
-            recipientLName: recipientlName,
-            recipientPhone: recipientPhone,
-            transactionIdentifier: transactionIdentifier
-        )
+        openStripPage()
+//        viewModel.placeOrder(
+//            recipientFName: recipientfName,
+//            recipientLName: recipientlName,
+//            recipientPhone: recipientPhone,
+//            transactionIdentifier: transactionIdentifier
+//        )
     }
 
 }
