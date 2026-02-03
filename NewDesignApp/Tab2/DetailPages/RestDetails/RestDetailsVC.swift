@@ -283,12 +283,12 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
         self.navigationController?.popViewController(animated: true)
     }
     func showMenuOption()-> Bool {
-        if selectedMenuType == .deals || selectedMenuType == .dineIn {
+        if [.deals, .dineIn, .catering].contains(selectedMenuType) {
             return false
         }
-        if selectedMenuType == .catering {
-            return filteredCateringList.count > 0 ? true : false
-        }
+//        if selectedMenuType == .catering {
+//            return filteredCateringList.count > 0 ? true : false
+//        }
         return true
     }
     func navigateToMenuDetails(index: IndexPath) {
@@ -386,7 +386,9 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
             let yPosition = -( scrollView.contentOffset.y+1)
            // print(yPosition)
 //            if self.restDetailsData?.menutype[selectedmenuType] != "Specials" {
+            if ![.deals, .dineIn, .catering].contains(selectedMenuType) {
                 menuView.isHidden = yPosition >= -577 ? true : false
+            }
 //            }
             restaurantName.isHidden = yPosition >= -177 ? true : false
             } else if let _ = scrollView as? UICollectionView {
@@ -610,9 +612,10 @@ extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         
         if section >= RestaurentDetailsSection.Items.rawValue {
-            if selectedMenuType == .deals || selectedMenuType == .dineIn {
+            if [.deals, .dineIn, .catering].contains(selectedMenuType) {
                 return 0
             }
+            /*
             if selectedMenuType == .catering {
 //                let sec = section - 5
 //                let item = self.cateringList[sec].heading
@@ -621,6 +624,7 @@ extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
 //                }
                 return self.filteredCateringList.count > 0 ? 50 : 0
             }
+            */
             return 50
     }
         return 0
@@ -747,7 +751,7 @@ extension RestDetailsVC: UICollectionViewDelegate,UICollectionViewDataSource{
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if selectedMenuType == .catering {
-            return self.allCateringList.count
+            return 0//self.allCateringList.count
         }
         return self.allMenuList.count
 

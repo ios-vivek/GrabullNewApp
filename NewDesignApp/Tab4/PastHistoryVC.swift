@@ -135,7 +135,7 @@ let montharr = ["01","02","03","04","05","06","07","08","09","10","11","12"]
         UtilsClass.showProgressHud(view: self.view)
         WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.pastOrder, forModelType: HisoryResponse.self) { success in
             UtilsClass.hideProgressHud(view: self.view)
-           // self.historyList = success.data.data
+            self.historyList = success.data.data
             self.historyTblView.reloadData()
             self.noDataFoundRefersh()
             self.noDataFoundLbl.text = self.historyList.count != 0 ? "" : "You don't have any order history in \(selectedMonth)."
