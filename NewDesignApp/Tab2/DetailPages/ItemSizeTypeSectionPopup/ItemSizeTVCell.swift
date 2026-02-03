@@ -84,5 +84,34 @@ class ItemSizeTVCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
+    
+    func priceServeAttributedText(
+        price: String,
+        serve: String
+    ) -> NSAttributedString {
+
+        let priceAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 14),
+            .foregroundColor: UIColor.black
+        ]
+
+        let serveAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: 12),
+            .foregroundColor: UIColor.darkGray
+        ]
+
+        let attributedText = NSMutableAttributedString(
+            string: price,
+            attributes: priceAttributes
+        )
+
+        let serveText = NSAttributedString(
+            string: " \(serve)",
+            attributes: serveAttributes
+        )
+
+        attributedText.append(serveText)
+        return attributedText
+    }
 
 }

@@ -420,47 +420,55 @@ public static func getAttributedString(str1: String, str2: String) -> NSMutableA
         }
         
     }
-    public static func setGlobalAddress(addressWithLatLong: [ResultLatLong]){
-        if !addressWithLatLong.isEmpty {
-            let add = addressWithLatLong[0]
-            let cllocation = CLLocation(latitude: add.geometry.location.lat, longitude: add.geometry.location.lng)
-            let latLong : CLLocationCoordinate2D = CLLocationCoordinate2DMake(cllocation.coordinate.latitude, cllocation.coordinate.longitude)
-            APPDELEGATE.selectedLocationAddress = LocationAddress()
-            APPDELEGATE.selectedLocationAddress.subLocality = ""
-            APPDELEGATE.selectedLocationAddress.latLong = latLong
-            for aAddress in add.address_components {
-                if aAddress.types.contains("premise"){
-                    APPDELEGATE.selectedLocationAddress.premise = aAddress.short_name
-                }
-                if aAddress.types.contains("country") {
-                    APPDELEGATE.selectedLocationAddress.country = aAddress.short_name
-                }
-                else if aAddress.types.contains("postal_code") {
-                    APPDELEGATE.selectedLocationAddress.zipcode = aAddress.short_name
-                }
-                else if aAddress.types.contains("locality") {
-                    APPDELEGATE.selectedLocationAddress.city = aAddress.short_name
-                }
-                else if aAddress.types.contains("administrative_area_level_1") {
-                    APPDELEGATE.selectedLocationAddress.state = aAddress.short_name
-                }
-                else if aAddress.types.contains("sublocality_level_1") {
-                    APPDELEGATE.selectedLocationAddress.subLocality = aAddress.short_name
-                }
-                else if aAddress.types.contains("street_number") {
-                    APPDELEGATE.selectedLocationAddress.streetNumber = aAddress.short_name
-                }
-                else if aAddress.types.contains("route") {
-                    APPDELEGATE.selectedLocationAddress.route = aAddress.short_name
-                }
-            }
-            if APPDELEGATE.selectedLocationAddress.premise.isEmpty {
-                APPDELEGATE.selectedLocationAddress.premise = APPDELEGATE.selectedLocationAddress.streetNumber
-            }
-            if APPDELEGATE.selectedLocationAddress.subLocality.isEmpty {
-                APPDELEGATE.selectedLocationAddress.subLocality = APPDELEGATE.selectedLocationAddress.route
+    public static func setGlobalAddress(addressWithLatLong: [ResultLatLong]) {
+
+        guard let result = addressWithLatLong.first else { return }
+
+        let location = CLLocation(
+            latitude: result.geometry.location.lat,
+            longitude: result.geometry.location.lng
+        )
+
+        let coordinate = location.coordinate
+
+        let address = LocationAddress()
+        address.latLong = coordinate
+        address.subLocality = ""
+
+        for component in result.address_components {
+
+            let types = component.types
+
+            if types.contains("premise") {
+                address.premise = component.short_name
+            } else if types.contains("country") {
+                address.country = component.short_name
+            } else if types.contains("postal_code") {
+                address.zipcode = component.short_name
+            } else if types.contains("locality") {
+                address.city = component.short_name
+            } else if types.contains("administrative_area_level_1") {
+                address.state = component.short_name
+            } else if types.contains("sublocality_level_1") {
+                address.subLocality = component.short_name
+            } else if types.contains("street_number") {
+                address.streetNumber = component.short_name
+            } else if types.contains("route") {
+                address.route = component.short_name
             }
         }
+
+        // 🔹 Fallback logic
+        if address.premise.isEmpty {
+            address.premise = address.streetNumber
+        }
+
+        if address.subLocality.isEmpty {
+            address.subLocality = address.route
+        }
+
+        // 🔹 Assign once
+        APPDELEGATE.selectedLocationAddress = address
     }
     public static func getStringDateFromString(stringDate: String) -> String {
         let currentTimeZone = TimeZone.current

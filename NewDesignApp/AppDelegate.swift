@@ -13,6 +13,7 @@ import UIKit
 import CoreLocation
 import IQKeyboardManagerSwift
 import UserNotifications
+import Stripe
 
 let APPDELEGATE = UIApplication.shared.delegate as! AppDelegate
 
@@ -36,6 +37,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        StripeAPI.defaultPublishableKey = "pk_test_51J8MBrSFomW9jcANOdfqJrfD5B6EMeMqc94bAqf5asZJsRiBPhl4Hn2EZaK8zWXcpb5n0g5oXgibQUbwwQexyLCF00cWpJdjK7"
        // IQKeyboardManager.shared.enable = true
         IQKeyboardManager.shared.enableAutoToolbar = true
         IQKeyboardManager.shared.resignOnTouchOutside = true

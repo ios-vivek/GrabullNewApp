@@ -136,6 +136,14 @@ struct MenuItem: Codable {
        let lgp: Double
        let exp: Double
        let xlp: Double
+    
+      let tray: String
+      let traysm: Int
+      let traymd: Int
+      let traylg: Int
+      let trayex: Int
+      let trayxl: Int
+    
 
        let minQty: Int
        let tax: Int
@@ -147,6 +155,7 @@ struct MenuItem: Codable {
            case sm, md, lg, ex, xl
            case smp, mdp, lgp, exp, xlp
            case minQty
+           case tray, traysm, traymd, traylg, trayex, trayxl
            case tax, used, completeMeal
        }
     
@@ -185,23 +194,23 @@ extension MenuItem {
         var list: [ItemPrice] = []
 
         if !sm.isEmpty, smp > 0 {
-            list.append(ItemPrice(size: sm, price: smp))
+            list.append(ItemPrice(size: sm, price: smp, tray: tray, trayPrice: traysm))
         }
 
         if !md.isEmpty, mdp > 0 {
-            list.append(ItemPrice(size: md, price: mdp))
+            list.append(ItemPrice(size: md, price: mdp, tray: tray, trayPrice: traymd))
         }
 
         if !lg.isEmpty, lgp > 0 {
-            list.append(ItemPrice(size: lg, price: lgp))
+            list.append(ItemPrice(size: lg, price: lgp, tray: tray, trayPrice: traylg))
         }
 
         if !ex.isEmpty, exp > 0 {
-            list.append(ItemPrice(size: ex, price: exp))
+            list.append(ItemPrice(size: ex, price: exp, tray: tray, trayPrice: trayex))
         }
 
         if !xl.isEmpty, xlp > 0 {
-            list.append(ItemPrice(size: xl, price: xlp))
+            list.append(ItemPrice(size: xl, price: xlp, tray: tray, trayPrice: trayxl))
         }
 
         return list.sorted { $0.price < $1.price }
@@ -210,5 +219,7 @@ extension MenuItem {
 struct ItemPrice {
     let size: String
     let price: Double
+    let tray: String
+    let trayPrice: Int
 }
 
