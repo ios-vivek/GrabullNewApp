@@ -43,7 +43,7 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
     
     func addItemSelection(index: IndexPath) {
         handleCartBeforeAdd(index: index)
-        /*
+        
         if Cart.shared.restDetails == nil {
             Cart.shared.restDetails = Cart.shared.tempRestDetails
             self.navigateToMenuDetails(index: index)
@@ -75,7 +75,7 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
             Cart.shared.restDetails = Cart.shared.tempRestDetails
             self.navigateToMenuDetails(index: index)
         }
-        */
+        
     }
     func handleCartBeforeAdd(index: IndexPath) {
         guard let currentRest = Cart.shared.restDetails else {
@@ -139,6 +139,7 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
     var itemData: MenuItem!
     var isReservationAvailable = false
     var selectedFiler = -1
+    var galleryImages = [String]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -232,13 +233,13 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
         }
     }
     func setImages() {
-        /*
-        if self.restDetailsData!.restImage != "" && self.restDetailsData!.gallery.list.isEmpty {
-            let url = ImageURL.init(url: self.restDetailsData!.restImage)
-            self.restDetailsData!.gallery.list.append(url)
-        }
-//                if self.restDetailsData!?.gallery.list.count == 0 {
-        */
+        galleryImages = Array(Set(
+            restDetailsData?.menuList
+                .flatMap { $0.itemList }
+                .compactMap { $0.itemImage }
+                .filter { !$0.isEmpty } ?? []
+        ))
+        galleryImages.append(self.restData?.restImgUrl ?? "")
     }
     func getMenuList() {
         if selectedMenuType == .menu {
@@ -478,7 +479,7 @@ extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "RestDetailTVCell", for: indexPath) as! RestDetailTVCell
             cell.selectionStyle = .none
             cell.delegate = self
-            cell.updateUI(data: self.restDetailsData, restImage: restData?.restImgUrl ?? "")
+            cell.updateUI(data: self.restDetailsData, restImage: restData?.restImgUrl ?? "", galleryImages: self.galleryImages)
             return cell
         case RestaurentDetailsSection.Deals.rawValue:
             let cell = tableView.dequeueReusableCell(withIdentifier: "DealsTVCell", for: indexPath) as! DealsTVCell
@@ -717,7 +718,7 @@ extension RestDetailsVC: GalleryDelegate {
     func selectedGalleryView() {
         let vc = self.viewController(viewController: RestImageGalleryVC.self, storyName: StoryName.Main.rawValue) as! RestImageGalleryVC
 
-      //  vc.galleryImages = self.restDetailsData?.gallery
+        vc.galleryImages = self.galleryImages
         self.navigationController?.pushViewController(vc, animated: true)
     }
     

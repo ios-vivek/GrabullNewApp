@@ -144,7 +144,7 @@ struct MenuItem: Codable {
       let trayex: Int
       let trayxl: Int
     
-
+       let itemImage: String
        let minQty: Int
        let tax: Int
        let used: Int
@@ -154,7 +154,7 @@ struct MenuItem: Codable {
            case id, heading, details, status, bogo
            case sm, md, lg, ex, xl
            case smp, mdp, lgp, exp, xlp
-           case minQty
+           case minQty, itemImage
            case tray, traysm, traymd, traylg, trayex, trayxl
            case tax, used, completeMeal
        }

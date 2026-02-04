@@ -48,11 +48,11 @@ var gotResponseFromService = false
         WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.resturantList, forModelType: RestaurantListResponse.self) { success in
             UtilsClass.hideProgressHud(view: self.view)
             self.gotResponseFromService = true
-            print(success.data.data)
-//            if success.data.restaurant.count > 0 {
-//                self.listResponse = success.data.restaurant
-//                self.dineFilter()
-//            }
+            //print(success.data.data)
+            if success.data.data.restaurants.count > 0 {
+                self.listResponse = success.data.data.restaurants
+                self.dineFilter()
+            }
         } ErrorHandler: { error in
             self.gotResponseFromService = true
             UtilsClass.hideProgressHud(view: self.view)
@@ -62,17 +62,11 @@ var gotResponseFromService = false
         
     }
     func dineFilter() {
-        /*
         if isDineFilter {
-            let filtered = self.listResponse.filter { $0.ordertypes.contains("Reservation") }
-           // print(filtered.count)
-           // print(self.listResponse.count)
+            let filtered = self.listResponse.filter { $0.dinein.contains("Yes") }
             self.listResponse = filtered
-           // print(self.listResponse.count)
         }
-         */
         self.homeCollection.reloadData()
-
     }
     func getRestDetailFromApi(restid: String, dbname: String) {
         Cart.shared.dbname = dbname
@@ -87,7 +81,8 @@ var gotResponseFromService = false
             UtilsClass.hideProgressHud(view: self.view)
             let story = UIStoryboard.init(name: "OrderFlow", bundle: nil)
             let vc = story.instantiateViewController(withIdentifier: "RestDetailsVC") as! RestDetailsVC
-           // vc.restDetailsData = success.data.restaurant
+            let customModel = success.data.toCustomModel()
+            vc.restDetailsData = customModel
             self.navigationController?.pushViewController(vc, animated: true)
             
         } ErrorHandler: { error in

@@ -123,14 +123,10 @@ var restData: CustomRestDetails?
              lblAsap.text = "Delivery\(result)"
          }
     }
-    func updateUI(data: CustomRestDetails?, restImage: String) {
+    func updateUI(data: CustomRestDetails?, restImage: String, galleryImages: [String]) {
         restData = data
-//                if restData?.gallery.list.count == 0 {
-//                    photoCountView.isHidden = true
-//                } else {
-//                    photoCountView.isHidden = false
-//                }
-       // lblPhotoCount.text = "\(restData?.gallery.list.count ?? 0) Photos"
+        photoCountView.isHidden = galleryImages.count > 0 ? false : true
+        lblPhotoCount.text = "\(galleryImages.count) Photos"
         restName.text = "\(restData?.name ?? "resta neme")"
         deliveryTimeLbl.text = "\(restData?.deliveryTime ?? 0) Mins"
         ratingLbl.text = "\(restData?.rating ?? 0)"
