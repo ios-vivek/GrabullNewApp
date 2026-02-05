@@ -223,9 +223,9 @@ final class ConfirmOrderViewModel {
     func startPaymentFlow() {
         var configuration = PaymentSheet.Configuration()
         configuration.merchantDisplayName = "Grabull"
-        configuration.customer = .init(id: "cus_P1SOv09MSNsewL", ephemeralKeySecret: "ek_test_YWNjdF8xSjhNQnJTRm9tVzlqY0FOLGxJSVpNQUdPUUs5S1BkRmpIakdqcVBuUnlkWFA4WUM_00ry0cOxAx")
+        configuration.customer = .init(id: "cus_TvDFH86vud9n1z", ephemeralKeySecret: "ek_test_YWNjdF8xSjhNQnJTRm9tVzlqY0FOLGt2aEgyRVFKZXZRNmE4MzdMa243c3FRcktjNGozRnY_00Xli8LvuG")
 
-        let paymentSheet = PaymentSheet(paymentIntentClientSecret: "pi_3SwyvZSFomW9jcAN1STm5KTf_secret_IKI2ickzLaMB444e6fMiYzvQE", configuration: configuration)
+        let paymentSheet = PaymentSheet(paymentIntentClientSecret: "pi_3SxMp0SFomW9jcAN1iSFhxml_secret_hk3JixoQ21MvvVd2sSkPGbMa5", configuration: configuration)
 
         presentPaymentSheet?(paymentSheet)
     }
