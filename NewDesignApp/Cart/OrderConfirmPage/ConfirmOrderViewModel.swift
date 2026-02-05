@@ -6,7 +6,7 @@ final class ConfirmOrderViewModel {
     
     // MARK: - State
     var selectedPaymentType: Int = 0
-    var payBy: PayBy = .Card
+    var payBy: PayBy = .Stripe
     var isSpecialSelected = false
     
     var userRewardAmount: String = "0.0"
@@ -61,15 +61,7 @@ final class ConfirmOrderViewModel {
             let toppingAmount = Cart.shared.roundValue2Digit(
                 value: toppings.reduce(0) { $0 + Float($1.price) }
             )
-            
-            //            let optionList = toppings.map {
-            //                [
-            //                    "id": "\($0.opID)" as AnyObject,
-            //                    "heading": $0.optionHeading as AnyObject,
-            //                    "price": "\($0.price)" as AnyObject
-            //                ]
-            //            }
-            
+
             let optionList = toppings
                 .map { String($0.opID) }
                 .joined(separator: "|")
@@ -109,7 +101,7 @@ final class ConfirmOrderViewModel {
             }
             placeOrder(recipientFName: recipientFName, recipientLName: recipientLName, recipientPhone: recipientPhone, transactionIdentifier: transactionIdentifier)
         default:
-            payBy = .Card
+            payBy = .Stripe
             startPaymentFlow()
         }
     }

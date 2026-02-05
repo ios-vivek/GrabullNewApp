@@ -12,9 +12,8 @@ import StripePaymentSheet
 //import PassKit
 enum PayBy {
     case Cash
-    case Card
     case Gift
-    case ApplePay
+    case Stripe
 }
 enum CellTypeSelected: Int {
     case Restname
@@ -35,7 +34,7 @@ class ConfirmOrderVC: UIViewController {
     @IBOutlet weak var cartTableView: UITableView!
 //let sectionArr = ["restname","deliveryto", "deliveryat", "SendAsGift", "Special","payment", "Redeem", "tips", "donate", "itemdetails", "totalprice"]
     private let viewModel = ConfirmOrderViewModel()
-    var payBy = PayBy.Card
+    var payBy = PayBy.Stripe
     var userRewardAmount: String = "0.0"
     var recipientfName: String = ""
     var recipientlName: String = ""
