@@ -119,7 +119,7 @@ struct MenuCategory: Codable {
 
 // MARK: - Menu Item
 struct MenuItem: Codable {
-    let id: String
+       let id: String
        let heading: String
        let details: String
        let status: String
@@ -149,6 +149,7 @@ struct MenuItem: Codable {
        let tax: Int
        let used: Int
        let completeMeal: Int
+      // let topping: [String]
 
        enum CodingKeys: String, CodingKey {
            case id, heading, details, status, bogo
@@ -157,6 +158,7 @@ struct MenuItem: Codable {
            case minQty, itemImage
            case tray, traysm, traymd, traylg, trayex, trayxl
            case tax, used, completeMeal
+          // case topping
        }
     
 }

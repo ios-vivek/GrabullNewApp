@@ -356,8 +356,8 @@ public static func getAttributedString(str1: String, str2: String) -> NSMutableA
             locationAddress.zipcode = placemark.postalCode
 
             // MARK: - Area Info
-            locationAddress.subLocality = placemark.subLocality
-            locationAddress.locality = placemark.locality
+            locationAddress.subLocality = placemark.subLocality ?? ""
+            locationAddress.locality = placemark.locality ?? ""
 
             // MARK: - Street Details
             locationAddress.streetNumber = placemark.subThoroughfare ?? ""
@@ -389,7 +389,7 @@ public static func getAttributedString(str1: String, str2: String) -> NSMutableA
             if APPDELEGATE.selectedLocationAddress.premise.isEmpty {
                 APPDELEGATE.selectedLocationAddress.premise = APPDELEGATE.selectedLocationAddress.streetNumber
             }
-            if APPDELEGATE.selectedLocationAddress.subLocality.isEmpty {
+            if let loc = APPDELEGATE.selectedLocationAddress.subLocality , loc.isEmpty {
                 APPDELEGATE.selectedLocationAddress.subLocality = APPDELEGATE.selectedLocationAddress.route
             }
 

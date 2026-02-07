@@ -236,8 +236,11 @@ class CartVC: UIViewController {
         return menuType
     }
     @IBAction func proceedAction() {
+        let add = Cart.shared.userAddress.fullAddress
+       // let add = "2 Barnsley Rd, Lynnfield, MA 01940, USA"//Cart.shared.userAddress.fullAddress
+
         if Cart.shared.orderType == .delivery {
-            checkDeliveryAvailability(restID: Cart.shared.restDetails.rid, menuType: getMenuTypesFromItems(), address: Cart.shared.userAddress.fullAddress)
+            checkDeliveryAvailability(restID: Cart.shared.restDetails.rid, menuType: getMenuTypesFromItems(), address: add)
         } else {
             contionueAction()
         }

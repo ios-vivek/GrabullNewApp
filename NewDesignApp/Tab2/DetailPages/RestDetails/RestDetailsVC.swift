@@ -38,7 +38,6 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
         cartLbl.text = "\(Cart.shared.cartData.count)"
         cartView.isHidden = Cart.shared.cartData.count > 0 ? false : true
         cartView.updateUI()
-
     }
     
     func addItemSelection(index: IndexPath) {

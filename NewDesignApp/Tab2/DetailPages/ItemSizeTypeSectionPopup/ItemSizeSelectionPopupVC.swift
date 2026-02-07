@@ -95,7 +95,9 @@ class ItemSizeSelectionPopupVC: UIViewController {
         }
         */
         self.setAmountValue()
-        getToppingFromApi()
+        //if !itemData.topping.isEmpty {
+            getToppingFromApi()
+       // }
         customQtySetup()
 
     }

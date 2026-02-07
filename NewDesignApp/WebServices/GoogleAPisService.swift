@@ -47,9 +47,15 @@ class GoogleAPisService: NSObject {
             })
     }
     public static func googleAddressLatLong<T:Codable>(searchtext: String, forModelType modelType: T.Type, SuccessHandler: @escaping (APIResponse<T>) -> Void, ErrorHandler: @escaping (String) -> Void) {
-        let requestUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=\(searchtext)&key=\(GoogleApiKey)"
-               
-        AF.request(requestUrl,
+        var components = URLComponents(string: "https://maps.googleapis.com/maps/api/geocode/json")!
+        components.queryItems = [
+            URLQueryItem(name: "address", value: searchtext),
+            URLQueryItem(name: "key", value: "AIzaSyAcpD8juDqASzLRWCdNP-ns4UzdVph1koU")
+        ]
+
+        let url = components.url!
+        print("google requestUrl: \(url.absoluteString)")
+        AF.request(url.absoluteString,
                    method: .post,
                    parameters: nil,
                    encoding: URLEncoding.default,
@@ -59,7 +65,7 @@ class GoogleAPisService: NSObject {
                 case .success(let data):
                     do {
                                        let jsonResponse = try JSONSerialization.jsonObject(with: data!, options: [])
-                        print(jsonResponse)
+                        print("google Response: \(jsonResponse)")
 
                         let listData = try JSONDecoder().decode(modelType.self, from: JSONSerialization.data(withJSONObject: jsonResponse))
                         print(listData)

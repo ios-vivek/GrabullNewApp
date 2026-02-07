@@ -87,6 +87,8 @@ class LocationVC: UIViewController {
         }
     }
     func getAddressLatlongFromApi(text: String) {
+        self.fromGoogle(text: text)
+        /*
         UtilsClass.getAddressDetails(from: text) { address in
             guard let address = address else {
                 self.fromGoogle(text: text)
@@ -101,6 +103,7 @@ class LocationVC: UIViewController {
             }
             UtilsClass.saveAddress(address: SavedAddressInDB(address: text, date: Date()))
         }
+        */
         
     }
     func fromGoogle(text: String) {

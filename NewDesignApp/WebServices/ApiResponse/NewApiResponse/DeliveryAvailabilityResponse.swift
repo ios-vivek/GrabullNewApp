@@ -24,9 +24,9 @@ struct DeliveryAvailabilityResponse: Codable {
 }
 
 struct DeliveryAvailabilityData: Codable {
-    let delMiles: Int
-    let delMilesCatering: Int
-    let distance: Double
-    let custAddress: String
+   // let allowedMiles: Int
+   // let distance: Int
+   // let custAddress: String
+   // let menuType: String
     let message: String
 }
