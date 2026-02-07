@@ -173,6 +173,8 @@
 		E2BAD6802CEDFAFC0016810A /* NoDataAvailableTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BAD67F2CEDFAFC0016810A /* NoDataAvailableTVCell.swift */; };
 		E2BE7C4E2E617A54001703BA /* PromoRestCVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BE7C4D2E617A54001703BA /* PromoRestCVCell.swift */; };
 		E2BE7C502E617E32001703BA /* PromoCVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BE7C4F2E617E32001703BA /* PromoCVCell.swift */; };
+		E2C74E712F34A3B5001EE059 /* CartRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C74E702F34A3B5001EE059 /* CartRequest.swift */; };
+		E2C74E7C2F36289D001EE059 /* PlaceOrderResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C74E7B2F36289D001EE059 /* PlaceOrderResponse.swift */; };
 		E2C805242D0C913200DD957D /* FinalOrderPageVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C805232D0C913200DD957D /* FinalOrderPageVC.swift */; };
 		E2CD9FA92E58D6E400740E7A /* ReferRestaurantVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2CD9FA82E58D6E400740E7A /* ReferRestaurantVC.swift */; };
 		E2CD9FAB2E58D74C00740E7A /* ReferRestaurantFromVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2CD9FAA2E58D74C00740E7A /* ReferRestaurantFromVC.swift */; };
@@ -395,6 +397,8 @@
 		E2BAD67F2CEDFAFC0016810A /* NoDataAvailableTVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoDataAvailableTVCell.swift; sourceTree = "<group>"; };
 		E2BE7C4D2E617A54001703BA /* PromoRestCVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoRestCVCell.swift; sourceTree = "<group>"; };
 		E2BE7C4F2E617E32001703BA /* PromoCVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoCVCell.swift; sourceTree = "<group>"; };
+		E2C74E702F34A3B5001EE059 /* CartRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartRequest.swift; sourceTree = "<group>"; };
+		E2C74E7B2F36289D001EE059 /* PlaceOrderResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceOrderResponse.swift; sourceTree = "<group>"; };
 		E2C805232D0C913200DD957D /* FinalOrderPageVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinalOrderPageVC.swift; sourceTree = "<group>"; };
 		E2CD9FA82E58D6E400740E7A /* ReferRestaurantVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferRestaurantVC.swift; sourceTree = "<group>"; };
 		E2CD9FAA2E58D74C00740E7A /* ReferRestaurantFromVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferRestaurantFromVC.swift; sourceTree = "<group>"; };
@@ -678,6 +682,7 @@
 				E2BAD65E2CDBBCF10016810A /* LoggedInUserResponse.swift */,
 				E2DBFED92CF82EEA00A8CB76 /* HistoryResponse.swift */,
 				E26503F92D117E9C0036A984 /* DineInHistoryResponse.swift */,
+				E2C74E7B2F36289D001EE059 /* PlaceOrderResponse.swift */,
 			);
 			path = ApiResponse;
 			sourceTree = "<group>";
@@ -957,6 +962,7 @@
 			children = (
 				E2BAD5FD2CBE9F410016810A /* CartFlow.storyboard */,
 				E2BAD5F82CBE8C1A0016810A /* CartData.swift */,
+				E2C74E702F34A3B5001EE059 /* CartRequest.swift */,
 				E2BAD5FB2CBE9F2F0016810A /* CartVC.swift */,
 				E21DE5F02D45463B007097F2 /* CompleteOrderPage */,
 				E2BAD5FF2CBEA4C40016810A /* Cells */,
@@ -1468,6 +1474,7 @@
 				E2BAD6052CC7ADBF0016810A /* ConfirmOrderVC.swift in Sources */,
 				E268A9742C6A41FC00B8C417 /* FoodMenuCVCell.swift in Sources */,
 				E2D219162E55AE7600625626 /* ReferVC.swift in Sources */,
+				E2C74E7C2F36289D001EE059 /* PlaceOrderResponse.swift in Sources */,
 				E2EC30522D55154A008F1603 /* UserLocationMapVC.swift in Sources */,
 				E2D219202E55D9F400625626 /* PastHistoryVC.swift in Sources */,
 				E21DE5F22D454674007097F2 /* DineInCompleteVC.swift in Sources */,
@@ -1501,6 +1508,7 @@
 				E2DBFEE22CFB5F2200A8CB76 /* OrderItemsTVCell.swift in Sources */,
 				E2442C702F1538250015085D /* RestDetailsResp.swift in Sources */,
 				E211F57B2C78759100309EE7 /* WebServices.swift in Sources */,
+				E2C74E712F34A3B5001EE059 /* CartRequest.swift in Sources */,
 				E2B46A632CBAADAF00D45C09 /* RestaurantCartDeatils.swift in Sources */,
 				E268A96B2C67D9A100B8C417 /* FeaturedTVCell.swift in Sources */,
 				E2BAD6112CC7C15B0016810A /* SpecialRequestTVCell.swift in Sources */,
@@ -1692,7 +1700,7 @@
 				CODE_SIGN_ENTITLEMENTS = NewDesignApp/NewDesignApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.6;
+				CURRENT_PROJECT_VERSION = 1.7;
 				DEVELOPMENT_TEAM = 6J7UZY2EAL;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -1731,7 +1739,7 @@
 				CODE_SIGN_ENTITLEMENTS = NewDesignApp/NewDesignApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.6;
+				CURRENT_PROJECT_VERSION = 1.7;
 				DEVELOPMENT_TEAM = 6J7UZY2EAL;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;

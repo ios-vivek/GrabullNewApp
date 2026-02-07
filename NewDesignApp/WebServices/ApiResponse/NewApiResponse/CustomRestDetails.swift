@@ -248,7 +248,7 @@ struct CustOfferlist: Codable {
       let size: String?
 
       // Order-based
-      let discountValue: Int?
+      let discountValue: Float?
       let discountType: String?
       let minAmount: Int?
 

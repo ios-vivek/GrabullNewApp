@@ -45,6 +45,7 @@ struct OldServiceType {
     static let orderHistory = "request/OrderHistory"
     static let bookdine = "book-dine/"
     static let placeOrder = "add-order/"
+    static let stripeConfirmedOrder = "stripe-payment-confirmed/"
     static let getDineInOrders = "dine-history/"
     static let addReview = "add-reviews/"
     static let getReview = "view-reviews/"

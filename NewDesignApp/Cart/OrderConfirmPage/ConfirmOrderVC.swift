@@ -35,7 +35,6 @@ class ConfirmOrderVC: UIViewController {
 //let sectionArr = ["restname","deliveryto", "deliveryat", "SendAsGift", "Special","payment", "Redeem", "tips", "donate", "itemdetails", "totalprice"]
     private let viewModel = ConfirmOrderViewModel()
     var payBy = PayBy.Stripe
-    var userRewardAmount: String = "0.0"
     var recipientfName: String = ""
     var recipientlName: String = ""
     var recipientPhone: String = ""
@@ -275,7 +274,7 @@ extension ConfirmOrderVC: UITableViewDelegate, UITableViewDataSource{
             
         case CellTypeSelected.Redeem.rawValue:
             let cell = tableView.dequeueReusableCell(withIdentifier: "RedeemTVCell", for: indexPath) as! RedeemTVCell
-            cell.update(amount: "\(userRewardAmount)")
+            cell.update(amount: "\(viewModel.userRewardAmount)")
             cell.delegate = self
             cell.selectionStyle = .none
             return cell

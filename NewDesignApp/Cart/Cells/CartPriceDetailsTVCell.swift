@@ -71,9 +71,9 @@ class CartPriceDetailsTVCell: UITableViewCell {
             subtotalValueLbl.text = "\(UtilsClass.getCurrencySymbol())\(subt.toString())"
             discountValueLbl.text = "-\(UtilsClass.getCurrencySymbol())\(dist.toString())"
             taxesValueLbl.text = "\(UtilsClass.getCurrencySymbol())\(taxt.toString())"
-            totalValueLbl.text = "\(UtilsClass.getCurrencySymbol())\(Cart.shared.roundValue2Digit(value: details.total + details.deliveryCharge).toString())"
+            totalValueLbl.text = "\(UtilsClass.getCurrencySymbol())\(Cart.shared.roundValue2Digit(value: details.total).toString())"
             let str = isPlaceOrder ? "Place Order" : "Checkout"
-            checkoutButton.setFontWithString(text: "\(str): \(UtilsClass.getCurrencySymbol())\(Cart.shared.roundValue2Digit(value: details.total + details.deliveryCharge))", fontSize: 16)
+            checkoutButton.setFontWithString(text: "\(str): \(UtilsClass.getCurrencySymbol())\(Cart.shared.roundValue2Digit(value: details.total))", fontSize: 16)
             let tax = details.tax - details.serviceCharge
             taxLbl.text = "Taxes, Fee Apllied: \(UtilsClass.getCurrencySymbol())\(Cart.shared.roundValue2Digit(value: tax).toString())"
             serviceLbl.text = "Service Fee \(UtilsClass.getCurrencySymbol())\(details.serviceCharge.toString())"

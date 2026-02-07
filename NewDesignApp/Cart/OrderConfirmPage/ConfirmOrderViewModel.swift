@@ -14,6 +14,8 @@ final class ConfirmOrderViewModel {
     var recipientLastName = ""
     var recipientPhone = ""
     var orderAsGift = "No"
+    var tempParam = [String: AnyObject]()
+    var tempRequest: StripeConfirmRequest?
     
     // MARK: - Bindings
     var reloadTable: (() -> Void)?
@@ -49,15 +51,16 @@ final class ConfirmOrderViewModel {
     }
     
     // MARK: - Items Payload
-    func buildItemList() -> [[String: AnyObject]] {
+    func buildItemList() -> [CartItem] {
         Cart.shared.cartData.compactMap { item in
             guard let size = item.restItemSizes.first else { return nil }
-            
+
             let toppings = item.restItemTopping.flatMap { $0.option }
+
             let toppingText = toppings.map {
                 $0.price > 0 ? "\($0.optionHeading) \($0.price)" : $0.optionHeading
             }.joined(separator: " | ")
-            
+
             let toppingAmount = Cart.shared.roundValue2Digit(
                 value: toppings.reduce(0) { $0 + Float($1.price) }
             )
@@ -65,26 +68,26 @@ final class ConfirmOrderViewModel {
             let optionList = toppings
                 .map { String($0.opID) }
                 .joined(separator: "|")
-            
-            return [
-                "id": item.restItem.id as AnyObject,
-                "mid": size.manuId as AnyObject,
-                "heading": item.restItem.heading as AnyObject,
-                "menu": size.manuName as AnyObject,
-                "menutype": size.menuType as AnyObject,
-                "qty": "\(size.itemQty)" as AnyObject,
-                "size": size.name as AnyObject,
-                "sizeh": size.sizeKey as AnyObject,
-                "price": "\(size.price)" as AnyObject,
-                "extra": toppingText as AnyObject,
-                "extamount": "\(toppingAmount)" as AnyObject,
-                "extracharge": "\(item.instructionExtraAmount)" as AnyObject,
-                "addedInst": item.instructionText as AnyObject,
-                "toppingList": optionList as AnyObject,
-                "tax": item.restItem.tax as AnyObject,
-                "free": "No" as AnyObject,
-                "freenote": "" as AnyObject
-            ]
+
+            return CartItem(
+                toppingList: optionList,
+                free: "No",
+                freenote: "",
+                extamount: "\(toppingAmount)",
+                extracharge: "\(item.instructionExtraAmount)",
+                menu: size.manuName,
+                mid: size.manuId,
+                extra: toppingText,
+                tax: item.restItem.tax,
+                menutype: size.menuType,
+                addedInst: item.instructionText,
+                sizeh: size.sizeKey,
+                id: item.restItem.id,
+                size: size.name,
+                price: "\(size.price)",
+                heading: item.restItem.heading,
+                qty: "\(size.itemQty)"
+            )
         }
     }
     
@@ -102,7 +105,7 @@ final class ConfirmOrderViewModel {
             placeOrder(recipientFName: recipientFName, recipientLName: recipientLName, recipientPhone: recipientPhone, transactionIdentifier: transactionIdentifier)
         default:
             payBy = .Stripe
-            startPaymentFlow()
+            placeOrder(recipientFName: recipientFName, recipientLName: recipientLName, recipientPhone: recipientPhone, transactionIdentifier: transactionIdentifier)
         }
     }
 
@@ -131,93 +134,114 @@ final class ConfirmOrderViewModel {
                 )
             }
             
-            let donateAmount = Cart.shared.isDonate ? Cart.shared.donateAmount : 0.0
-            let price = Cart.shared.getAllPriceDeatils()
-            
             // MARK: - Parameters (UNCHANGED)
-            var params: [String: AnyObject] = [:]
+        let address = Cart.shared.userAddress
+        let price = Cart.shared.getAllPriceDeatils()
+        let donateAmount = Cart.shared.isDonate ? Cart.shared.donateAmount : 0.0
+
+        let cartRequest = CartRequest(
+            name: APPDELEGATE.userResponse?.customer.fullName ?? "",
+            recipientphone: recipientPhone,
+            cvv: selectedPaymentType == 0 ? Cart.shared.cardCvv : "",
+            email: APPDELEGATE.userResponse?.customer.email ?? "",
+            orderType: "\(Cart.shared.orderType)".capitalized,
+            customerId: APPDELEGATE.userResponse?.customer.customerId ?? "",
+            add2: address?.add2 ?? "",
+            devicetype: AppConfig.DeviceType,
+            newcard: "New",
+            holddate: Cart.shared.orderDate == .ASAP ? "" : "\(holddate) \(holdTime)",
+            dcharge: "\(price.deliveryCharge)",
+            holdtime: Cart.shared.orderDate == .ASAP ? "No" : "Yes",
+            items: buildItemList(),
+            apiKey: AppConfig.OldAPI_KEY,
+            apiId: AppConfig.API_ID,
+            addcard: "No",
+            cardholder: selectedPaymentType == 0 ? Cart.shared.cardHolder : "",
+            offeramount: price.offeramount,
+            expiry: selectedPaymentType == 0 ? Cart.shared.cardExpiry : "",
+            state: address?.state ?? "",
+            recipientname: "\(recipientFName) \(recipientLName)",
+            cardno: selectedPaymentType == 0 ? Cart.shared.cardNumber : "",
+            total: "\(price.total)",
+            tips: Cart.shared.isTips ? "\(Cart.shared.tipsAmount)" : "0.0",
+            transactionIdentifier: transactionIdentifier,
+            dbname: Cart.shared.dbname,
+            city: address?.city ?? "",
+            payBy: "\(payBy)",
+            orderasGift: orderAsGift,
+            scharge: "\(price.serviceCharge)",
+            restaurantId: Cart.shared.restDetails.rid,
+            donate: "\(donateAmount)",
+            orderat: address?.addtypes ?? "",
+            billingzip: selectedPaymentType == 0 ? Cart.shared.cardZip : "",
+            did: Cart.shared.orderNumber,
+            rewards: Cart.shared.isReward ? "\(Cart.shared.rewardAmount)" : "0.0",
+            specialinstruction: Cart.shared.specialInstructionText,
+            phone: APPDELEGATE.userResponse?.customer.phone ?? "",
+            add1: address?.add1 ?? "",
+            offerdetails: price.offerdetails,
+            zip: address?.zip ?? "",
+            giftnumber: selectedPaymentType == 1 ? Cart.shared.giftNumber : ""
+        )
+        setTempdata(temp: cartRequest)
             
-            params["did"] = Cart.shared.orderNumber as AnyObject
-            params["api_id"] = AppConfig.API_ID as AnyObject
-            params["api_key"] = AppConfig.OldAPI_KEY as AnyObject
-            params["customer_id"] = APPDELEGATE.userResponse?.customer.customerId as AnyObject
-            params["name"] = APPDELEGATE.userResponse?.customer.fullName as AnyObject
-            params["email"] = APPDELEGATE.userResponse?.customer.email as AnyObject
-            params["phone"] = APPDELEGATE.userResponse?.customer.phone as AnyObject
-            params["restaurant_id"] = Cart.shared.restDetails.rid as AnyObject
-            params["order_type"] = "\(Cart.shared.orderType)".capitalized as AnyObject
-            
-            let address = Cart.shared.userAddress
-            params["add1"] = address?.add1 as AnyObject
-            params["add2"] = address?.add2 as AnyObject
-            params["city"] = address?.city as AnyObject
-            params["state"] = address?.state as AnyObject
-            params["zip"] = address?.zip as AnyObject
-            params["orderat"] = address?.addtypes as AnyObject
-            
-            params["pay_by"] = "\(payBy)" as AnyObject
-            
-            params["giftnumber"] = selectedPaymentType == 1 ? Cart.shared.giftNumber as AnyObject : "" as AnyObject
-            params["cardno"] = selectedPaymentType == 0 ? Cart.shared.cardNumber as AnyObject : "" as AnyObject
-            params["expiry"] = selectedPaymentType == 0 ? Cart.shared.cardExpiry as AnyObject : "" as AnyObject
-            params["cvv"] = selectedPaymentType == 0 ? Cart.shared.cardCvv as AnyObject : "" as AnyObject
-            params["billingzip"] = selectedPaymentType == 0 ? Cart.shared.cardZip as AnyObject : "" as AnyObject
-            params["cardholder"] = selectedPaymentType == 0 ? Cart.shared.cardHolder as AnyObject : "" as AnyObject
-            
-            params["addcard"] = "No" as AnyObject
-            params["newcard"] = "New" as AnyObject
-            params["holdtime"] = Cart.shared.orderDate == .ASAP ? "No" as AnyObject : "Yes" as AnyObject
-            params["holddate"] = "\(holddate) \(holdTime)" as AnyObject
-            
-            params["total"] = "\(price.total)" as AnyObject
-            params["tips"] = Cart.shared.isTips ? "\(Cart.shared.tipsAmount)" as AnyObject : "0.0" as AnyObject
-            params["rewards"] = Cart.shared.isReward ? "\(Cart.shared.rewardAmount)" as AnyObject : "0.0" as AnyObject
-            params["specialinstruction"] = Cart.shared.specialInstructionText as AnyObject
-            params["items"] = buildItemList() as AnyObject
-            params["devicetype"] = AppConfig.DeviceType as AnyObject
-            params["scharge"] = "\(price.serviceCharge)" as AnyObject
-            params["donate"] = "\(donateAmount)" as AnyObject
-            params["dcharge"] = "\(price.deliveryCharge)" as AnyObject
-            
-            params["recipientname"] = "\(recipientFName) \(recipientLName)" as AnyObject
-            params["recipientphone"] = recipientPhone as AnyObject
-            params["orderasGift"] = orderAsGift as AnyObject
-            params["transactionIdentifier"] = transactionIdentifier as AnyObject
-            params["dbname"] = Cart.shared.dbname as AnyObject
-            params["offerdetails"] = price.offerdetails as AnyObject
-            params["offeramount"] = price.offeramount as AnyObject
-            
-            print(params.json)
+        let encoder = JSONEncoder()
+        encoder.keyEncodingStrategy = .convertToSnakeCase
+        let data = try? encoder.encode(cartRequest)
+        let jsonObject = try? JSONSerialization.jsonObject(with: data ?? Data())
+        let params = jsonObject as? [String: AnyObject] ?? [:]
+
+        print(params.json)
             
             // MARK: - API Call
-            
-            WebServices.placeOrderService(parameters: params) { response in
-                self.hideLoader?()
-                if let data = response["data"] as? [String: Any] {
-                    if let oid = data["orderId"] as? String {
-                        Cart.shared.orderNumber = oid
-                        print("Order number:", oid)
-                    }
-                    if let support = data["support"] as? String {
-                        Cart.shared.supportNumber = support
+        WebServices.placeOrderService(parameters: params) { response in
+            self.hideLoader?()
+            let orderData = response.data
+            Cart.shared.orderNumber = orderData.oid ?? ""
+            self.tempRequest?.oid = orderData.oid ?? ""
+            self.tempRequest?.orderId = orderData.orderId
+            if self.payBy == .Stripe, let stripe = orderData.gateway {
+                if response.status != "Success"{
+                    self.showError?("Something went wrong. Please try again later.")
+                }
+                else if stripe.chargeAmount > 0.0 && response.status == "Success"{
+                    self.tempRequest?.transaction = stripe.paymentIntent
+                    self.startPaymentFlow(custId: stripe.customer, epk: stripe.ephemeralKey, piId: stripe.paymentIntent, parameters: params)
+                } else {
+                    if response.status == "Success" {
+                        Cart.shared.supportNumber = orderData.support
+                        self.orderPlaced?()
+                    } else {
+                        self.showError?("Something went wrong. Please try again later.")
                     }
                 }
-                
-                self.orderPlaced?()
-                
-            } errorHandler: { errorMessage in
-                self.hideLoader?()
-                self.showError?(errorMessage)
+            } else {
+                if response.status == "Success" {
+                    Cart.shared.supportNumber = orderData.support
+                    self.orderPlaced?()
+                } else {
+                    self.showError?("Something went wrong. Please try again later.")
+                }
             }
+        } errorHandler: { errorMessage in
+            self.hideLoader?()
+            self.showError?(errorMessage)
+        }
+
+    }
+    
+    func setTempdata(temp: CartRequest) {
+        self.tempRequest = StripeConfirmRequest(restaurantId: temp.restaurantId, orderId: "", oid: "", transaction: "")
     }
 
     // MARK: - Stripe Payment Helpers
-    func startPaymentFlow() {
+    func startPaymentFlow(custId: String, epk: String, piId: String, parameters: [String: AnyObject]) {
+        self.tempParam = parameters
         var configuration = PaymentSheet.Configuration()
         configuration.merchantDisplayName = "Grabull"
-        configuration.customer = .init(id: "cus_TvDFH86vud9n1z", ephemeralKeySecret: "ek_test_YWNjdF8xSjhNQnJTRm9tVzlqY0FOLGt2aEgyRVFKZXZRNmE4MzdMa243c3FRcktjNGozRnY_00Xli8LvuG")
+        configuration.customer = .init(id: custId, ephemeralKeySecret: epk)
 
-        let paymentSheet = PaymentSheet(paymentIntentClientSecret: "pi_3SxMp0SFomW9jcAN1iSFhxml_secret_hk3JixoQ21MvvVd2sSkPGbMa5", configuration: configuration)
+        let paymentSheet = PaymentSheet(paymentIntentClientSecret: piId, configuration: configuration)
 
         presentPaymentSheet?(paymentSheet)
     }
@@ -226,18 +250,37 @@ final class ConfirmOrderViewModel {
         switch paymentResult {
         case .completed:
             print("Your order is confirmed")
-            placeOrder(
-                recipientFName: recipientFirstName,
-                recipientLName: recipientLastName,
-                recipientPhone: recipientPhone,
-                transactionIdentifier: ""
-            )
+            self.stripeConfirmedApi(request: self.tempRequest)
         case .canceled:
             print("Payment canceled")
-            showError?("Payment was canceled")
+           // showError?("Payment was canceled")
+//            self.tempRequest?.transaction = "123"
+//            self.stripeConfirmedApi(request: self.tempRequest)
         case .failed(let error):
             print("Payment failed: \n\(error.localizedDescription)")
             showError?(error.localizedDescription)
+        }
+    }
+    
+    func stripeConfirmedApi(request: StripeConfirmRequest?) {
+        guard let finalRequest = request else { return }
+        var parameters = CommonAPIParams.base()
+        parameters.merge([
+            "restaurant_id" : finalRequest.restaurantId,
+            "order_id" : finalRequest.orderId,
+            "oid" : finalRequest.oid,
+            "transaction" : finalRequest.transaction,
+            "items" : self.tempParam["items"] ?? []
+        ]) { _, new in new }
+        self.showLoader?()
+        WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.stripeConfirmedOrder, forModelType: StripeConfirmResponse.self) { success in
+            self.hideLoader?()
+            Cart.shared.orderNumber = success.data.data.orderId
+            Cart.shared.supportNumber = success.data.data.support
+            self.orderPlaced?()
+            
+        } ErrorHandler: { error in
+            self.hideLoader?()
         }
     }
 }

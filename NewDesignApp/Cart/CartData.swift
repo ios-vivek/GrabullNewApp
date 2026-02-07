@@ -294,11 +294,12 @@ class Cart {
             guard minAmount <= subTotal else { continue }
 
             if offer.type == "$" {
-                discount = minAmount
-                offerType = "\(offer.discountValue ?? 0)$ Discount"
+                discount = offer.discountValue ?? 0.0
+                offerType = "Discount \(offer.discountValue ?? 0)$"
             } else if offer.type == "%" {
-                discount = (subTotal * minAmount) / 100
-                offerType = "\(offer.discountValue ?? 0)% Discount"
+                let value = offer.discountValue ?? 0.0
+                discount = (subTotal * value) / 100
+                offerType = "Discount \(offer.discountValue ?? 0.0)%"
             }
             
         }
@@ -378,7 +379,7 @@ class Cart {
         let allTaxesAmount = calculateTaxConServices(rest: rest, discountedSubTotal: discountedSubTotal, taxAbleSubtotal: taxableSubTotal)
         let taxCalculation = roundValue2Digit(value: allTaxesAmount.tax + allTaxesAmount.con + allTaxesAmount.serviceCharge)
         
-        let total = (subTotal + taxCalculation) - offerDiscount.discount
+        let total = (subTotal + taxCalculation + deliveryCharge) - offerDiscount.discount
 
         return CheckoutPrice(
             subTotal: subTotal,

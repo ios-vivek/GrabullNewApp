@@ -231,6 +231,7 @@ let montharr = ["01","02","03","04","05","06","07","08","09","10","11","12"]
         popupVC.modalPresentationStyle = .overCurrentContext
         popupVC.modalTransitionStyle = .crossDissolve
         popupVC.orderID = historyList[getTag].order
+        popupVC.restID = historyList[getTag].resturantID
         self.present(popupVC, animated: true)
     }
     

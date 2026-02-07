@@ -43,8 +43,9 @@ class CounsinesCVCell: UICollectionViewCell {
     func updateUIOld(cousine: Cuisine) {
        // self.foodImage.sd_setImage(with: URL(string: getMindList()[index]), placeholderImage: foodTypeLblUIImage(named: ""))
         foodTypeLbl.text = cousine.heading
-        
-        let url = cousine.cuisineImage//getMindList()[index]
+        let url = cousine.imgUrl//getMindList()[index]
+        //print("cousine.cuisineImage--->",cousine.cuisineImage ?? "")
+
         AF.request( url,method: .get).response{ response in
             switch response.result {
             case .success(let responseData):
