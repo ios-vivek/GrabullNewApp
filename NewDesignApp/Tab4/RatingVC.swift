@@ -48,6 +48,8 @@ class RatingVC: UIViewController {
         var parameters = CommonAPIParams.base()
         parameters.merge([
             "order" : orderID,
+            "rest_id" : restID,
+            "custName": APPDELEGATE.userResponse?.customer.fullName ?? ""
         ]) { _, new in new }
         
         UtilsClass.showProgressHud(view: self.view)
@@ -59,13 +61,22 @@ class RatingVC: UIViewController {
         }
     }
     func reviewSetData(response: ReviewResponse) {
-        if response.status != "Failed" {
+        if response.status != "Failed" && response.data.status == "Pending"{
             reviewTextView.text = response.data.comment
-            starRatingView.rating = Float(response.data.rating!) ?? 0.0
+            starRatingView.rating = Float(response.data.rating ?? 0.0)
             postBtn.setTitle("EDIT REVIEW", for: .normal)
             starRatingView.isUserInteractionEnabled = false
             reviewTextView.isUserInteractionEnabled = false
             reviewTextView.backgroundColor = .white
+        }
+        else if response.status != "Failed" && response.data.status == "Publishing"{
+                reviewTextView.text = response.data.comment
+                starRatingView.rating = Float(response.data.rating ?? 0.0)
+                postBtn.setTitle("EDIT REVIEW", for: .normal)
+                starRatingView.isUserInteractionEnabled = false
+                reviewTextView.isUserInteractionEnabled = false
+                reviewTextView.backgroundColor = .white
+            postBtn.isHidden = true
         } else {
             starRatingView.isUserInteractionEnabled = true
             reviewTextView.isUserInteractionEnabled = true
@@ -86,7 +97,7 @@ class RatingVC: UIViewController {
         UtilsClass.showProgressHud(view: self.view)
         WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.addReview, forModelType: ReviewResponse.self) { success in
             UtilsClass.hideProgressHud(view: self.view)
-            if success.data.status == "success" {
+            if success.data.status == "Success" {
                 self.msgLbl.text = "Review Added Successfully."
                 self.successView.isHidden = false
                 self.starRatingView.isHidden = true
@@ -105,11 +116,12 @@ class RatingVC: UIViewController {
             "order" : orderID,
             "rating" : "\(starRatingView.rating)",
             "comment" : "\(reviewTextView.text ?? "")",
+            "custName": APPDELEGATE.userResponse?.customer.fullName ?? ""
         ]) { _, new in new }
         UtilsClass.showProgressHud(view: self.view)
         WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.updateReview, forModelType: ReviewResponse.self) { success in
             UtilsClass.hideProgressHud(view: self.view)
-            if success.data.status == "success" {
+            if success.data.status == "Success" {
                 self.msgLbl.text = "Review Updated Successfully."
                 self.successView.isHidden = false
                 self.starRatingView.isHidden = true

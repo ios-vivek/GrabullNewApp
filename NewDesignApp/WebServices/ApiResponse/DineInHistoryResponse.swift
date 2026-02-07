@@ -42,7 +42,7 @@ struct ReviewData: Codable {
     let comment: String?
     let date: String?
     let name: String?
-    let rating: String?
+    let rating: Float?
     let reply: String?
     let status: String?
 }
