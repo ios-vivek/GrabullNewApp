@@ -36,7 +36,13 @@ var index = 0
         self.index = index
         let item = Cart.shared.cartData[index]
         let size = item.restItemSizes.first!
-        itemName.text = item.restItem.heading + " (\(size.manuName))\(size.isCatering ? " (Caterging)" : "")"
+        var name = ""
+        if size.isCatering {
+            name = " \(size.isCatering ? " (Caterging)" : "")"
+        } else {
+            name = " (\(size.manuName))"
+        }
+        itemName.text = item.restItem.heading + name
         itemQtyLbl.text = "\(size.itemQty)"
         let price = self.setAmountValue(sizes: size, toppings: item.restItemTopping)
         let pt = Cart.shared.roundValue2Digit(value: (price + item.extra))

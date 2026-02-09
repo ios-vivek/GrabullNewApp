@@ -76,7 +76,7 @@ class HistoryTVCell: UITableViewCell {
         if order.type == "Delivery" {
             deliveryTypeLbl.attributedText = self.configureSplInstText(text1: "Delivered at: ", text: "\(order.deliveryAddress)")
         } else {
-            deliveryTypeLbl.attributedText = self.configureSplInstText(text1: "Pickup by: ", text: "\(order.name) 📞\("order.mobile")")
+            deliveryTypeLbl.attributedText = self.configureSplInstText(text1: "Pickup by: ", text: "\(order.name) 📞\(order.phone)")
         }
         if !order.orderItems.isEmpty {
             qtyLbl.text = "\(order.orderItems[0].qty)"

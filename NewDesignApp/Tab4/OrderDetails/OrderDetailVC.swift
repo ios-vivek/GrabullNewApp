@@ -28,11 +28,11 @@ class OrderDetailVC: UIViewController {
         subTotalLbl.text = "\(UtilsClass.getCurrencySymbol())\(hOrder.subtotal)"
         taxLbl.text = "\(UtilsClass.getCurrencySymbol())\(hOrder.taxC)"
         tipLbl.text = "\(UtilsClass.getCurrencySymbol())\(hOrder.tips)"
-        //rewardLbl.text = "\(UtilsClass.getCurrencySymbol())\(hOrder.reward)"
+        rewardLbl.text = "\(UtilsClass.getCurrencySymbol())\(hOrder.reward)"
         totalLbl.text = "\(UtilsClass.getCurrencySymbol())\(hOrder.total)"
         tip2Lbl.text = "\(UtilsClass.getCurrencySymbol())\(hOrder.tips2)"
-        customerNameLbl.text = "Name: \(hOrder.resturant)"
-       // custPhoneLbl.text = "Mobile: \(hOrder.mobile)"
+        customerNameLbl.text = "Name: \(hOrder.name)"
+        custPhoneLbl.text = "Mobile: \(hOrder.phone)"
 
 
     }
@@ -78,7 +78,7 @@ extension OrderDetailVC: UITableViewDelegate, UITableViewDataSource {
             if indexPath.row == 0 {
                 cell.updateUIHeading()
             } else {
-                //cell.updateUI(item: hOrder.orderItems[indexPath.row - 1])
+                cell.updateUI(item: hOrder.orderItems[indexPath.row - 1])
             }
             return cell
         }
