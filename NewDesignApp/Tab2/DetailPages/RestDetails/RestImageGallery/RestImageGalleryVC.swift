@@ -15,7 +15,7 @@ class RestImageGalleryVC: UIViewController {
         super.viewDidLoad()
         navView.backgroundColor = themeBackgrounColor
        // galleryCollection.register(UINib(nibName: "HeaderCollectionView", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "HeaderCollectionView") //elementKindSectionFooter for footerview
-        galleryCollection.backgroundColor = .gGray100
+        galleryCollection.backgroundColor = .white
     }
     
     @IBAction func backAction() {
@@ -33,8 +33,8 @@ extension RestImageGalleryVC: UICollectionViewDelegate,UICollectionViewDataSourc
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GalleryCVCell", for: indexPath as IndexPath) as! GalleryCVCell
-        cell.backgroundColor = .clear
         cell.updateUI(url: galleryImages[indexPath.row])
+        cell.backgroundColor = .gGray100
         return cell;
 
     }

@@ -159,13 +159,13 @@ class RestSearchVC: UIViewController {
         WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.resturantList, forModelType: RestaurantListResponse.self) { success in
             UtilsClass.hideProgressHud(view: self.view)
             
-            if success.data.data.restaurants.count > 0 {
+           // if success.data.data.restaurants.count > 0 {
                     let story = UIStoryboard.init(name: "FoodSearch", bundle: nil)
                     let vc = story.instantiateViewController(withIdentifier: "SearchDetailVC") as! SearchDetailVC
                 vc.listResponse = success.data.data.restaurants
                     vc.cuisine = self.cuisine
                     self.navigationController?.pushViewController(vc, animated: true)
-            }
+          //  }
             
         } ErrorHandler: { error in
             UtilsClass.hideProgressHud(view: self.view)

@@ -53,6 +53,7 @@ var gotResponseFromService = false
                 self.listResponse = success.data.data.restaurants
                 self.dineFilter()
             }
+            self.homeCollection.reloadData()
         } ErrorHandler: { error in
             self.gotResponseFromService = true
             UtilsClass.hideProgressHud(view: self.view)
