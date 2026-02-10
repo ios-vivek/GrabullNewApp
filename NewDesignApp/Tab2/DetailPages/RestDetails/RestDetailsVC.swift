@@ -8,6 +8,7 @@
 
 import UIKit
 import Lottie
+import SafariServices
 
 class RestData: NSObject {
     let dbname: String
@@ -400,6 +401,22 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
         let vc = self.viewController(viewController: CartVC.self, storyName: StoryName.CartFlow.rawValue) as! CartVC
         Cart.shared.tempAllRestmenu = self.allMenuList
         self.navigationController?.pushViewController(vc, animated: true)
+    }
+    private func loadURLSafari(dineUrl: String) {
+        let trimmedURL = dineUrl.trimmingCharacters(in: .whitespacesAndNewlines)
+        print("url: \(trimmedURL)")
+
+        guard let url = URL(string: trimmedURL),
+              ["http", "https"].contains(url.scheme?.lowercased() ?? "") else {
+            //hideProgress()
+            return
+        }
+
+        UtilsClass.hideProgressHud(view: self.view)
+
+        let safariVC = SFSafariViewController(url: url)
+        safariVC.modalPresentationStyle = .fullScreen
+        present(safariVC, animated: true)
     }
 
 }
@@ -816,16 +833,18 @@ extension RestDetailsVC: MenuTypeSelectedDelegate {
         restaurantTable.reloadData()
         menuHeadingCollection.reloadData()
         if menuType == .dineIn && isReservationAvailable {
+            self.selectedMenuType = .menu
+            self.restaurantTable.reloadData()
+            loadURLSafari(dineUrl: "\(self.restDetailsData?.dineUrl ?? "")/\(APPDELEGATE.userResponse?.customer.customerId ?? "")")
+            /*
             let story = UIStoryboard.init(name: "OrderFlow", bundle: nil)
             let popupVC = story.instantiateViewController(withIdentifier: "DineInVC") as! DineInVC
-           // popupVC.modalPresentationStyle = .overCurrentContext
-           // popupVC.modalTransitionStyle = .crossDissolve
-           // popupVC.delegate = self
-          //  self.present(popupVC, animated: true)
-            popupVC.dineUrl = self.restDetailsData?.dineUrl ?? ""
+          print("DineIn url: \(self.restDetailsData?.dineUrl ?? "")/\(APPDELEGATE.userResponse?.customer.customerId ?? "")")
+            popupVC.dineUrl = "\(self.restDetailsData?.dineUrl ?? "")/\(APPDELEGATE.userResponse?.customer.customerId ?? "")"
             self.selectedMenuType = .menu
             self.restaurantTable.reloadData()
             self.navigationController?.pushViewController(popupVC, animated: true)
+            */
         }
     }
 }

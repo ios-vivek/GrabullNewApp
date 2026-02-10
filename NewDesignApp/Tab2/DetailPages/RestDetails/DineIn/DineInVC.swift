@@ -7,6 +7,8 @@
 
 import UIKit
 import WebKit
+import MBProgressHUD
+import SafariServices
 
 class DineInVC: UIViewController {
     private var webView: WKWebView!
@@ -92,25 +94,28 @@ var timeSlots = [TimeSlots]()
         refreshView()
         timeSlots = UtilsClass.getTimeSlotForDate(day: self.datesList[0].currectDateInFormate)
         tbl.isHidden = true
-        setupWebView()
+
+        //setupWebView()
+       // loadURLSafari()
 
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        loadURL()
+        //loadURL()
     }
     private func setupWebView() {
             let config = WKWebViewConfiguration()
             //config.preferences.javaScriptEnabled = true
-
+        
         webView = WKWebView(frame: .zero, configuration: config)
            webView.translatesAutoresizingMaskIntoConstraints = false
            webView.navigationDelegate = self
 
            view.addSubview(webView)
+        UtilsClass.showProgressHud(view: self.view)
 
            NSLayoutConstraint.activate([
-               webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 100),
+               webView.topAnchor.constraint(equalTo: view.topAnchor, constant: 80),
                webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
                webView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                webView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
@@ -118,12 +123,29 @@ var timeSlots = [TimeSlots]()
 
         }
 
-        private func loadURL() {
-            print("url: \(dineUrl)")
-            guard let url = URL(string: dineUrl) else { return }
-            let request = URLRequest(url: url)
-            webView.load(request)
+    private func loadURL() {
+        let trimmedURL = dineUrl.trimmingCharacters(in: .whitespacesAndNewlines)
+        print("url: \(trimmedURL)")
+
+        guard let url = URL(string: trimmedURL),
+              ["http", "https"].contains(url.scheme?.lowercased() ?? "") else {
+            hideProgress()
+            return
         }
+
+        guard let url = URL(string: trimmedURL) else {
+            hideProgress()
+            return
+        }
+
+        let request = URLRequest(url: url)
+        webView.load(request)
+    }
+   
+    func hideProgress() {
+        showAlert(title: "Url not found", msg: "Please try later.")
+        UtilsClass.hideProgressHud(view: self.view)
+    }
     @IBAction func loginAction() {
         let vc = self.viewController(viewController: ProfileVC.self, storyName: StoryName.Profile.rawValue) as! ProfileVC
         vc.delegate = self
@@ -366,6 +388,8 @@ extension DineInVC: WKNavigationDelegate {
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        UtilsClass.hideProgressHud(view: self.view)
+
         print("Finished loading:", webView.url?.absoluteString ?? "")
     }
 

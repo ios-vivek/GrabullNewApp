@@ -43,7 +43,7 @@ class OrderDetailVC: UIViewController {
 }
 extension OrderDetailVC: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
+        return 3
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
@@ -64,14 +64,14 @@ extension OrderDetailVC: UITableViewDelegate, UITableViewDataSource {
             cell.updateUI(order: hOrder)
             return cell
         }
-        if indexPath.section == 1 {
+        else if indexPath.section == 1 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "DeliveryAddressTVCell", for: indexPath) as! DeliveryAddressTVCell
             cell.selectionStyle = .none
             cell.backgroundColor = .white
             cell.updateUI(order: hOrder)
             return cell
         }
-        if indexPath.section == 2 {
+        else if indexPath.section == 2 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "OrderItemsTVCell", for: indexPath) as! OrderItemsTVCell
             cell.selectionStyle = .none
             cell.backgroundColor = .white
@@ -81,12 +81,13 @@ extension OrderDetailVC: UITableViewDelegate, UITableViewDataSource {
                 cell.updateUI(item: hOrder.orderItems[indexPath.row - 1])
             }
             return cell
+        } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "OrderItemsTVCell", for: indexPath) as! OrderItemsTVCell
+            cell.selectionStyle = .none
+            cell.backgroundColor = .white
+            
+            return cell
         }
-        let cell = tableView.dequeueReusableCell(withIdentifier: "OrderItemsTVCell", for: indexPath) as! OrderItemsTVCell
-        cell.selectionStyle = .none
-        cell.backgroundColor = .white
-        
-        return cell
     }
 //    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
 //        return 170

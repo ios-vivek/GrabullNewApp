@@ -107,7 +107,7 @@ class OngoingHistoryVC: UIViewController {
             UtilsClass.hideProgressHud(view: self.view)
             let story = UIStoryboard.init(name: "OrderFlow", bundle: nil)
             let vc = story.instantiateViewController(withIdentifier: "RestDetailsVC") as! RestDetailsVC
-           // vc.restDetailsData = success.data.restaurant
+            vc.restDetailsData = success.data.data.toCustomModel()
             self.navigationController?.pushViewController(vc, animated: true)
             
         } ErrorHandler: { error in
@@ -143,11 +143,12 @@ extension OngoingHistoryVC: UITableViewDelegate, UITableViewDataSource {
             cell.rateBtn.addTarget(self, action: #selector(ratingAction), for: .touchUpInside)
             cell.reOrderBtn.tag = indexPath.row
             cell.reOrderBtn.addTarget(self, action: #selector(trackOrderAction), for: .touchUpInside)
+            cell.rateBtn.isHidden = true
             return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
             let vc = self.viewController(viewController: OrderDetailVC.self, storyName: StoryName.History.rawValue) as! OrderDetailVC
-            vc.hOrder = historyList[indexPath.section]
+            vc.hOrder = historyList[indexPath.row]
             self.navigationController?.pushViewController(vc, animated: true)
     }
 }

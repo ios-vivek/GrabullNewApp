@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SafariServices
 
 class SearchDetailVC: UIViewController {
     var listResponse = [Restaurant]()
@@ -90,6 +91,20 @@ var gotResponseFromService = false
             UtilsClass.hideProgressHud(view: self.view)
         }
     }
+    private func loadURLSafari(dineUrl: String) {
+        let trimmedURL = dineUrl.trimmingCharacters(in: .whitespacesAndNewlines)
+        print("url: \(trimmedURL)")
+
+        guard let url = URL(string: trimmedURL),
+              ["http", "https"].contains(url.scheme?.lowercased() ?? "") else {
+            showAlert(title: "Url not found", msg: "Please try later.")
+            return
+        }
+
+        let safariVC = SFSafariViewController(url: url)
+        safariVC.modalPresentationStyle = .fullScreen
+        present(safariVC, animated: true)
+    }
 
 }
 
@@ -148,13 +163,15 @@ extension SearchDetailVC: UICollectionViewDelegate,UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if listResponse.count > 0 {
             if isDineFilter {
-//                            let vc = self.viewController(viewController: DineInReservationVC.self, storyName: StoryName.DineIn.rawValue) as! DineInReservationVC
-//                            self.navigationController?.pushViewController(vc, animated: true)
+                loadURLSafari(dineUrl: "\(listResponse[indexPath.row].dinein)/\(APPDELEGATE.userResponse?.customer.customerId ?? "")")
+                /*
                 let story = UIStoryboard.init(name: "OrderFlow", bundle: nil)
                 let popupVC = story.instantiateViewController(withIdentifier: "DineInVC") as! DineInVC
                 popupVC.restaurantID = listResponse[indexPath.row].rid
                 popupVC.comeFromDashBoard = true
+                popupVC.dineUrl = listResponse[indexPath.row].dinein
                 self.navigationController?.pushViewController(popupVC, animated: true)
+                */
             } else {
                 let rest = self.listResponse[indexPath.row]
                 self.getRestDetailFromApi(restid: rest.rid, dbname: rest.dbname)

@@ -253,7 +253,7 @@ let montharr = ["01","02","03","04","05","06","07","08","09","10","11","12"]
             UtilsClass.hideProgressHud(view: self.view)
             let story = UIStoryboard.init(name: "OrderFlow", bundle: nil)
             let vc = story.instantiateViewController(withIdentifier: "RestDetailsVC") as! RestDetailsVC
-          //  vc.restDetailsData = success.data.restaurant
+            vc.restDetailsData = success.data.data.toCustomModel()
             self.navigationController?.pushViewController(vc, animated: true)
             
         } ErrorHandler: { error in
@@ -302,7 +302,7 @@ extension PastHistoryVC: UITableViewDelegate, UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
             let vc = self.viewController(viewController: OrderDetailVC.self, storyName: StoryName.History.rawValue) as! OrderDetailVC
-            vc.hOrder = historyList[indexPath.section]
+            vc.hOrder = historyList[indexPath.row]
             self.navigationController?.pushViewController(vc, animated: true)
     }
 }
