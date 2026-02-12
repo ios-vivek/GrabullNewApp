@@ -341,7 +341,7 @@ class Cart {
         let tax = roundValue2Digit(
             value: (taxAbleSubtotal * Float(rest.tax)) / 100
         )
-        //print("-----Tax: \(tax), \nCon: \(con), \nService: \(serviceCharge), \ntaxable\(taxAbleSubtotal), \ndiscountedSubtotal: \(discountedSubTotal)")
+        print("-----Tax: \(tax), \nCon: \(con), \nService: \(serviceCharge), \ntaxable\(taxAbleSubtotal), \ndiscountedSubtotal: \(discountedSubTotal)")
         return (tax, con, serviceCharge)
     }
     

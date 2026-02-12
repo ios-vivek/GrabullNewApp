@@ -128,13 +128,6 @@ class WebServices: NSObject {
 
                 do {
                     
-                    if let raw = String(data: data, encoding: .utf8) {
-                        print("🔴 RAW RESPONSE:")
-                        print(raw)
-                    } else {
-                        print("❌ Unable to convert response to String")
-                    }
-
                     // 🔹 PRINT RAW JSON RESPONSE
                            APILogger.printResponseJSON(data)
                     
@@ -172,6 +165,16 @@ struct BaseAPIResponse: Codable {
 struct APILogger {
 
     static func printResponseJSON(_ data: Data) {
+        /*
+        
+        if let raw = String(data: data, encoding: .utf8) {
+            print("🔴 RAW RESPONSE:")
+            print(raw)
+        } else {
+            print("❌ Unable to convert response to String")
+        }
+        */
+
         do {
             let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
             let prettyData = try JSONSerialization.data(

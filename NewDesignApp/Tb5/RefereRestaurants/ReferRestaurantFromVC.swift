@@ -24,6 +24,7 @@ import UIKit
         override func viewDidLoad() {
             super.viewDidLoad()
             self.view.backgroundColor = pageBackgroundColor
+            messageTxtView.backgroundColor = .clear
             tbl.backgroundColor = .clear
             restNameTextField.layer.borderWidth = 1
             restNameTextField.layer.borderColor = kborderColor.cgColor

@@ -33,6 +33,7 @@ class EditProfileVC: UIViewController {
         sNameFld.setPlaceHolderColor(.gGray200)
         emailFld.setPlaceHolderColor(.gGray200)
         phoneFld.setPlaceHolderColor(.gGray200)
+        emailFld.textColor = .gGray200
 
     }
     @IBAction func backAction() {

@@ -136,6 +136,9 @@ class ScheduleDateTimeVC: UIViewController {
             }
         }
         checkTodayOpen()
+        if timeList.count == 0 {
+            showAlert(title: "Please select different date", msg: "No time available.")
+        }
     }
     func calculateAvailableTime(time: String, date: String) {
         let formatter = DateFormatter()
@@ -239,7 +242,7 @@ class ScheduleDateTimeVC: UIViewController {
             let str = selectedTimeIndex >= 0 ? "\(type) today at \(convertedTime)" : "\(type) today"
             dateSubmitButton.setTitle("\(str)", for: .normal)
             dateLbl.text = UtilsClass.getTodayDateInString()
-            selectTimeLbl.text = "Select Time \(type)"
+            selectTimeLbl.text = "Select \(type) Time"
             selectedDateIndex = 0
             collectionTopHeight.constant = 70.0
             selecttimeView.isHidden = false
@@ -261,7 +264,7 @@ class ScheduleDateTimeVC: UIViewController {
             selecttimeView.isHidden = selectedDateIndex >= 0 ? false : true
             timeBackBtn.isHidden = selectedDateIndex >= 0 ? false : true
             dateLbl.text = selectedDateIndex >= 0 ? "\(self.datesList[selectedDateIndex].day), \(self.datesList[selectedDateIndex].date)" : "Select Date"
-            selectTimeLbl.text = "Select Time \(type)"
+            selectTimeLbl.text = "Select \(type) Time"
             dateSubmitButton.backgroundColor = (selectedTimeIndex >= 0 && selectedDateIndex >= 0) ? themeBackgrounColor : .gGray100
             dateSubmitButton.setTitleColor(color: (selectedTimeIndex >= 0 && selectedDateIndex >= 0) ? .white : themeBackgrounColor)
         }

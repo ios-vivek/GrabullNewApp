@@ -32,7 +32,8 @@ struct OrderHistory: Codable {
         let resturant: String
         let date: String
         let type: String
-        let deliveryAddress: [HisoryAddress]
+        let deliveryAddress: HisoryAddress?
+        let resturantAddress: String?
         let holdtime: String
         let holddate: String?
         let trackorder: String
@@ -67,6 +68,7 @@ struct OrderHistory: Codable {
             case date
             case type
             case deliveryAddress
+            case resturantAddress
             case holdtime
             case holddate
             case trackorder

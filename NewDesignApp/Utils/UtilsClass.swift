@@ -573,7 +573,7 @@ public static func getAttributedString(str1: String, str2: String) -> NSMutableA
        }
     public static func getDates() -> [DayDateList] {
         var dayList = [DayDateList]()
-        for i in (0 ..< 19) {
+        for i in (1 ..< 19) {
             let currentDate = self.dateAddingDay(value: i)
             let day = self.getDayInEEE(date: currentDate)
             let  date = self.getDateInDDMMM(date: currentDate)

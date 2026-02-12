@@ -13,21 +13,39 @@ class OrderDetailsTVCell: UITableViewCell {
     @IBOutlet weak var ordernumberLbl: UILabel!
     @IBOutlet weak var priceLbl: UILabel!
     @IBOutlet weak var dateLbl: UILabel!
+    private let statusLbl = UILabel()
 
 
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        setupStatusLabel()
+    }
+    private func setupStatusLabel() {
+        statusLbl.translatesAutoresizingMaskIntoConstraints = false
+        statusLbl.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
+        statusLbl.textColor = .gSkyBlue
+        statusLbl.textAlignment = .right
+        statusLbl.numberOfLines = 1
+
+        contentView.addSubview(statusLbl)
+
+        NSLayoutConstraint.activate([
+            statusLbl.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
+            statusLbl.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12)
+        ])
     }
     func updateUI(order: OrderHistory) {
+        ordernumberLbl.textColor = .black
+        statusLbl.text = order.status.uppercased()
         ordernumberLbl.text = "Order #\(order.order)"
         restNameLbl.text = order.resturant
         restNameLbl.textColor = kOrangeColor
-        addressLbl.text = order.type == "Pickup" ? "\("order.pickup_address")" : order.deliveryAddress.first?.fullAddress ?? ""
+       // addressLbl.text = order.type == "Pickup" ? "📍 \(order.resturantAddress ?? "")" : "📍 \(order.deliveryAddress?.fullAddress ?? "")"
+        addressLbl.text = "📍 \(order.resturantAddress ?? "")"
         priceLbl.text = "Price \(UtilsClass.getCurrencySymbol())\(order.total)"
         let text = order.type == "Pickup" ? "Order picked on" : "Order delivered on"
         if order.holddate == "Yes" {
-            //dateLbl.text = "\(text) \(order.holddate ?? "")"
             dateLbl.attributedText = getAttributedString(fstring: "\(text) ", sstring: "\(order.holddate ?? "")")
         } else {
             dateLbl.attributedText = getAttributedString(fstring: "\(text) ", sstring: "\(order.date)")

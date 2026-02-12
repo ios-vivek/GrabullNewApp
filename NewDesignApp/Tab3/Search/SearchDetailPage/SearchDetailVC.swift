@@ -163,7 +163,7 @@ extension SearchDetailVC: UICollectionViewDelegate,UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if listResponse.count > 0 {
             if isDineFilter {
-                loadURLSafari(dineUrl: "\(listResponse[indexPath.row].dinein)/\(APPDELEGATE.userResponse?.customer.customerId ?? "")")
+                loadURLSafari(dineUrl: "\(listResponse[indexPath.row].dineUrl ?? "")/\(APPDELEGATE.userResponse?.customer.customerId ?? "")")
                 /*
                 let story = UIStoryboard.init(name: "OrderFlow", bundle: nil)
                 let popupVC = story.instantiateViewController(withIdentifier: "DineInVC") as! DineInVC

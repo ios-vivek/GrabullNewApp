@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
         <capability name="Named colors" minToolsVersion="9.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
@@ -618,7 +618,7 @@
                                             <nil key="highlightedColor"/>
                                         </label>
                                     </subviews>
-                                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                     <constraints>
                                         <constraint firstAttribute="trailing" secondItem="JCa-Wt-Pew" secondAttribute="trailing" constant="20" id="36f-Tw-5xE"/>
                                         <constraint firstItem="JCa-Wt-Pew" firstAttribute="leading" secondItem="klt-55-KTc" secondAttribute="leading" constant="20" symbolic="YES" id="5rZ-Ry-DZv"/>
@@ -821,7 +821,7 @@
                             </tableView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="4fD-Yp-tgt"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="eiZ-bg-Uyl" firstAttribute="leading" secondItem="4fD-Yp-tgt" secondAttribute="leading" id="Dxm-qZ-nY3"/>
                             <constraint firstItem="iEJ-oH-h4X" firstAttribute="top" secondItem="eiZ-bg-Uyl" secondAttribute="bottom" id="JR4-dn-xmS"/>

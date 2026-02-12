@@ -668,7 +668,7 @@ extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
                 headerView.headingLbl.text = ""
             }
             else {
-                headerView.headingLbl.text = self.menuList[sec].heading
+                headerView.headingLbl.text = self.menuList[sec].heading + self.menuList[sec].subheading
             }
            // headerView.headingLbl.textColor = .black
 

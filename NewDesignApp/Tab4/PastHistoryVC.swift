@@ -293,7 +293,7 @@ extension PastHistoryVC: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "HistoryTVCell", for: indexPath) as! HistoryTVCell
             cell.selectionStyle = .none
             cell.backgroundColor = .clear
-            cell.updateUI(order: historyList[indexPath.row])
+            cell.pastOrderUpdateUI(order: historyList[indexPath.row])
             cell.rateBtn.tag = indexPath.row
             cell.rateBtn.addTarget(self, action: #selector(ratingAction), for: .touchUpInside)
             cell.reOrderBtn.tag = indexPath.row

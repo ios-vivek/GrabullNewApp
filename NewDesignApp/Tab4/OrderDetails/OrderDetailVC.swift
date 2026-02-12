@@ -33,6 +33,7 @@ class OrderDetailVC: UIViewController {
         tip2Lbl.text = "\(UtilsClass.getCurrencySymbol())\(hOrder.tips2)"
         customerNameLbl.text = "Name: \(hOrder.name)"
         custPhoneLbl.text = "Mobile: \(hOrder.phone)"
+        orderTblView.backgroundColor = .white
 
 
     }

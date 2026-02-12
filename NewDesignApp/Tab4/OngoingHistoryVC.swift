@@ -94,7 +94,18 @@ class OngoingHistoryVC: UIViewController {
     
     @objc func ratingAction(sender: UIButton) {
         let rest = historyList[sender.tag]
-       // getRestDetailFromApi(restid: "\(rest.resturant_id)", dbname: "\(rest.dbname)")
+        if rest.status == "Processing" {
+            // getRestDetailFromApi(restid: "\(rest.resturant_id)", dbname: "\(rest.dbname)")
+        } else {
+            let getTag = sender.tag
+            let story = UIStoryboard.init(name: "History", bundle: nil)
+            let popupVC = story.instantiateViewController(withIdentifier: "RatingVC") as! RatingVC
+            popupVC.modalPresentationStyle = .overCurrentContext
+            popupVC.modalTransitionStyle = .crossDissolve
+            popupVC.orderID = historyList[getTag].order
+            popupVC.restID = historyList[getTag].resturantID
+            self.present(popupVC, animated: true)
+        }
     }
     
     func getRestDetailFromApi(restid: String, dbname: String) {
@@ -138,12 +149,11 @@ extension OngoingHistoryVC: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "HistoryTVCell", for: indexPath) as! HistoryTVCell
             cell.selectionStyle = .none
             cell.backgroundColor = .clear
-            cell.updateUI(order: historyList[indexPath.row])
+            cell.ongoingUpdateUI(order: historyList[indexPath.row])
             cell.rateBtn.tag = indexPath.row
             cell.rateBtn.addTarget(self, action: #selector(ratingAction), for: .touchUpInside)
             cell.reOrderBtn.tag = indexPath.row
             cell.reOrderBtn.addTarget(self, action: #selector(trackOrderAction), for: .touchUpInside)
-            cell.rateBtn.isHidden = true
             return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
