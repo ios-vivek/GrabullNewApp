@@ -262,8 +262,11 @@ struct CustList: Codable {
 struct SupportDetailResponse: Codable {
        let status: String
        let code: Int
-       let data: [ChatData]?
+       let data: ResultData?
        let error: String?
+}
+struct ResultData: Codable {
+       let result: [ChatData]?
 }
 struct ChatData: Codable {
     let id: String?

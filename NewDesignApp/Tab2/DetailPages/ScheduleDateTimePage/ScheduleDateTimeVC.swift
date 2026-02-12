@@ -67,20 +67,22 @@ class ScheduleDateTimeVC: UIViewController {
           //  etalbl.text = "Eta \(Int(Cart.shared.tempRestDetails.pickuptime)) - \(Int(Cart.shared.tempRestDetails.pickuptime + 10.0)) mins"
           //  etaDetailLbl.text = "\(Int(Cart.shared.tempRestDetails.pickuptime + 10.0)) mins for order over $150"
         }
-     //   self.segmentedControl.setEnabled(Cart.shared.tempRestDetails.isDelivery, forSegmentAt: 0);
-      //  self.segmentedControl.setEnabled(Cart.shared.tempRestDetails.isPickup, forSegmentAt: 1);
 
         dateLbl.text = UtilsClass.getTodayDateInString()
         dateCollection.backgroundColor = .white
         dateSubmitButton.setRounded(cornerRadius: 8)
         getTimingFromApi(date: UtilsClass.getCurrentDateInString(date: Date()))
-        if !Cart.shared.tempRestDetails.isRestaurantOpenToday {
-            self.segmentedControl.selectedSegmentIndex = 1
-        }
-        //print("today closed..\(UtilsClass.isRestaurantClosedToday(Cart.shared.tempRestDetails.stopyoday))")
-       //
+       
+        checkForASAP()
         pickDeliveryControl.isHidden = isPickupDeliverySettingHide
         topConstrainsWarningLbl.constant = isPickupDeliverySettingHide ? 12 : 65
+    }
+    func checkForASAP() {
+        if !Cart.shared.tempRestDetails.isRestaurantOpenToday {
+            self.segmentedControl.selectedSegmentIndex = 1
+            self.segmentedControl.setEnabled(false, forSegmentAt: 0);
+            self.orderDate = .Today
+        }
     }
     func checkTodayOpen() {
         let d = datesList[selectedDateIndex]
@@ -137,9 +139,23 @@ class ScheduleDateTimeVC: UIViewController {
         }
         checkTodayOpen()
         if timeList.count == 0 {
-            showAlert(title: "Please select different date", msg: "No time available.")
+            if self.orderDate == .Later {
+                let d = datesList[selectedDateIndex]
+                let text = "\(Cart.shared.orderType == .pickup ? "Pickup" : "Delivery")"
+                showAlertWithAction(title: "Please select different date", msg: "\(text) will not be available on \(d.date)") {
+                    self.timeBackAction()
+                }
+            }
+            if self.orderDate == .Today {
+                let text = "\(Cart.shared.orderType == .pickup ? "Pickup" : "Delivery")"
+                showAlertWithAction(title: "Please select different date", msg: "\(text) will not be available today.") {
+                    self.segmentedControl.selectedSegmentIndex = 2
+                    self.segmentedControlValueChanged(self.segmentedControl)
+                }
+            }
         }
     }
+
     func calculateAvailableTime(time: String, date: String) {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
@@ -148,7 +164,6 @@ class ScheduleDateTimeVC: UIViewController {
            let time2 = formatter.date(from: "\(date) \(time)") {
 
             if time1 < time2 {
-               // print("time1\(time1) is earlier than time2\(time2)")
                 timeList.append(time)
             }
         }

@@ -87,7 +87,7 @@ class ComplaintDetailsVC: UIViewController {
         UtilsClass.showProgressHud(view: self.view)
         WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.getSupportDetail, forModelType: SupportDetailResponse.self) { success in
             UtilsClass.hideProgressHud(view: self.view)
-            self.chatDataList = success.data.data ?? [ChatData]()
+            self.chatDataList = success.data.data?.result ?? [ChatData]()
             self.tbl.reloadData()
         } ErrorHandler: { error in
             UtilsClass.hideProgressHud(view: self.view)
