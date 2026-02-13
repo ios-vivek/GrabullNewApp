@@ -17,6 +17,7 @@ class GoogleAPisService: NSObject {
             APPDELEGATE.selectedLocationAddress.latLong = latLong
         }
         let requestUrl = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=\(searchtext)&components=country:us&types=establishment&location=\(APPDELEGATE.selectedLocationAddress.latLong.latitude)%2C\(APPDELEGATE.selectedLocationAddress.latLong.longitude)&radius=500&key=\(GoogleApiKey)"
+        print("google suggestion requestUrl: \(requestUrl)")
         AF.request(requestUrl,
                    method: .post,
                    parameters: nil,

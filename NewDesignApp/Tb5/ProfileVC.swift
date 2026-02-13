@@ -41,7 +41,7 @@ class ProfileVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .white
-        tbl.backgroundColor  = .clear
+        tbl.backgroundColor  = .white
         checkedForTblScroll()
         NotificationCenter.default.addObserver(self, selector: #selector(self.methodOfReceivedNotification(notification:)), name: Notification.Name("pushnotificationaccount"), object: nil)
     }

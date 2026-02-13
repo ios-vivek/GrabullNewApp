@@ -46,12 +46,12 @@ struct Coupons: Codable {
 }
 struct UserAdd: Codable {
 
-    let id: Int
+    let id: String
     let street: String?
     let add1: String?
     let add2: String?
     let add3: String?
-    let addtypes: String?
+    let type: String?
     let city: String?
     let state: String?
     let zip: String?

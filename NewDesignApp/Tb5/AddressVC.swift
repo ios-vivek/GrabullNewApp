@@ -103,7 +103,7 @@ extension AddressVC: AddressDelegate {
     func deleteAddress(selectedIndex: Int) {
         let alertController = UIAlertController(title: "Delete", message: "Are you sure want to delete address?", preferredStyle: .alert)
         let OKAction = UIAlertAction(title: "Ok", style: .default) { action in
-            self.deleteAddress(addressID: APPDELEGATE.userResponse!.customer.address[selectedIndex].id.toString(), index: selectedIndex)
+            self.deleteAddress(addressID: APPDELEGATE.userResponse!.customer.address[selectedIndex].id, index: selectedIndex)
         }
         let cancel = UIAlertAction(title: "Cancel", style: .cancel) { alert in
             

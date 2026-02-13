@@ -28,11 +28,5 @@
 			</array>
 		</dict>
 	</dict>
-	<key>CFBundleDisplayName</key>
-	<string>Grabull Shop</string>
-	<key>NSCameraUsageDescription</key>
-	<string>We use the camera to allow you to upload photos and scan content when placing orders</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>We need permission to save images to your photo library.</string>
 </dict>
 </plist>

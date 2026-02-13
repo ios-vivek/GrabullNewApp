@@ -129,8 +129,8 @@ final class ConfirmOrderViewModel {
             
             if Cart.shared.orderType == .pickup {
                 Cart.shared.userAddress = UserAdd(
-                    id: 0, street: "", add1: "", add2: "",
-                    add3: "", addtypes: "", city: "", state: "", zip: ""
+                    id: "0", street: "", add1: "", add2: "",
+                    add3: "", type: "", city: "", state: "", zip: ""
                 )
             }
             
@@ -172,7 +172,7 @@ final class ConfirmOrderViewModel {
             scharge: "\(price.serviceCharge)",
             restaurantId: Cart.shared.restDetails.rid,
             donate: "\(donateAmount)",
-            orderat: address?.addtypes ?? "",
+            orderat: address?.type ?? "",
             billingzip: selectedPaymentType == 0 ? Cart.shared.cardZip : "",
             did: Cart.shared.orderNumber,
             rewards: Cart.shared.isReward ? "\(Cart.shared.rewardAmount)" : "0.0",
