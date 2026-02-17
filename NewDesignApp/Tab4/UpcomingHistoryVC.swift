@@ -70,7 +70,7 @@ class UpcomingHistoryVC: UIViewController {
         let parameters = CommonAPIParams.base()
         
         UtilsClass.showProgressHud(view: self.view)
-        WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.ongoingOrder, forModelType: HisoryResponse.self) { success in
+        WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.upcomingOrder, forModelType: HisoryResponse.self) { success in
             UtilsClass.hideProgressHud(view: self.view)
             self.historyList = success.data.data
             self.historyTblView.reloadData()
@@ -144,6 +144,7 @@ extension UpcomingHistoryVC: UITableViewDelegate, UITableViewDataSource {
             cell.rateBtn.addTarget(self, action: #selector(ratingAction), for: .touchUpInside)
             cell.reOrderBtn.tag = indexPath.row
             cell.reOrderBtn.addTarget(self, action: #selector(trackOrderAction), for: .touchUpInside)
+        cell.rateBtn.isHidden = true
             return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

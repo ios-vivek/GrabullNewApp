@@ -12,6 +12,8 @@ import UIKit
     class ReferRestaurantVC: UIViewController {
         @IBOutlet weak var tbl: UITableView!
         @IBOutlet weak var referRestBth: UIButton!
+        @IBOutlet weak var noDataFoundLbl: UILabel!
+
 
 
         var restaurantList: [ReferRestaurantList] = []
@@ -23,6 +25,7 @@ import UIKit
             referRestBth.setRounded(cornerRadius: 4)
             referRestBth.setFontWithString(text: "Refer A Restaurant", fontSize: 16)
             referRestBth.backgroundColor = kBlueColor
+            noDataFoundLbl.isHidden = true
         }
         override func viewWillAppear(_ animated: Bool) {
                 super.viewWillAppear(animated)
@@ -44,10 +47,16 @@ import UIKit
                 UtilsClass.hideProgressHud(view: self.view)
                 self.restaurantList = success.data.data
                 self.tbl.reloadData()
+                self.showLable()
             } ErrorHandler: { error in
                 UtilsClass.hideProgressHud(view: self.view)
-                self.showAlert(title: "Error", msg: "Failed to load restaurant list.")
+                //self.showAlert(title: "Error", msg: "Failed to load restaurant list.")
+                self.showLable()
             }
+        }
+        func showLable() {
+            noDataFoundLbl.text = "You don't have any refer restaurants."
+            noDataFoundLbl.isHidden = self.restaurantList.isEmpty ? false : true
         }
 
     }
