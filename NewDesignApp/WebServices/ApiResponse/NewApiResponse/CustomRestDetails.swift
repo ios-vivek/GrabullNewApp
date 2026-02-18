@@ -101,10 +101,29 @@ struct CustomRestDetails: Codable {
 // MARK: - Menu Category
 struct CustMenuCategory: Codable {
     let id: String
+       let heading: String
+       let submenu: String
+
+       let itemList: [MenuItem]
+
+       let submenuList: [CustSubMenuCategory]?
+}
+extension CustMenuCategory {
+
+    var allItems: [MenuItem] {
+
+        if submenu == "Yes" {
+            return submenuList?.flatMap { $0.itemList } ?? []
+        }
+
+        return itemList
+    }
+
+}
+struct CustSubMenuCategory: Codable {
+
+    let id: String
     let heading: String
-    let subid: String
-    let subheading: String
-    let submenu: String
     let itemList: [MenuItem]
 }
 
@@ -193,8 +212,8 @@ extension RestDetailsRes {
             ratingHD1: ratingHD1,
             ratingHD2: ratingHD2,
             
-            menuList: menuList.flatMap { $0.toCustomCategories() },
-            cateringList: cateringList.flatMap { $0.toCustomCategories() },
+            menuList: menuList.map { $0.toCustomCategory() },
+            cateringList: cateringList.map { $0.toCustomCategory() },
             offer: offer
 
 
@@ -203,33 +222,37 @@ extension RestDetailsRes {
 }
 extension MenuCategory {
 
-    func toCustomCategories() -> [CustMenuCategory] {
+    func toCustomCategory() -> CustMenuCategory {
 
-        // Case 1: submenu = NO → direct category
         if subMenu.lowercased() == "no" {
-            return [
-                CustMenuCategory(
-                    id: id,
-                    heading: heading,
-                    subid: "",
-                    subheading: "",
-                    submenu: subMenu,
-                    itemList: itemList
-                )
-            ]
-        }
 
-        // Case 2: submenu = YES → flatten menulist
-        return menuList.map { sub in
-            CustMenuCategory(
+            return CustMenuCategory(
                 id: id,
                 heading: heading,
-                subid: sub.id,
-                subheading: sub.heading,
                 submenu: subMenu,
-                itemList: sub.itemList
+                itemList: itemList,
+                submenuList: nil
             )
         }
+
+        // submenu = YES
+
+        let submenus = menuList.map {
+
+            CustSubMenuCategory(
+                id: $0.id,
+                heading: $0.heading,
+                itemList: $0.itemList
+            )
+        }
+
+        return CustMenuCategory(
+            id: id,
+            heading: heading,
+            submenu: subMenu,
+            itemList: [],
+            submenuList: submenus
+        )
     }
 }
 

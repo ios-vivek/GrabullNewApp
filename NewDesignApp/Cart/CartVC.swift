@@ -165,7 +165,7 @@ class CartVC: UIViewController {
         }
 
         guard !alreadyExists else { return }
-
+/*vivek
         let menu = CustMenuCategory(
             id: menuItem.id,
             heading: menuItem.heading,
@@ -174,8 +174,8 @@ class CartVC: UIViewController {
             submenu: menuItem.submenu,
             itemList: [itemData]
         )
-
-        allDisplayItems.append(menu)
+*/
+ //       allDisplayItems.append(menu)
     }
     func removeItemFromCompleteMealList() {
 

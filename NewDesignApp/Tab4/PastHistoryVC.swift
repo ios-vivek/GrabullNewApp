@@ -140,6 +140,7 @@ let montharr = ["01","02","03","04","05","06","07","08","09","10","11","12"]
             self.noDataFoundRefersh()
             self.noDataFoundLbl.text = self.historyList.count != 0 ? "" : "You don't have any order history in \(selectedMonth)."
             self.emptyView.isHidden = self.historyList.count != 0 ? true : false
+            self.historyTblView.isHidden = !self.emptyView.isHidden
             
         } ErrorHandler: { error in
             UtilsClass.hideProgressHud(view: self.view)
@@ -147,6 +148,7 @@ let montharr = ["01","02","03","04","05","06","07","08","09","10","11","12"]
             self.historyTblView.reloadData()
             self.noDataFoundLbl.text = "You don't have any past orders."
             self.emptyView.isHidden = false
+            self.historyTblView.isHidden = !self.emptyView.isHidden
         }
     }
     
