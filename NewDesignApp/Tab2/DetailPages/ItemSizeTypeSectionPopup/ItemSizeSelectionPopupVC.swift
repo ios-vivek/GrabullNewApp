@@ -51,6 +51,7 @@ class ItemSizeSelectionPopupVC: UIViewController {
         // Do any additional setup after loading the view.
         instructionTxtView.backgroundColor = .white
         instructionTxtView.textColor = .black
+        instructionTxtView.delegate = self
         instructionPlaceholderLbl.isHidden = false
         instructionTxtView.layer.masksToBounds = true
         instructionTxtView.layer.cornerRadius = 10
@@ -367,6 +368,13 @@ extension ItemSizeSelectionPopupVC: UITableViewDelegate, UITableViewDataSource {
         
 }
 extension ItemSizeSelectionPopupVC: UITextViewDelegate { //If your class is not conforms to the UITextViewDelegate protocol you will not be able to set it as delegate to UITextView
+
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        let currentText = textView.text ?? ""
+        guard let stringRange = Range(range, in: currentText) else { return true }
+        let updatedText = currentText.replacingCharacters(in: stringRange, with: text)
+        return updatedText.count <= 60
+    }
 
     func textViewDidChange(_ textView: UITextView) {
         //Handle the text changes here

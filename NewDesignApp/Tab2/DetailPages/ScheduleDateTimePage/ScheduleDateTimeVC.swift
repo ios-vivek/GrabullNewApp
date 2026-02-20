@@ -170,7 +170,7 @@ class ScheduleDateTimeVC: UIViewController {
     }
     @IBAction func backAction() {
         self.dismiss(animated: true) {
-            
+            self.delegate?.dateChanged()
         }
     }
     @IBAction func dateSubmitAction() {
@@ -187,9 +187,7 @@ class ScheduleDateTimeVC: UIViewController {
             //Pickup today ASAP
             //Pickup today at 6:15 pm
             //Pickup on 2, Oct at 06:30 am
-            let selectedTime = SeletedTime(date: UtilsClass.getCurrentDateInString(date: Date()), time: "", heading: "\(type) today ASAP")
-            //let seletedTime = SeletedTime.init(ht: "", t: "", a: "", finalTimeAndDate: UtilsClass.getCurrentDateInString(date: Date()), heading: "Pickup today ASAP")
-            Cart.shared.selectedTime = selectedTime
+            Cart.shared.resetTime()
         }
         else if self.orderDate == .Today {
             if selectedTimeIndex == -1 {
@@ -285,12 +283,14 @@ class ScheduleDateTimeVC: UIViewController {
         }
     }
     @objc func pickupDeliveryControlValueChanged(_ sender: UISegmentedControl) {
+        self.orderDate = .ASAP
         if sender.selectedSegmentIndex == 0 {
             Cart.shared.orderType = .delivery
         }
         if sender.selectedSegmentIndex == 1 {
             Cart.shared.orderType = .pickup
         }
+        Cart.shared.resetTime()
         self.setTimelist()
         self.dateCollection.reloadData()
     }

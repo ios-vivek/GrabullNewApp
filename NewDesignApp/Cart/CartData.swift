@@ -127,6 +127,12 @@ class Cart {
         instructionText = ""
         specialInstructionText = ""
     }
+    func resetTime(){
+        orderType = Cart.shared.orderType
+        let text = Cart.shared.orderType == .pickup ? "Pickup" : "Delivery"
+        selectedTime = SeletedTime.init(date: UtilsClass.getCurrentDateInString(date: Date()), time: "00:00:00", heading: "\(text) today ASAP")
+        orderDate = .ASAP
+    }
     func addInCart() {
         Cart.shared.restDetails = self.restDetails
 //        if self.itemData.completeMealList.count > 0 {

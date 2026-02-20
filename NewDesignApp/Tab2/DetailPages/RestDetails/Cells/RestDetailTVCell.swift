@@ -69,17 +69,18 @@ var restData: CustomRestDetails?
     }
     @objc func deliveryBtnAction() {
         Cart.shared.orderType = .delivery
+        Cart.shared.resetTime()
         selectedButtonUI()
     }
     @objc func pickupBtnAction() {
         Cart.shared.orderType = .pickup
+        Cart.shared.resetTime()
         selectedButtonUI()
     }
     @objc func scheduleAction() {
         self.delegate?.scheduleDateAction()
     }
     func selectedButtonUI() {
-
         let isDelivery = Cart.shared.orderType == .delivery
 
         // Button colors

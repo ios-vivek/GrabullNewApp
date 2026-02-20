@@ -24,8 +24,6 @@ class CartVC: UIViewController {
     var isOpen = false
     override func viewDidLoad() {
         super.viewDidLoad()
-       // let seletedTime = SeletedTime.init(date: UtilsClass.getCurrentDateInString(date: Date()), time: "00:00 am", heading: "Pickup today ASAP")
-       // Cart.shared.selectedTime = seletedTime
         var fullText = "Order"
         var firstPart = "Order"
         var secondPart = ""

@@ -142,6 +142,23 @@ class ConfirmOrderVC: UIViewController {
     }
    
     func addOrder(transactionIdentifier: String) {
+        if ((Cart.shared.restDetails.openStatus.status.contains("Closed") || Cart.shared.restDetails.openStatus.status.contains("closed")) && Cart.shared.orderDate == .ASAP){
+            let alertController = UIAlertController(title: "Alert", message: "Restaurant is closed for now. Please change your delivery / pickup timing.", preferredStyle: .alert)
+            let OKAction = UIAlertAction(title: "Ok", style: .default) { action in
+                self.clickedOnChangeTime()
+
+            }
+            let cancel = UIAlertAction(title: "Cancel", style: .cancel) { alert in
+                
+            }
+            alertController.addAction(OKAction)
+            alertController.addAction(cancel)
+            OperationQueue.main.addOperation {
+                self.present(alertController, animated: true,
+                             completion:nil)
+            }
+            return
+        }
         viewModel.checkPaymentType(
             recipientFName: recipientfName,
             recipientLName: recipientlName,

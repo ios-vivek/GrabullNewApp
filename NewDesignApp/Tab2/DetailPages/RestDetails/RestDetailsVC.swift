@@ -145,9 +145,7 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
         super.viewDidLoad()
         if restDetailsData != nil && Cart.shared.tempRestDetails != nil {
             if (restDetailsData!.rid != Cart.shared.tempRestDetails.rid) {
-                let seletedTime = SeletedTime.init(date: UtilsClass.getCurrentDateInString(date: Date()), time: "00:00:00", heading: "Pickup today ASAP")
-                Cart.shared.selectedTime = seletedTime
-                Cart.shared.orderDate = .ASAP
+                Cart.shared.resetTime()
             }
         }
         Cart.shared.tempRestDetails = restDetailsData!

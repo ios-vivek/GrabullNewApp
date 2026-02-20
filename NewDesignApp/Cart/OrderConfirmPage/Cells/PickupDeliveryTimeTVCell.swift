@@ -27,8 +27,6 @@ class PickupDeliveryTimeTVCell: UITableViewCell {
         //Pickup today at 6:15 pm
         //Pickup on 2, Oct at 06:30 am
         orderTypeLbl.text = Cart.shared.selectedTime.heading
-       // let min = Cart.shared.restDetails.restPickupTime + 10
-        //readyTimeLbl.text = "Ready in \(Int(Cart.shared.restDetails.restPickupTime))-\(Int(min)) Min"
     }
     @IBAction func changeTimeAction() {
         self.delegate?.clickedOnChangeTime()
