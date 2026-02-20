@@ -125,57 +125,54 @@ class CartVC: UIViewController {
         self.cartTableView.reloadData()
     }
     func getAllItemsForNextVCDisplay() {
-        allDisplayItems = [CustMenuCategory]()
-       // print("Cart.shared.cartData--\(Cart.shared.cartData)")
-        for item in Cart.shared.cartData {
-           // print("allMenuList--\(allMenuList.count)")
-            if Cart.shared.tempAllRestmenu.count > 0 {
-                for menuItem in Cart.shared.tempAllRestmenu {
-                   // print("menuItem.submenu--\(menuItem.submenu)")
-//                    if menuItem.submenu == "No" {
-//                        for itemData in menuItem.itemList {
-//                            self.addItemInCompleteMeal(menuItem: menuItem, item: item, itemData: itemData)
-//                        }
-//                    } else {
-                        for itemData in menuItem.itemList {
-                            self.addItemInCompleteMeal(menuItem: menuItem, item: item, itemData: itemData)
-                        }
-                    //}
-                }
-            }
-        }
-        removeItemFromCompleteMealList()
-       
-    }
+
+           allDisplayItems = []
+
+           for cartItem in Cart.shared.cartData {
+
+               for menu in Cart.shared.tempAllRestmenu {
+
+                   for itemData in menu.allItems {
+
+                       addItemInCompleteMeal(
+                           menuItem: menu,
+                           item: cartItem,
+                           itemData: itemData
+                       )
+                   }
+               }
+           }
+
+           removeItemFromCompleteMealList()
+       }
     func addItemInCompleteMeal(
         menuItem: CustMenuCategory,
         item: CartItemList,
         itemData: MenuItem
     ) {
-//print("itemid in cart: \(itemData.id)")
-      //  print("itemid in cart: \(Cart.shared.restDetails.completeMeal)")
+
         guard
             item.restItem.completeMeal == 1,
             Cart.shared.restDetails.completeMeal.contains(itemData.id)
         else { return }
 
-        // Avoid duplicates
+
+        // ✅ check duplicate using itemData.id
         let alreadyExists = allDisplayItems.contains {
             $0.itemList.first?.id == itemData.id
         }
 
         guard !alreadyExists else { return }
-/*vivek
+
+
+        // ✅ FIX: ADD ONLY THIS ITEM
         let menu = CustMenuCategory(
             id: menuItem.id,
-            heading: menuItem.heading,
-            subid: menuItem.subid,
-            subheading: menuItem.subheading,
-            submenu: menuItem.submenu,
-            itemList: [itemData]
+            heading: menuItem.heading, submenu: menuItem.submenu,
+            itemList: [itemData], submenuList: menuItem.submenuList   // ⭐⭐⭐ MOST IMPORTANT FIX
         )
-*/
- //       allDisplayItems.append(menu)
+
+        allDisplayItems.append(menu)
     }
     func removeItemFromCompleteMealList() {
 
@@ -663,9 +660,10 @@ extension CartVC: ItemDetailsDelegate {
 }
 extension CartVC: OpenItemDetailDelegate {
     func addItemInList(index: IndexPath) {
+        let menu = completeItemList[index.section]
         let newItem = completeItemList[index.section].itemList[index.row]
         Cart.shared.itemData = newItem
-        var newSize = Cart.shared.getAllSizes(menu: Cart.shared.tempRestmenu, item: newItem, isCatering: false, menuType: "")[0]
+        var newSize = Cart.shared.getAllSizes(menu: menu, item: newItem, isCatering: false, menuType: "")[0]
             newSize.itemQty = 1
             Cart.shared.itemSizes = [Sizes]()
             Cart.shared.itemSizes.append(newSize)
