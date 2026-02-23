@@ -694,9 +694,9 @@ extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
             else {
                 headerView.headingLbl.text = self.menuList[sec].heading
             }
-           // headerView.headingLbl.textColor = .black
+            headerView.headingLbl.textColor = .black
 
-            headerView.headingLbl.textColor = self.menuList[sec].submenu == "No" ? .black : .gSkyBlue
+           // headerView.headingLbl.textColor = self.menuList[sec].submenu == "No" ? .black : .gSkyBlue
             headerView.headerViewBckground.backgroundColor = UIColor.gGray100
             
 
