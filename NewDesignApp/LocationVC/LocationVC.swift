@@ -177,7 +177,10 @@ extension LocationVC: UITableViewDelegate, UITableViewDataSource {
             }
             getAddressLatlongFromApi(text: addressList[indexPath.row].description ?? "")
         } else {
-            getAddressLatlongFromApi(text: recentAddress[indexPath.row - 1].address)
+            let index = indexPath.row - 1
+            if index >= 0 {
+                getAddressLatlongFromApi(text: recentAddress[index].address)
+            }
         }
     }
 //    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
