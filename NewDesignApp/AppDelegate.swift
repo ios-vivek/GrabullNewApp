@@ -38,9 +38,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         StripeAPI.defaultPublishableKey = "pk_test_51MBnMwI2xj9owfknjowsJGrw7fB1UdeSyAZIYqORBT7EgTY0wRP6fLb4hajFcE0ehOGIQQXTqc618DOaZQ8P0chT00Ut2oqKvN"
-       // IQKeyboardManager.shared.enable = true
-        IQKeyboardManager.shared.enableAutoToolbar = true
+        IQKeyboardManager.shared.isEnabled = true
         IQKeyboardManager.shared.resignOnTouchOutside = true
+        IQKeyboardManager.shared.enableAutoToolbar = true
 
         setupLoactionManager()
         UtilsClass.getuserDetails()
