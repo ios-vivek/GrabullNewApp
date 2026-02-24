@@ -30,7 +30,7 @@ class AddAddressVC: UIViewController {
 
         // Do any additional setup after loading the view.
         addressType.selectedSegmentTintColor = themeBackgrounColor
-addressType.setTextColor()
+        addressType.setTextColor()
         addressType.addTarget(self, action: #selector(segmentedControlValueChanged(_:)), for: .valueChanged)
         if isUpdateAddress {
             address1TxtFld.text = updateUserAdd?.add1
@@ -38,13 +38,13 @@ addressType.setTextColor()
             cityTxtFld.text = updateUserAdd?.city
             stateTxtFld.text = updateUserAdd?.state
             zipcodeTxtFld.text = updateUserAdd?.zip
-            if updateUserAdd?.addtypes == "Home" {
+            if updateUserAdd?.type == "Home" {
                 addressType.selectedSegmentIndex = 0
             }
-            if updateUserAdd?.addtypes == "Office" {
+            if updateUserAdd?.type == "Office" {
                 addressType.selectedSegmentIndex = 1
             }
-            if updateUserAdd?.addtypes == "Other" {
+            if updateUserAdd?.type == "Other" {
                 addressType.selectedSegmentIndex = 2
             }
         }
@@ -122,7 +122,7 @@ addressType.setTextColor()
             let alertController = UIAlertController(title: "Success", message: "Address added successfully.", preferredStyle: .alert)
             let OKAction = UIAlertAction(title: "Ok", style: .default) { action in
                 if self.fromCheckoutPage {
-                    let add = UserAdd(id: 0, street: "", add1: self.address1TxtFld.text!, add2: self.address2TxtFld.text!, add3: "", addtypes: self.selectedAddressType, city: self.cityTxtFld.text!, state: self.stateTxtFld.text!, zip: self.zipcodeTxtFld.text!)
+                    let add = UserAdd(id: "0", street: "", add1: self.address1TxtFld.text!, add2: self.address2TxtFld.text!, add3: "", type: self.selectedAddressType, city: self.cityTxtFld.text!, state: self.stateTxtFld.text!, zip: self.zipcodeTxtFld.text!)
 //                    let deliveryZipsArray = Cart.shared.restDetails.deliveryzip.components(separatedBy: ",")
 //                    if !deliveryZipsArray.contains(self.zipcodeTxtFld.text!) {
 //                        self.showAlert(title: "Error", msg: "Oops! Out of Delivery Radius, We Deliver Within 4 Miles Radius..")

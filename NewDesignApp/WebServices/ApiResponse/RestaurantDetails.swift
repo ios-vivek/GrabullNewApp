@@ -130,6 +130,7 @@ struct Sizes: Codable {
     var itemQty: Int
     let sizeKey: String
     var isCatering : Bool = false
+    let serveTray: String
 }
 
 struct RestaurantDetailData: Codable {

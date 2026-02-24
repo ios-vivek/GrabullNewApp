@@ -69,33 +69,28 @@ var restData: CustomRestDetails?
     }
     @objc func deliveryBtnAction() {
         Cart.shared.orderType = .delivery
+        Cart.shared.resetTime()
         selectedButtonUI()
     }
     @objc func pickupBtnAction() {
         Cart.shared.orderType = .pickup
+        Cart.shared.resetTime()
         selectedButtonUI()
     }
     @objc func scheduleAction() {
         self.delegate?.scheduleDateAction()
     }
     func selectedButtonUI() {
-        let isDelivery = !(Cart.shared.orderType == .pickup)
-        var pcolor: UIColor = isDelivery ? .white : .black
-        var dcolor: UIColor = !isDelivery ? .black : .white
-        if isDelivery {
-            pcolor = .black
-            dcolor = .white
-            pickupBtn.backgroundColor = .white
-            deliveryBtn.backgroundColor = kGreenColor
-        } else {
-            pcolor = .white
-            dcolor = .black
-            pickupBtn.backgroundColor = kGreenColor
-            deliveryBtn.backgroundColor = .white
-        }
-        
-        deliveryBtn.textColor = dcolor
-        pickupBtn.textColor = pcolor
+        let isDelivery = Cart.shared.orderType == .delivery
+
+        // Button colors
+        pickupBtn.backgroundColor   = isDelivery ? .white : kGreenColor
+        deliveryBtn.backgroundColor = isDelivery ? kGreenColor : .white
+
+        pickupBtn.textColor   = isDelivery ? .black : .white
+        deliveryBtn.textColor = isDelivery ? .white : .black
+
+        // Time & label
         if isDelivery {
             deliveryTimeLbl.text = "\(restData?.deliveryTime ?? 0) Mins"
             lblAsap.text = "Delivery, ASAP"
@@ -103,14 +98,18 @@ var restData: CustomRestDetails?
             deliveryTimeLbl.text = "\(restData?.pickupTime ?? 0) Mins"
             lblAsap.text = "Pickup, ASAP"
         }
+
         setDate()
+
+        // Restaurant closed handling
         guard let rest = Cart.shared.tempRestDetails else { return }
-        /*
-        if !rest.isRestaurantOpen && Cart.shared.orderDate == .ASAP {
-            lblAsap.text = Cart.shared.tempRestDetails.openstatus
+
+        if !rest.isRestaurantOpenToday && Cart.shared.orderDate == .ASAP {
+            lblAsap.text = rest.openStatus.status
             lblAsap.textColor = .red
+        } else {
+            lblAsap.textColor = .black
         }
-        */
     }
     func setDate() {
         
@@ -125,14 +124,10 @@ var restData: CustomRestDetails?
              lblAsap.text = "Delivery\(result)"
          }
     }
-    func updateUI(data: CustomRestDetails?, restImage: String) {
+    func updateUI(data: CustomRestDetails?, restImage: String, galleryImages: [String]) {
         restData = data
-//                if restData?.gallery.list.count == 0 {
-//                    photoCountView.isHidden = true
-//                } else {
-//                    photoCountView.isHidden = false
-//                }
-       // lblPhotoCount.text = "\(restData?.gallery.list.count ?? 0) Photos"
+        photoCountView.isHidden = galleryImages.count > 0 ? false : true
+        lblPhotoCount.text = "\(galleryImages.count) Photos"
         restName.text = "\(restData?.name ?? "resta neme")"
         deliveryTimeLbl.text = "\(restData?.deliveryTime ?? 0) Mins"
         ratingLbl.text = "\(restData?.rating ?? 0)"

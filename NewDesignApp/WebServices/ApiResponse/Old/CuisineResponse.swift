@@ -41,9 +41,6 @@ struct Cuisine: Codable {
         let url: String
         let img: String
         let imgUrl: String
-    var cuisineImage: String {
-        return OldServiceType.cuisineImageUrl + img
-    }
 }
 struct RestSlider: Codable {
     let url: String

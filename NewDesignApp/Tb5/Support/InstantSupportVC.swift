@@ -15,6 +15,9 @@ class InstantSupportVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = pageBackgroundColor
+        tbl.backgroundColor = .clear
+        msgTextView.backgroundColor = .clear
+        ordernumberTextFld.backgroundColor = .clear
         submitBth.setRounded(cornerRadius: 4)
         submitBth.setFontWithString(text: "Submit Query", fontSize: 16)
         submitBth.backgroundColor = kBlueColor

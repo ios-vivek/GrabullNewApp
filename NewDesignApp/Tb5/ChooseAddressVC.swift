@@ -19,6 +19,7 @@ class ChooseAddressVC: UIViewController {
 
         // Do any additional setup after loading the view.
         self.view.backgroundColor = .white
+        addressTbl.backgroundColor = .clear
 
     }
     @IBAction func backAction() {
@@ -48,9 +49,9 @@ extension ChooseAddressVC: UITableViewDelegate, UITableViewDataSource {
         cell.backgroundColor = .white
         let address = APPDELEGATE.userResponse!.customer.address[indexPath.row]
         let selectedAddress = Cart.shared.userAddress
-        let user = APPDELEGATE.userResponse!.customer
-        cell.addressLbl.text = "\(address.add1) \(address.add2), \(address.city), \(address.state), \(address.zip)"
-        cell.addressTypeLbl.text = address.addtypes
+        //let user = APPDELEGATE.userResponse!.customer
+        cell.addressLbl.text = "\(address.add1 ?? "") \(address.add2 ?? ""), \(address.city ?? ""), \(address.state ?? ""), \(address.zip ?? "")"
+        cell.addressTypeLbl.text = address.type
         cell.updateUI(selected: selectedAddress?.id == address.id)
        // cell.phoneLbl.text = "Phone Number: \(user.phone)"
        // cell.delegate = self

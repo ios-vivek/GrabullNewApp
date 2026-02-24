@@ -47,7 +47,7 @@ class WebServices: NSObject {
 
     public static func placeOrderService(
         parameters: [String: AnyObject],
-        successHandler: @escaping (_ successResult: [String: Any]) -> Void,
+        successHandler: @escaping (_ successResult: PlaceOrderResponse) -> Void,
         errorHandler: @escaping (_ errorResult: String) -> Void
     ) {
 
@@ -59,38 +59,44 @@ class WebServices: NSObject {
             parameters: parameters,
             encoding: JSONEncoding.default
         )
-        .responseJSON { response in
+        .responseData { response in
 
             switch response.result {
 
-            case .success(let value):
+            case .success(let data):
+                do {
+                    
+                    if let raw = String(data: data, encoding: .utf8) {
+                        print("🔴 RAW RESPONSE:")
+                        print(raw)
+                    } else {
+                        print("❌ Unable to convert response to String")
+                    }
+                    
+                    let decodedResponse = try JSONDecoder().decode(
+                        PlaceOrderResponse.self,
+                        from: data
+                    )
 
-                guard let json = value as? [String: Any] else {
+                    print("Place order response:", decodedResponse)
+
+                    // ✅ SUCCESS
+                    if decodedResponse.code == 200,
+                       decodedResponse.status == "Success" {
+                        successHandler(decodedResponse)
+                        return
+                    }
+                    Cart.shared.orderNumber = decodedResponse.data.oid ?? ""
+
+                    // ❌ API Error
+                    errorHandler(
+                        decodedResponse.error ?? "Unable to process server response"
+                    )
+
+                } catch {
+                    print("Decoding error:", error)
                     errorHandler("Invalid server response")
-                    return
                 }
-
-                print("Place order response:", json)
-
-                let statusCode = json["code"] as? Int ?? 0
-                let status = json["status"] as? String ?? ""
-
-                // ✅ SUCCESS (200)
-                if statusCode == 200, status == "Success" {
-                    successHandler(json)
-                    return
-                }
-                if let data = json["data"] as? [String: Any] {
-                    Cart.shared.orderNumber = data["oid"] as? String ?? ""
-                    Cart.shared.supportNumber = data["support"] as? String ?? ""
-                }
-
-                // ❌ FAILURE (402 or others)
-                let errorMessage =
-                    (json["error"] as? String)?.trimmingCharacters(in: .whitespacesAndNewlines)
-                    ?? "Unable to process server response"
-
-                errorHandler(errorMessage)
 
             case .failure(let error):
                 print("Network error:", error)
@@ -121,6 +127,7 @@ class WebServices: NSObject {
             case .success(let data):
 
                 do {
+                    
                     // 🔹 PRINT RAW JSON RESPONSE
                            APILogger.printResponseJSON(data)
                     
@@ -158,6 +165,16 @@ struct BaseAPIResponse: Codable {
 struct APILogger {
 
     static func printResponseJSON(_ data: Data) {
+        /*
+        
+        if let raw = String(data: data, encoding: .utf8) {
+            print("🔴 RAW RESPONSE:")
+            print(raw)
+        } else {
+            print("❌ Unable to convert response to String")
+        }
+        */
+
         do {
             let jsonObject = try JSONSerialization.jsonObject(with: data, options: [])
             let prettyData = try JSONSerialization.data(

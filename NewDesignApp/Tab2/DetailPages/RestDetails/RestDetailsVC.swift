@@ -8,6 +8,7 @@
 
 import UIKit
 import Lottie
+import SafariServices
 
 class RestData: NSObject {
     let dbname: String
@@ -38,12 +39,11 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
         cartLbl.text = "\(Cart.shared.cartData.count)"
         cartView.isHidden = Cart.shared.cartData.count > 0 ? false : true
         cartView.updateUI()
-
     }
     
     func addItemSelection(index: IndexPath) {
         handleCartBeforeAdd(index: index)
-        /*
+        
         if Cart.shared.restDetails == nil {
             Cart.shared.restDetails = Cart.shared.tempRestDetails
             self.navigateToMenuDetails(index: index)
@@ -75,7 +75,7 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
             Cart.shared.restDetails = Cart.shared.tempRestDetails
             self.navigateToMenuDetails(index: index)
         }
-        */
+        
     }
     func handleCartBeforeAdd(index: IndexPath) {
         guard let currentRest = Cart.shared.restDetails else {
@@ -139,14 +139,13 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
     var itemData: MenuItem!
     var isReservationAvailable = false
     var selectedFiler = -1
+    var galleryImages = [String]()
 
     override func viewDidLoad() {
         super.viewDidLoad()
         if restDetailsData != nil && Cart.shared.tempRestDetails != nil {
             if (restDetailsData!.rid != Cart.shared.tempRestDetails.rid) {
-                let seletedTime = SeletedTime.init(date: UtilsClass.getCurrentDateInString(date: Date()), time: "00:00:00", heading: "Pickup today ASAP")
-                Cart.shared.selectedTime = seletedTime
-                Cart.shared.orderDate = .ASAP
+                Cart.shared.resetTime()
             }
         }
         Cart.shared.tempRestDetails = restDetailsData!
@@ -204,41 +203,38 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
 
     }
     func getAllSpecialDealsMenu() {
+
         guard let offers = restDetailsData?.offer else { return }
 
         let itemMap: [String: (CustMenuCategory, MenuItem)] = Dictionary(
             uniqueKeysWithValues:
                 allMenuList.flatMap { menu in
-                    menu.itemList.map { ($0.id, (menu, $0)) }
+                    menu.allItems.map { ($0.id, (menu, $0)) }
                 }
         )
 
-        specialList = offers.compactMap { offer in
+        specialList = offers.compactMap { offer -> CustMenuCategory? in
+
             guard
-                let itemId = offer.itemId,                // ✅ unwrap here
-                let (menu, item) = itemMap[itemId]        // ✅ now safe
+                let itemId = offer.itemId,
+                let (menu, item) = itemMap[itemId]
             else {
                 return nil
             }
 
             return CustMenuCategory(
-                id: menu.id,
-                heading: menu.heading,
-                subid: menu.subid,
-                subheading: menu.subheading,
-                submenu: menu.submenu,
-                itemList: [item]
+                id: menu.id, heading: menu.heading, submenu: menu.submenu, itemList: menu.itemList, submenuList: menu.submenuList// ✅ correct
             )
         }
     }
     func setImages() {
-        /*
-        if self.restDetailsData!.restImage != "" && self.restDetailsData!.gallery.list.isEmpty {
-            let url = ImageURL.init(url: self.restDetailsData!.restImage)
-            self.restDetailsData!.gallery.list.append(url)
-        }
-//                if self.restDetailsData!?.gallery.list.count == 0 {
-        */
+        galleryImages = Array(Set(
+            restDetailsData?.menuList
+                .flatMap { $0.itemList }
+                .compactMap { $0.itemImage }
+                .filter { !$0.isEmpty } ?? []
+        ))
+        galleryImages.append(self.restData?.restImgUrl ?? "")
     }
     func getMenuList() {
         if selectedMenuType == .menu {
@@ -283,12 +279,12 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
         self.navigationController?.popViewController(animated: true)
     }
     func showMenuOption()-> Bool {
-        if selectedMenuType == .deals || selectedMenuType == .dineIn {
+        if [.deals, .dineIn, .catering].contains(selectedMenuType) {
             return false
         }
-        if selectedMenuType == .catering {
-            return filteredCateringList.count > 0 ? true : false
-        }
+//        if selectedMenuType == .catering {
+//            return filteredCateringList.count > 0 ? true : false
+//        }
         return true
     }
     func navigateToMenuDetails(index: IndexPath) {
@@ -296,21 +292,12 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
         let story = UIStoryboard.init(name: "OrderFlow", bundle: nil)
         let popupVC = story.instantiateViewController(withIdentifier: "ItemSizeSelectionPopupVC") as! ItemSizeSelectionPopupVC
         if selectedMenuType == .menu {
-            let itemList = self.menuList[index.section - 5]
-            let itemm = itemList.itemList[index.row]
-            itemData = itemm
-            popupVC.restmenu = self.menuList[index.section - 5]
+            popupVC.restmenu = self.getItem(index: index, list: self.menuList)
         } else if selectedMenuType == .catering {
-            let itemList = self.filteredCateringList[index.section - 5]
-            let itemm: MenuItem = itemList.itemList[index.row]
-                itemData = itemm
-            popupVC.restmenu = self.filteredCateringList[index.section - 5]
+            popupVC.restmenu = self.getItem(index: index, list: self.filteredCateringList)
         }
         else if selectedMenuType == .deals {
-            let itemList = self.specialList[index.section - 5]
-            let itemm: MenuItem = itemList.itemList[index.row]
-                itemData = itemm
-            popupVC.restmenu = self.specialList[index.section - 5]
+            popupVC.restmenu = self.getItem(index: index, list: self.specialList)
         }
         popupVC.selectedMenuType = self.selectedMenuType
         popupVC.delegate = self
@@ -320,6 +307,20 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
         self.present(popupVC, animated: true)
          
         
+    }
+    func getItem(index: IndexPath, list: [CustMenuCategory])-> CustMenuCategory {
+        let itemList = list[index.section - 5]
+        let itemm: MenuItem
+        if itemList.submenu == "Yes" {
+            // Flatten all submenu items
+            let allItems = itemList.submenuList?.flatMap { $0.itemList } ?? []
+            itemm = allItems[index.row]
+        } else {
+            itemm = itemList.itemList[index.row]
+
+        }
+        itemData = itemm
+        return itemList
     }
     func openItemDetails(itemlist: RestItemList, index: IndexPath) {
         /*
@@ -386,7 +387,9 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
             let yPosition = -( scrollView.contentOffset.y+1)
            // print(yPosition)
 //            if self.restDetailsData?.menutype[selectedmenuType] != "Specials" {
+            if ![.deals, .dineIn, .catering].contains(selectedMenuType) {
                 menuView.isHidden = yPosition >= -577 ? true : false
+            }
 //            }
             restaurantName.isHidden = yPosition >= -177 ? true : false
             } else if let _ = scrollView as? UICollectionView {
@@ -398,6 +401,22 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
         let vc = self.viewController(viewController: CartVC.self, storyName: StoryName.CartFlow.rawValue) as! CartVC
         Cart.shared.tempAllRestmenu = self.allMenuList
         self.navigationController?.pushViewController(vc, animated: true)
+    }
+    private func loadURLSafari(dineUrl: String) {
+        let trimmedURL = dineUrl.trimmingCharacters(in: .whitespacesAndNewlines)
+        print("url: \(trimmedURL)")
+
+        guard let url = URL(string: trimmedURL),
+              ["http", "https"].contains(url.scheme?.lowercased() ?? "") else {
+            //hideProgress()
+            return
+        }
+
+        UtilsClass.hideProgressHud(view: self.view)
+
+        let safariVC = SFSafariViewController(url: url)
+        safariVC.modalPresentationStyle = .fullScreen
+        present(safariVC, animated: true)
     }
 
 }
@@ -455,28 +474,39 @@ extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
         }
         if section >= RestaurentDetailsSection.Items.rawValue {
             if selectedMenuType == .dineIn {
-                return 1
+                return 0
             }
             if selectedMenuType == .deals {
-                print(specialList[section - 5].itemList.count)
-                return specialList.count > 0 ? (specialList[section - 5].itemList.count) : 1
+                if specialList.count == 0 {
+                    return 1
+                }
+                return self.getItemCount(section: section, menuList: self.specialList)
             }
             if selectedMenuType == .catering {
-                let count = filteredCateringList.count > 0 ? (self.filteredCateringList[section - 5].itemList.count) : 1
-                return count//self.cateringList[section - 5].itemList2?.count ?? 0
+                if filteredCateringList.count == 0 {
+                       return 1
+                   }
+                return self.getItemCount(section: section, menuList: self.filteredCateringList)
             }
-            return self.menuList[section - 5].itemList.count
+            
+            return self.getItemCount(section: section, menuList: self.menuList)
         }
         return 1
     }
-    
+    func getItemCount(section: Int, menuList: [CustMenuCategory])-> Int {
+        let menu = menuList[section - 5]
+        if menu.submenu == "Yes" {
+            return menu.submenuList?.flatMap { $0.itemList }.count ?? 0
+        }
+        return menu.itemList.count
+    }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
         case RestaurentDetailsSection.RestDetails.rawValue:
             let cell = tableView.dequeueReusableCell(withIdentifier: "RestDetailTVCell", for: indexPath) as! RestDetailTVCell
             cell.selectionStyle = .none
             cell.delegate = self
-            cell.updateUI(data: self.restDetailsData, restImage: restData?.restImgUrl ?? "")
+            cell.updateUI(data: self.restDetailsData, restImage: restData?.restImgUrl ?? "", galleryImages: self.galleryImages)
             return cell
         case RestaurentDetailsSection.Deals.rawValue:
             let cell = tableView.dequeueReusableCell(withIdentifier: "DealsTVCell", for: indexPath) as! DealsTVCell
@@ -572,19 +602,32 @@ extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
                     //}
                 } else {
                     let menu = self.menuList[itemSectionIndex]
-                    let item = menu.itemList[indexPath.row]
-                    if menu.submenu == "Yes1" {
-                        let cell = tableView.dequeueReusableCell(withIdentifier: "ItemHeadingTVCell", for: indexPath) as! ItemHeadingTVCell
+                    if menu.submenu == "Yes" {
+
+                        let cell = tableView.dequeueReusableCell(withIdentifier: "ItemTVCell", for: indexPath) as! ItemTVCell
+
                         cell.selectionStyle = .none
-                        cell.itemHeadingLbl.text = menu.subheading
-                        cell.backgroundColor = .gGray100
+                        cell.delegate = self
+                        cell.selectedIndex = indexPath
+
+                        // Flatten all submenu items
+                        let allItems = menu.submenuList?.flatMap { $0.itemList } ?? []
+
+                        let item = allItems[indexPath.row]
+
+                        cell.updateUI(itemlist: item)
+
+                        cell.dividerImage.isHidden = indexPath.row == allItems.count - 1
+
                         return cell
                     } else {
+                        let menu = self.menuList[itemSectionIndex]
+
                         let cell = tableView.dequeueReusableCell(withIdentifier: "ItemTVCell", for: indexPath) as! ItemTVCell
                         cell.selectionStyle = .none
                         cell.delegate = self
                         cell.selectedIndex = indexPath
-                            cell.updateUI(itemlist: item)
+                        cell.updateUI(itemlist: menu.itemList[indexPath.row])
                         cell.dividerImage.isHidden = false
                         if indexPath.row + 1 == self.menuList[itemSectionIndex].itemList.count {
                             cell.dividerImage.isHidden = true
@@ -610,9 +653,10 @@ extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         
         if section >= RestaurentDetailsSection.Items.rawValue {
-            if selectedMenuType == .deals || selectedMenuType == .dineIn {
+            if [.deals, .dineIn, .catering].contains(selectedMenuType) {
                 return 0
             }
+            /*
             if selectedMenuType == .catering {
 //                let sec = section - 5
 //                let item = self.cateringList[sec].heading
@@ -621,6 +665,7 @@ extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
 //                }
                 return self.filteredCateringList.count > 0 ? 50 : 0
             }
+            */
             return 50
     }
         return 0
@@ -649,9 +694,9 @@ extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
             else {
                 headerView.headingLbl.text = self.menuList[sec].heading
             }
-           // headerView.headingLbl.textColor = .black
+            headerView.headingLbl.textColor = .black
 
-            headerView.headingLbl.textColor = self.menuList[sec].submenu == "No" ? .black : .gSkyBlue
+           // headerView.headingLbl.textColor = self.menuList[sec].submenu == "No" ? .black : .gSkyBlue
             headerView.headerViewBckground.backgroundColor = UIColor.gGray100
             
 
@@ -713,7 +758,7 @@ extension RestDetailsVC: GalleryDelegate {
     func selectedGalleryView() {
         let vc = self.viewController(viewController: RestImageGalleryVC.self, storyName: StoryName.Main.rawValue) as! RestImageGalleryVC
 
-      //  vc.galleryImages = self.restDetailsData?.gallery
+        vc.galleryImages = self.galleryImages
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
@@ -747,7 +792,7 @@ extension RestDetailsVC: UICollectionViewDelegate,UICollectionViewDataSource{
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if selectedMenuType == .catering {
-            return self.allCateringList.count
+            return 0//self.allCateringList.count
         }
         return self.allMenuList.count
 
@@ -812,16 +857,18 @@ extension RestDetailsVC: MenuTypeSelectedDelegate {
         restaurantTable.reloadData()
         menuHeadingCollection.reloadData()
         if menuType == .dineIn && isReservationAvailable {
+            self.selectedMenuType = .menu
+            self.restaurantTable.reloadData()
+            loadURLSafari(dineUrl: "\(self.restDetailsData?.dineUrl ?? "")/\(APPDELEGATE.userResponse?.customer.customerId ?? "")")
+            /*
             let story = UIStoryboard.init(name: "OrderFlow", bundle: nil)
             let popupVC = story.instantiateViewController(withIdentifier: "DineInVC") as! DineInVC
-           // popupVC.modalPresentationStyle = .overCurrentContext
-           // popupVC.modalTransitionStyle = .crossDissolve
-           // popupVC.delegate = self
-          //  self.present(popupVC, animated: true)
-            popupVC.dineUrl = self.restDetailsData?.dineUrl ?? ""
+          print("DineIn url: \(self.restDetailsData?.dineUrl ?? "")/\(APPDELEGATE.userResponse?.customer.customerId ?? "")")
+            popupVC.dineUrl = "\(self.restDetailsData?.dineUrl ?? "")/\(APPDELEGATE.userResponse?.customer.customerId ?? "")"
             self.selectedMenuType = .menu
             self.restaurantTable.reloadData()
             self.navigationController?.pushViewController(popupVC, animated: true)
+            */
         }
     }
 }

@@ -87,6 +87,8 @@ class LocationVC: UIViewController {
         }
     }
     func getAddressLatlongFromApi(text: String) {
+        self.fromGoogle(text: text)
+        /*
         UtilsClass.getAddressDetails(from: text) { address in
             guard let address = address else {
                 self.fromGoogle(text: text)
@@ -101,6 +103,7 @@ class LocationVC: UIViewController {
             }
             UtilsClass.saveAddress(address: SavedAddressInDB(address: text, date: Date()))
         }
+        */
         
     }
     func fromGoogle(text: String) {
@@ -174,7 +177,10 @@ extension LocationVC: UITableViewDelegate, UITableViewDataSource {
             }
             getAddressLatlongFromApi(text: addressList[indexPath.row].description ?? "")
         } else {
-            getAddressLatlongFromApi(text: recentAddress[indexPath.row - 1].address)
+            let index = indexPath.row - 1
+            if index >= 0 {
+                getAddressLatlongFromApi(text: recentAddress[index].address)
+            }
         }
     }
 //    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

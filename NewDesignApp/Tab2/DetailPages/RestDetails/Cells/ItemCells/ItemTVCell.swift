@@ -86,7 +86,7 @@ class ItemTVCell: UITableViewCell {
         }
         */
         
-        let url = ""//"\(ServiceType.imageUrl)\(itemlist?. ?? "")"
+        let url = itemlist.itemImage
         AF.request( url,method: .get).response{ response in
             switch response.result {
             case .success(let responseData):

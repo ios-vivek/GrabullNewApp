@@ -28,11 +28,12 @@ class OrderDetailVC: UIViewController {
         subTotalLbl.text = "\(UtilsClass.getCurrencySymbol())\(hOrder.subtotal)"
         taxLbl.text = "\(UtilsClass.getCurrencySymbol())\(hOrder.taxC)"
         tipLbl.text = "\(UtilsClass.getCurrencySymbol())\(hOrder.tips)"
-        //rewardLbl.text = "\(UtilsClass.getCurrencySymbol())\(hOrder.reward)"
+        rewardLbl.text = "\(UtilsClass.getCurrencySymbol())\(hOrder.reward)"
         totalLbl.text = "\(UtilsClass.getCurrencySymbol())\(hOrder.total)"
         tip2Lbl.text = "\(UtilsClass.getCurrencySymbol())\(hOrder.tips2)"
-        customerNameLbl.text = "Name: \(hOrder.resturant)"
-       // custPhoneLbl.text = "Mobile: \(hOrder.mobile)"
+        customerNameLbl.text = "Name: \(hOrder.name)"
+        custPhoneLbl.text = "Mobile: \(hOrder.phone)"
+        orderTblView.backgroundColor = .white
 
 
     }
@@ -43,7 +44,7 @@ class OrderDetailVC: UIViewController {
 }
 extension OrderDetailVC: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
+        return 3
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 1 {
@@ -64,29 +65,30 @@ extension OrderDetailVC: UITableViewDelegate, UITableViewDataSource {
             cell.updateUI(order: hOrder)
             return cell
         }
-        if indexPath.section == 1 {
+        else if indexPath.section == 1 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "DeliveryAddressTVCell", for: indexPath) as! DeliveryAddressTVCell
             cell.selectionStyle = .none
             cell.backgroundColor = .white
             cell.updateUI(order: hOrder)
             return cell
         }
-        if indexPath.section == 2 {
+        else if indexPath.section == 2 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "OrderItemsTVCell", for: indexPath) as! OrderItemsTVCell
             cell.selectionStyle = .none
             cell.backgroundColor = .white
             if indexPath.row == 0 {
                 cell.updateUIHeading()
             } else {
-                //cell.updateUI(item: hOrder.orderItems[indexPath.row - 1])
+                cell.updateUI(item: hOrder.orderItems[indexPath.row - 1])
             }
             return cell
+        } else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "OrderItemsTVCell", for: indexPath) as! OrderItemsTVCell
+            cell.selectionStyle = .none
+            cell.backgroundColor = .white
+            
+            return cell
         }
-        let cell = tableView.dequeueReusableCell(withIdentifier: "OrderItemsTVCell", for: indexPath) as! OrderItemsTVCell
-        cell.selectionStyle = .none
-        cell.backgroundColor = .white
-        
-        return cell
     }
 //    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
 //        return 170

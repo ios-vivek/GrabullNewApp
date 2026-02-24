@@ -6,25 +6,43 @@
 //
 
 import Foundation
-struct DineInHistoryResponse: Codable {
-    let result: String?
-    let status: String?
-    var dinein: [DineInOrder]
-}
-struct DineInOrder: Codable {
-    let booking: String
-    let comment: String?
-    let date: String
-    let people: String
-    let restaurant: String
+
+struct BookingHistoryResponse: Codable {
     let status: String
+    let code: Int
+    let data: [BookingItem]
+    let error: String
+}
+struct BookingItem: Codable {
+    let booking: String
+    let status: String
+    let phone: String
+    let details: String
+    let occasion: String
+    let reply: String?
+    let restaurantName: String
+    let peopleCount: Int
+    let bookingRaw: String
+    let dateRaw: String
+    let date: String
+    let replyDate: String?
+    let email: String
+    let name: String
+    let payment: String
 }
 
 struct ReviewResponse: Codable {
+    let status: String
+    let code: Int
+    let data: ReviewData
+    let error: String
+}
+
+struct ReviewData: Codable {
     let comment: String?
     let date: String?
     let name: String?
-    let rating: String?
+    let rating: Float?
     let reply: String?
     let status: String?
 }

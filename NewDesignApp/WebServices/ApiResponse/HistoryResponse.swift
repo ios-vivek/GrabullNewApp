@@ -12,6 +12,19 @@ struct HisoryResponse: Codable {
        let code: Int
        let data: [OrderHistory]
 }
+
+struct HisoryAddress: Codable {
+    let streets: String
+    let address: String
+    let city: String
+    let state: String
+    let zip: String
+    let landmark: String
+    var fullAddress: String {
+        "\(streets), \(address), \(city), \(state), \(zip)"
+    }
+}
+
 struct OrderHistory: Codable {
     let order: String
         let resturantID: String
@@ -19,7 +32,8 @@ struct OrderHistory: Codable {
         let resturant: String
         let date: String
         let type: String
-        let deliveryAddress: [String]
+        let deliveryAddress: HisoryAddress?
+        let resturantAddress: String?
         let holdtime: String
         let holddate: String?
         let trackorder: String
@@ -42,7 +56,9 @@ struct OrderHistory: Codable {
 
         let details: String
         let orderItems: [OrderItem]
-        let addedItems: [String]
+        let addedItems: [OrderItem]
+    let recipientphone: String
+    let recipientname: String
 
         enum CodingKeys: String, CodingKey {
             case order
@@ -52,6 +68,7 @@ struct OrderHistory: Codable {
             case date
             case type
             case deliveryAddress
+            case resturantAddress
             case holdtime
             case holddate
             case trackorder
@@ -73,6 +90,8 @@ struct OrderHistory: Codable {
             case details
             case orderItems
             case addedItems
+            case recipientphone
+            case recipientname
         }
 }
 struct OrderItem: Codable {
@@ -243,8 +262,11 @@ struct CustList: Codable {
 struct SupportDetailResponse: Codable {
        let status: String
        let code: Int
-       let data: [ChatData]?
+       let data: ResultData?
        let error: String?
+}
+struct ResultData: Codable {
+       let result: [ChatData]?
 }
 struct ChatData: Codable {
     let id: String?

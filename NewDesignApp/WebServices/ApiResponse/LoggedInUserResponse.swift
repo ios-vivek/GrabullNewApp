@@ -13,7 +13,7 @@ struct LoggedInUserResponse: Codable {
 }
 struct UserData: Codable {
    // let address: [UserAddress]?
-   // let coupons: String?
+    let stripeId: String?
     let customer_id: String?
     let email: String?
     let fname: String?

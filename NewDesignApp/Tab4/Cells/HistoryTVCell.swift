@@ -66,7 +66,7 @@ class HistoryTVCell: UITableViewCell {
         starRatingView.isHidden = true
         self.contentView.addSubview(starRatingView)
     }
-    func updateUI(order: OrderHistory) {
+    func ongoingUpdateUI(order: OrderHistory) {
     
        // starRatingView.rating = Float(order.rating ?? "0.0") ?? 0.0
         orderNoLbl.text = "Order #\(order.order)"
@@ -74,9 +74,35 @@ class HistoryTVCell: UITableViewCell {
         dateLbl.text = order.date
         dateLbl.attributedText = self.configureSplInstText(text1: "Order Time: ", text: "\(order.date)")
         if order.type == "Delivery" {
-            deliveryTypeLbl.attributedText = self.configureSplInstText(text1: "Delivered at: ", text: "\(order.deliveryAddress)")
+            deliveryTypeLbl.attributedText = self.configureSplInstText(text1: "Delivered at: ", text: "\(order.deliveryAddress?.fullAddress ?? "")")
         } else {
-            deliveryTypeLbl.attributedText = self.configureSplInstText(text1: "Pickup by: ", text: "\(order.name) 📞\("order.mobile")")
+            deliveryTypeLbl.attributedText = self.configureSplInstText(text1: "Pickup by: ", text: "\(order.name) 📞\(order.phone)")
+        }
+        if !order.orderItems.isEmpty {
+            qtyLbl.text = "\(order.orderItems[0].qty)"
+            itemNameLbl.text = "\(order.orderItems[0].item)"
+        }
+        
+        if order.status == "Picked Up" || order.status == "Delivered" {
+            rateBtn.isHidden = false
+            rateBtn.setTitle("Rate Order", for: .normal)
+        }
+        else {
+            rateBtn.isHidden = true
+        }
+        
+    }
+    func upComingUpdateUI(order: OrderHistory) {
+    
+       // starRatingView.rating = Float(order.rating ?? "0.0") ?? 0.0
+        orderNoLbl.text = "Order #\(order.order)"
+        priceLbl.text = "\(UtilsClass.getCurrencySymbol())\(order.total)"
+        dateLbl.text = order.date
+        dateLbl.attributedText = self.configureSplInstText(text1: "Order Time: ", text: "\(order.date)")
+        if order.type == "Delivery" {
+            deliveryTypeLbl.attributedText = self.configureSplInstText(text1: "Delivered at: ", text: "\(order.deliveryAddress?.fullAddress ?? "")")
+        } else {
+            deliveryTypeLbl.attributedText = self.configureSplInstText(text1: "Pickup by: ", text: "\(order.name) 📞\(order.phone)")
         }
         if !order.orderItems.isEmpty {
             qtyLbl.text = "\(order.orderItems[0].qty)"
@@ -84,6 +110,26 @@ class HistoryTVCell: UITableViewCell {
         }
         
     }
+    
+    func pastOrderUpdateUI(order: OrderHistory) {
+    
+       // starRatingView.rating = Float(order.rating ?? "0.0") ?? 0.0
+        orderNoLbl.text = "Order #\(order.order)"
+        priceLbl.text = "\(UtilsClass.getCurrencySymbol())\(order.total)"
+        dateLbl.text = order.date
+        dateLbl.attributedText = self.configureSplInstText(text1: "Order Time: ", text: "\(order.date)")
+        if order.type == "Delivery" {
+            deliveryTypeLbl.attributedText = self.configureSplInstText(text1: "Delivered at: ", text: "\(order.deliveryAddress?.fullAddress ?? "")")
+        } else {
+            deliveryTypeLbl.attributedText = self.configureSplInstText(text1: "Pickup by: ", text: "\(order.name) 📞\(order.phone)")
+        }
+        if !order.orderItems.isEmpty {
+            qtyLbl.text = "\(order.orderItems[0].qty)"
+            itemNameLbl.text = "\(order.orderItems[0].item)"
+        }
+        
+    }
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 

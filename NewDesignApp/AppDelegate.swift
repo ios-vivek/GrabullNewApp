@@ -13,6 +13,7 @@ import UIKit
 import CoreLocation
 import IQKeyboardManagerSwift
 import UserNotifications
+import Stripe
 
 let APPDELEGATE = UIApplication.shared.delegate as! AppDelegate
 
@@ -36,9 +37,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-       // IQKeyboardManager.shared.enable = true
-        IQKeyboardManager.shared.enableAutoToolbar = true
+        StripeAPI.defaultPublishableKey = "pk_test_51MBnMwI2xj9owfknjowsJGrw7fB1UdeSyAZIYqORBT7EgTY0wRP6fLb4hajFcE0ehOGIQQXTqc618DOaZQ8P0chT00Ut2oqKvN"
+        IQKeyboardManager.shared.isEnabled = true
         IQKeyboardManager.shared.resignOnTouchOutside = true
+        IQKeyboardManager.shared.enableAutoToolbar = true
 
         setupLoactionManager()
         UtilsClass.getuserDetails()
@@ -328,6 +330,7 @@ extension UIApplication {
 
 import UIKit
 extension UIDevice {
+
     static var modelIdentifier: String {
         var systemInfo = utsname()
         uname(&systemInfo)
@@ -338,30 +341,47 @@ extension UIDevice {
             return identifier + String(UnicodeScalar(UInt8(value)))
         }
     }
-    
+
+
     static var modelName: String {
-        let identifier = modelIdentifier
 
-        switch identifier {
+        switch modelIdentifier {
 
-        // iPhone
+        // MARK: iPhone 14
         case "iPhone14,7": return "iPhone 14"
         case "iPhone14,8": return "iPhone 14 Plus"
         case "iPhone15,2": return "iPhone 14 Pro"
         case "iPhone15,3": return "iPhone 14 Pro Max"
 
+
+        // MARK: iPhone 15
         case "iPhone15,4": return "iPhone 15"
         case "iPhone15,5": return "iPhone 15 Plus"
         case "iPhone16,1": return "iPhone 15 Pro"
         case "iPhone16,2": return "iPhone 15 Pro Max"
 
-        // Simulator
+
+        // MARK: iPhone 16 (LATEST)
+        case "iPhone17,1": return "iPhone 16"
+        case "iPhone17,2": return "iPhone 16 Plus"
+        case "iPhone17,3": return "iPhone 16 Pro"
+        case "iPhone17,4": return "iPhone 16 Pro Max"
+
+
+        // MARK: iPhone SE
+        case "iPhone14,6": return "iPhone SE (3rd Gen)"
+
+
+        // MARK: Simulator
         case "i386", "x86_64", "arm64":
-            return "Simulator (\(ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"] ?? "Unknown"))"
+
+            let simulator = ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"] ?? "Unknown"
+
+            return "Simulator (\(simulator))"
+
 
         default:
-            return identifier
+            return modelIdentifier
         }
     }
 }
-

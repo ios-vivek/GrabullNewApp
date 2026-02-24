@@ -135,11 +135,12 @@ let montharr = ["01","02","03","04","05","06","07","08","09","10","11","12"]
         UtilsClass.showProgressHud(view: self.view)
         WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.pastOrder, forModelType: HisoryResponse.self) { success in
             UtilsClass.hideProgressHud(view: self.view)
-           // self.historyList = success.data.data
+            self.historyList = success.data.data
             self.historyTblView.reloadData()
             self.noDataFoundRefersh()
             self.noDataFoundLbl.text = self.historyList.count != 0 ? "" : "You don't have any order history in \(selectedMonth)."
             self.emptyView.isHidden = self.historyList.count != 0 ? true : false
+            self.historyTblView.isHidden = !self.emptyView.isHidden
             
         } ErrorHandler: { error in
             UtilsClass.hideProgressHud(view: self.view)
@@ -147,6 +148,7 @@ let montharr = ["01","02","03","04","05","06","07","08","09","10","11","12"]
             self.historyTblView.reloadData()
             self.noDataFoundLbl.text = "You don't have any past orders."
             self.emptyView.isHidden = false
+            self.historyTblView.isHidden = !self.emptyView.isHidden
         }
     }
     
@@ -231,6 +233,7 @@ let montharr = ["01","02","03","04","05","06","07","08","09","10","11","12"]
         popupVC.modalPresentationStyle = .overCurrentContext
         popupVC.modalTransitionStyle = .crossDissolve
         popupVC.orderID = historyList[getTag].order
+        popupVC.restID = historyList[getTag].resturantID
         self.present(popupVC, animated: true)
     }
     
@@ -252,7 +255,7 @@ let montharr = ["01","02","03","04","05","06","07","08","09","10","11","12"]
             UtilsClass.hideProgressHud(view: self.view)
             let story = UIStoryboard.init(name: "OrderFlow", bundle: nil)
             let vc = story.instantiateViewController(withIdentifier: "RestDetailsVC") as! RestDetailsVC
-          //  vc.restDetailsData = success.data.restaurant
+            vc.restDetailsData = success.data.data.toCustomModel()
             self.navigationController?.pushViewController(vc, animated: true)
             
         } ErrorHandler: { error in
@@ -292,7 +295,7 @@ extension PastHistoryVC: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "HistoryTVCell", for: indexPath) as! HistoryTVCell
             cell.selectionStyle = .none
             cell.backgroundColor = .clear
-            cell.updateUI(order: historyList[indexPath.row])
+            cell.pastOrderUpdateUI(order: historyList[indexPath.row])
             cell.rateBtn.tag = indexPath.row
             cell.rateBtn.addTarget(self, action: #selector(ratingAction), for: .touchUpInside)
             cell.reOrderBtn.tag = indexPath.row
@@ -301,7 +304,7 @@ extension PastHistoryVC: UITableViewDelegate, UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
             let vc = self.viewController(viewController: OrderDetailVC.self, storyName: StoryName.History.rawValue) as! OrderDetailVC
-            vc.hOrder = historyList[indexPath.section]
+            vc.hOrder = historyList[indexPath.row]
             self.navigationController?.pushViewController(vc, animated: true)
     }
 }

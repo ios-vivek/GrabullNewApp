@@ -51,6 +51,7 @@ class ItemSizeSelectionPopupVC: UIViewController {
         // Do any additional setup after loading the view.
         instructionTxtView.backgroundColor = .white
         instructionTxtView.textColor = .black
+        instructionTxtView.delegate = self
         instructionPlaceholderLbl.isHidden = false
         instructionTxtView.layer.masksToBounds = true
         instructionTxtView.layer.cornerRadius = 10
@@ -95,7 +96,9 @@ class ItemSizeSelectionPopupVC: UIViewController {
         }
         */
         self.setAmountValue()
-        getToppingFromApi()
+        //if !itemData.topping.isEmpty {
+            getToppingFromApi()
+       // }
         customQtySetup()
 
     }
@@ -283,9 +286,10 @@ extension ItemSizeSelectionPopupVC: UITableViewDelegate, UITableViewDataSource {
             cell.selectionStyle = .none
         cell.backgroundColor = .clear
         if indexPath.section == 0 {
-            cell.sizeNameLbl.text = Cart.shared.getAllSizes(menu: restmenu, item: itemData, isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType))[indexPath.row].name
-            cell.priceLbl.text = "\(UtilsClass.getCurrencySymbol())\(Cart.shared.getAllSizes(menu: restmenu, item: itemData, isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType))[indexPath.row].price)"
-            cell.updateUIForSelectSize(indexPath: indexPath, sizes: Cart.shared.getAllSizes(menu: restmenu, item: itemData, isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType)), selectedSize: selectedSize)
+            let itemSizes = Cart.shared.getAllSizes(menu: restmenu, item: itemData, isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType))
+            cell.sizeNameLbl.text = itemSizes[indexPath.row].name
+            cell.priceLbl.attributedText = cell.priceServeAttributedText(price: "\(UtilsClass.getCurrencySymbol())\(itemSizes[indexPath.row].price) ", serve: "\(itemSizes[indexPath.row].serveTray)")
+            cell.updateUIForSelectSize(indexPath: indexPath, sizes: itemSizes, selectedSize: selectedSize)
         }
         else if indexPath.section > 0 {
             if selectedSize >= 0 {
@@ -364,6 +368,13 @@ extension ItemSizeSelectionPopupVC: UITableViewDelegate, UITableViewDataSource {
         
 }
 extension ItemSizeSelectionPopupVC: UITextViewDelegate { //If your class is not conforms to the UITextViewDelegate protocol you will not be able to set it as delegate to UITextView
+
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        let currentText = textView.text ?? ""
+        guard let stringRange = Range(range, in: currentText) else { return true }
+        let updatedText = currentText.replacingCharacters(in: stringRange, with: text)
+        return updatedText.count <= 60
+    }
 
     func textViewDidChange(_ textView: UITextView) {
         //Handle the text changes here

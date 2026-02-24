@@ -70,7 +70,7 @@ class UpcomingHistoryVC: UIViewController {
         let parameters = CommonAPIParams.base()
         
         UtilsClass.showProgressHud(view: self.view)
-        WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.ongoingOrder, forModelType: HisoryResponse.self) { success in
+        WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.upcomingOrder, forModelType: HisoryResponse.self) { success in
             UtilsClass.hideProgressHud(view: self.view)
             self.historyList = success.data.data
             self.historyTblView.reloadData()
@@ -107,7 +107,7 @@ class UpcomingHistoryVC: UIViewController {
                 UtilsClass.hideProgressHud(view: self.view)
                 let story = UIStoryboard.init(name: "OrderFlow", bundle: nil)
                 let vc = story.instantiateViewController(withIdentifier: "RestDetailsVC") as! RestDetailsVC
-              //  vc.restDetailsData = success.data.restaurant
+                vc.restDetailsData = success.data.data.toCustomModel()
                 self.navigationController?.pushViewController(vc, animated: true)
                 
             } ErrorHandler: { error in
@@ -139,16 +139,17 @@ extension UpcomingHistoryVC: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "HistoryTVCell", for: indexPath) as! HistoryTVCell
             cell.selectionStyle = .none
             cell.backgroundColor = .clear
-            cell.updateUI(order: historyList[indexPath.row])
+            cell.upComingUpdateUI(order: historyList[indexPath.row])
             cell.rateBtn.tag = indexPath.row
             cell.rateBtn.addTarget(self, action: #selector(ratingAction), for: .touchUpInside)
             cell.reOrderBtn.tag = indexPath.row
             cell.reOrderBtn.addTarget(self, action: #selector(trackOrderAction), for: .touchUpInside)
+        cell.rateBtn.isHidden = true
             return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
             let vc = self.viewController(viewController: OrderDetailVC.self, storyName: StoryName.History.rawValue) as! OrderDetailVC
-            vc.hOrder = historyList[indexPath.section]
+            vc.hOrder = historyList[indexPath.row]
             self.navigationController?.pushViewController(vc, animated: true)
     }
 }

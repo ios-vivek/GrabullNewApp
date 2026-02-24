@@ -35,6 +35,7 @@ struct Restaurant: Codable {
     let img: String
     let imgUrl: String?
     let imgUrlM: String?
+    let dineUrl: String?
 
     let offer: [Offer]
     let offerIconsUrl: String?

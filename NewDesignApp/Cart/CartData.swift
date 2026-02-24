@@ -127,6 +127,12 @@ class Cart {
         instructionText = ""
         specialInstructionText = ""
     }
+    func resetTime(){
+        orderType = Cart.shared.orderType
+        let text = Cart.shared.orderType == .pickup ? "Pickup" : "Delivery"
+        selectedTime = SeletedTime.init(date: UtilsClass.getCurrentDateInString(date: Date()), time: "00:00:00", heading: "\(text) today ASAP")
+        orderDate = .ASAP
+    }
     func addInCart() {
         Cart.shared.restDetails = self.restDetails
 //        if self.itemData.completeMealList.count > 0 {
@@ -165,7 +171,7 @@ class Cart {
                     }
                 }
 //                if isExistItem && !isExistSize{
-//                    addedCartItems.cartLists[itemIndex].restItems[sizeIndex].
+//                                                                                   addedCartItems.cartLists[itemIndex].restItems[sizeIndex].
 //                    var acartLists = CartList(restItems: [oneCartItem])
 //                    let added = AddedCartItems(cartRestuarantID: self.restuarantID, cartLists: [acartLists])
 //                    self.addedCartItems = added
@@ -294,11 +300,12 @@ class Cart {
             guard minAmount <= subTotal else { continue }
 
             if offer.type == "$" {
-                discount = minAmount
-                offerType = "\(offer.discountValue ?? 0)$ Discount"
+                discount = offer.discountValue ?? 0.0
+                offerType = "Discount \(offer.discountValue ?? 0)$"
             } else if offer.type == "%" {
-                discount = (subTotal * minAmount) / 100
-                offerType = "\(offer.discountValue ?? 0)% Discount"
+                let value = offer.discountValue ?? 0.0
+                discount = (subTotal * value) / 100
+                offerType = "Discount \(offer.discountValue ?? 0.0)%"
             }
             
         }
@@ -340,7 +347,7 @@ class Cart {
         let tax = roundValue2Digit(
             value: (taxAbleSubtotal * Float(rest.tax)) / 100
         )
-        //print("-----Tax: \(tax), \nCon: \(con), \nService: \(serviceCharge), \ntaxable\(taxAbleSubtotal), \ndiscountedSubtotal: \(discountedSubTotal)")
+        print("-----Tax: \(tax), \nCon: \(con), \nService: \(serviceCharge), \ntaxable\(taxAbleSubtotal), \ndiscountedSubtotal: \(discountedSubTotal)")
         return (tax, con, serviceCharge)
     }
     
@@ -378,7 +385,7 @@ class Cart {
         let allTaxesAmount = calculateTaxConServices(rest: rest, discountedSubTotal: discountedSubTotal, taxAbleSubtotal: taxableSubTotal)
         let taxCalculation = roundValue2Digit(value: allTaxesAmount.tax + allTaxesAmount.con + allTaxesAmount.serviceCharge)
         
-        let total = (subTotal + taxCalculation) - offerDiscount.discount
+        let total = (subTotal + taxCalculation + deliveryCharge) - offerDiscount.discount
 
         return CheckoutPrice(
             subTotal: subTotal,
@@ -507,19 +514,19 @@ class Cart {
           //  }
         }
         if item.smp > 0 {
-            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.sm)", price: "\(item.smp.to2Decimal())", itemQty: item.minQty, sizeKey: "sm", isCatering: isCatering))
+            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.sm)", price: "\(item.smp.to2Decimal())", itemQty: item.minQty, sizeKey: "sm", isCatering: isCatering, serveTray: "\(item.tray == "Yes" ? "(serves \(item.traysm))" : "")"))
         }
         if item.mdp > 0 {
-            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.md)", price: "\(item.mdp.to2Decimal())", itemQty: item.minQty, sizeKey: "md", isCatering: isCatering))
+            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.md)", price: "\(item.mdp.to2Decimal())", itemQty: item.minQty, sizeKey: "md", isCatering: isCatering, serveTray: "\(item.tray == "Yes" ? "(serves \(item.traymd))" : "")"))
         }
         if item.lgp > 0 {
-            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.lg)", price: "\(item.lgp.to2Decimal())", itemQty: item.minQty, sizeKey: "lg", isCatering: isCatering))
+            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.lg)", price: "\(item.lgp.to2Decimal())", itemQty: item.minQty, sizeKey: "lg", isCatering: isCatering, serveTray: "\(item.tray == "Yes" ? "(serves \(item.traylg))" : "")"))
         }
         if item.exp > 0 {
-            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.ex)", price: "\(item.exp.to2Decimal())", itemQty: item.minQty, sizeKey: "ex", isCatering: isCatering))
+            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.ex)", price: "\(item.exp.to2Decimal())", itemQty: item.minQty, sizeKey: "ex", isCatering: isCatering, serveTray: "\(item.tray == "Yes" ? "(serves \(item.trayex))" : "")"))
         }
         if item.xlp > 0 {
-            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.xl)", price: "\(item.xlp.to2Decimal())", itemQty: item.minQty, sizeKey: "xl", isCatering: isCatering))
+            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.xl)", price: "\(item.xlp.to2Decimal())", itemQty: item.minQty, sizeKey: "xl", isCatering: isCatering, serveTray: "\(item.tray == "Yes" ? "(serves \(item.trayxl))" : "")"))
         }
         
         return arr

@@ -24,8 +24,6 @@ class CartVC: UIViewController {
     var isOpen = false
     override func viewDidLoad() {
         super.viewDidLoad()
-       // let seletedTime = SeletedTime.init(date: UtilsClass.getCurrentDateInString(date: Date()), time: "00:00 am", heading: "Pickup today ASAP")
-       // Cart.shared.selectedTime = seletedTime
         var fullText = "Order"
         var firstPart = "Order"
         var secondPart = ""
@@ -34,17 +32,16 @@ class CartVC: UIViewController {
             firstPart = ""
             fullText = "\(Cart.shared.restDetails.name)"
             secondPart = "\(Cart.shared.restDetails.name)"
-            /*
-            let deliveryZipsArray = Cart.shared.restDetails.deliveryzip.components(separatedBy: ",")
+            
             if Cart.shared.userAddress == nil && APPDELEGATE.userLoggedIn(){
-                for address in APPDELEGATE.userResponse!.customer.address! {
-                    if deliveryZipsArray.contains(address.zip) {
+                for address in APPDELEGATE.userResponse!.customer.address {
+                    if APPDELEGATE.selectedLocationAddress.zipcode == address.zip {
                         Cart.shared.userAddress = address
                         break
                     }
                 }
             }
-            */
+            
         }
         
         let attributedString = NSMutableAttributedString(string: fullText)
@@ -126,54 +123,51 @@ class CartVC: UIViewController {
         self.cartTableView.reloadData()
     }
     func getAllItemsForNextVCDisplay() {
-        allDisplayItems = [CustMenuCategory]()
-       // print("Cart.shared.cartData--\(Cart.shared.cartData)")
-        for item in Cart.shared.cartData {
-           // print("allMenuList--\(allMenuList.count)")
-            if Cart.shared.tempAllRestmenu.count > 0 {
-                for menuItem in Cart.shared.tempAllRestmenu {
-                   // print("menuItem.submenu--\(menuItem.submenu)")
-//                    if menuItem.submenu == "No" {
-//                        for itemData in menuItem.itemList {
-//                            self.addItemInCompleteMeal(menuItem: menuItem, item: item, itemData: itemData)
-//                        }
-//                    } else {
-                        for itemData in menuItem.itemList {
-                            self.addItemInCompleteMeal(menuItem: menuItem, item: item, itemData: itemData)
-                        }
-                    //}
-                }
-            }
-        }
-        removeItemFromCompleteMealList()
-       
-    }
+
+           allDisplayItems = []
+
+           for cartItem in Cart.shared.cartData {
+
+               for menu in Cart.shared.tempAllRestmenu {
+
+                   for itemData in menu.allItems {
+
+                       addItemInCompleteMeal(
+                           menuItem: menu,
+                           item: cartItem,
+                           itemData: itemData
+                       )
+                   }
+               }
+           }
+
+           removeItemFromCompleteMealList()
+       }
     func addItemInCompleteMeal(
         menuItem: CustMenuCategory,
         item: CartItemList,
         itemData: MenuItem
     ) {
-//print("itemid in cart: \(itemData.id)")
-      //  print("itemid in cart: \(Cart.shared.restDetails.completeMeal)")
+
         guard
             item.restItem.completeMeal == 1,
             Cart.shared.restDetails.completeMeal.contains(itemData.id)
         else { return }
 
-        // Avoid duplicates
+
+        // ✅ check duplicate using itemData.id
         let alreadyExists = allDisplayItems.contains {
             $0.itemList.first?.id == itemData.id
         }
 
         guard !alreadyExists else { return }
 
+
+        // ✅ FIX: ADD ONLY THIS ITEM
         let menu = CustMenuCategory(
             id: menuItem.id,
-            heading: menuItem.heading,
-            subid: menuItem.subid,
-            subheading: menuItem.subheading,
-            submenu: menuItem.submenu,
-            itemList: [itemData]
+            heading: menuItem.heading, submenu: menuItem.submenu,
+            itemList: [itemData], submenuList: menuItem.submenuList   // ⭐⭐⭐ MOST IMPORTANT FIX
         )
 
         allDisplayItems.append(menu)
@@ -217,9 +211,31 @@ class CartVC: UIViewController {
         popupVC.modalTransitionStyle = .crossDissolve
         self.present(popupVC, animated: true)
     }
-    @IBAction func proceedAction() {
+    func getMenuTypesFromItems()-> String {
+        var menuType = "Regular"
         if Cart.shared.orderType == .delivery {
-            checkDeliveryAvailability(restID: Cart.shared.restDetails.rid, menuType: "Regular", address: Cart.shared.userAddress.fullAddress)
+            let types = Set(
+                Cart.shared.cartData.compactMap {
+                    $0.restItemSizes.first?.menuType
+                }
+            )
+
+            if types.contains("Menu") {
+                menuType = "Regular"
+            } else if types.contains("Catering") {
+                menuType = "Catering"
+            } else if types.contains("Deals") {
+                menuType = "Regular"
+            }
+        }
+        return menuType
+    }
+    @IBAction func proceedAction() {
+        let add = Cart.shared.userAddress.fullAddress
+       // let add = "2 Barnsley Rd, Lynnfield, MA 01940, USA"//Cart.shared.userAddress.fullAddress
+
+        if Cart.shared.orderType == .delivery {
+            checkDeliveryAvailability(restID: Cart.shared.restDetails.rid, menuType: getMenuTypesFromItems(), address: add)
         } else {
             contionueAction()
         }
@@ -285,9 +301,10 @@ class CartVC: UIViewController {
                 showAlert(title: "Out of Delivery Area", msg: "\(data.data?.message ?? "Out of Delivery Area")")
             }
             
-        } ErrorHandler: { [weak self] _ in
-            guard let self = self else { return }
+        } ErrorHandler: { error in
+           // guard let self = self else { return }
             UtilsClass.hideProgressHud(view: self.view)
+            self.showAlert(title: "Out of Delivery Area", msg: "\(error)")
         }
     }
     
@@ -450,7 +467,7 @@ extension CartVC: UITableViewDelegate, UITableViewDataSource{
                 }else {
                     cell.headingLbl.text = "Delivery At:"
                     let address = Cart.shared.userAddress
-                    add = "\(address!.add1) \(address!.add2), \(address!.city), \(address!.state), \(address!.zip)"
+                    add = "\(address!.add1 ?? "") \(address!.add2 ?? ""), \(address!.city ?? ""), \(address!.state ?? ""), \(address!.zip ?? "")"
                     cell.changeAddressBtn.isHidden = false
                     cell.changePhoneBtn.isHidden = false
                     cell.phoneLbl.text = "Phone: \(APPDELEGATE.userResponse?.customer.phone ?? "")"
@@ -641,9 +658,10 @@ extension CartVC: ItemDetailsDelegate {
 }
 extension CartVC: OpenItemDetailDelegate {
     func addItemInList(index: IndexPath) {
+        let menu = completeItemList[index.section]
         let newItem = completeItemList[index.section].itemList[index.row]
         Cart.shared.itemData = newItem
-        var newSize = Cart.shared.getAllSizes(menu: Cart.shared.tempRestmenu, item: newItem, isCatering: false, menuType: "")[0]
+        var newSize = Cart.shared.getAllSizes(menu: menu, item: newItem, isCatering: false, menuType: "")[0]
             newSize.itemQty = 1
             Cart.shared.itemSizes = [Sizes]()
             Cart.shared.itemSizes.append(newSize)

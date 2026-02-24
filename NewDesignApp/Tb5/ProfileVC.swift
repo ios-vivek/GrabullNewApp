@@ -14,7 +14,7 @@ protocol LoginSuccessDelegate: AnyObject {
 enum ProfileItem: String, CaseIterable {
     case profileDetails = "Profile Details"
     case myaddress = "Address"
-    case payments = "Payments"
+   // case payments = "Payments"
     case orders = "Order History"
     case changePassword = "Change Password"
     case notifications = "Notifications"
@@ -41,7 +41,7 @@ class ProfileVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view.backgroundColor = .white
-        tbl.backgroundColor  = .clear
+        tbl.backgroundColor  = .white
         checkedForTblScroll()
         NotificationCenter.default.addObserver(self, selector: #selector(self.methodOfReceivedNotification(notification:)), name: Notification.Name("pushnotificationaccount"), object: nil)
     }
@@ -191,9 +191,9 @@ extension ProfileVC: UITableViewDelegate, UITableViewDataSource {
             case .myaddress:
                 let vc = self.viewController(viewController: AddressVC.self, storyName: StoryName.Profile.rawValue) as! AddressVC
                 self.navigationController?.pushViewController(vc, animated: true)
-            case .payments:
-                let vc = self.viewController(viewController: PaymentVC.self, storyName: StoryName.Profile.rawValue) as! PaymentVC
-                self.navigationController?.pushViewController(vc, animated: true)
+//            case .payments:
+//                let vc = self.viewController(viewController: PaymentVC.self, storyName: StoryName.Profile.rawValue) as! PaymentVC
+//                self.navigationController?.pushViewController(vc, animated: true)
             case .orders:
                 let history = UIStoryboard(name: "History", bundle: nil)
                 let historyVC = history.instantiateViewController(withIdentifier: "HistoryHomeVC") as! HistoryHomeVC
