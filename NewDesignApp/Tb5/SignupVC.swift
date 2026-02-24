@@ -34,6 +34,16 @@ class SignupVC: UIViewController {
         phoneFld.setPlaceHolderColor(.gGray200)
         passwordFld.setPlaceHolderColor(.gGray200)
         confirmPassFld.setPlaceHolderColor(.gGray200)
+        
+        passwordFld.isSecureTextEntry = true
+        passwordFld.textContentType = .oneTimeCode
+        passwordFld.autocorrectionType = .no
+        passwordFld.spellCheckingType = .no
+        
+        confirmPassFld.isSecureTextEntry = true
+        confirmPassFld.textContentType = .oneTimeCode
+        confirmPassFld.autocorrectionType = .no
+        confirmPassFld.spellCheckingType = .no
 
     }
     @IBAction func backAction() {
@@ -85,18 +95,12 @@ class SignupVC: UIViewController {
         UtilsClass.showProgressHud(view: self.view)
         WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.getSignup, forModelType: LoginResponse.self) { success in
             UtilsClass.hideProgressHud(view: self.view)
-            let alertController = UIAlertController(title: "Success", message: "You are successfully registered.", preferredStyle: .alert)
-            let OKAction = UIAlertAction(title: "Ok", style: .default) { action in
-                APPDELEGATE.userResponse = success.data.data
-                self.delegate?.signupCompleted()
-                self.navigationController?.popViewController(animated: true)
+            self.showToast(message: "You are successfully registered.", font: UIFont.systemFont(ofSize: 14))
+            APPDELEGATE.userResponse = success.data.data
+            UtilsClass.saveUserDetails()
+            self.delegate?.signupCompleted()
+            self.navigationController?.popViewController(animated: true)
 
-            }
-            alertController.addAction(OKAction)
-            OperationQueue.main.addOperation {
-                self.present(alertController, animated: true,
-                             completion:nil)
-            }
             
         } ErrorHandler: { error in
             UtilsClass.hideProgressHud(view: self.view)
