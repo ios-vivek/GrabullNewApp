@@ -66,13 +66,13 @@ struct RestDetailsRes: Codable {
        let tax: Double
        let conv: Int
        let gbconv: Int
-       let scharged: Double
-       let schargeo: Int
-       let schargev: Int
+       let scharged: Float
+       let schargeo: Float
+       let schargev: Float
 
        let stopToday: String
        let dineStop: String
-       let dineStopR: String
+       let dineStopR: Int
 
        let serviceFee: String
        let donateChange: String

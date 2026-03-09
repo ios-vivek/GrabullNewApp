@@ -231,7 +231,7 @@ class CartVC: UIViewController {
         return menuType
     }
     @IBAction func proceedAction() {
-        let add = Cart.shared.userAddress.fullAddress
+        let add = Cart.shared.userAddress?.fullAddress ?? ""
        // let add = "2 Barnsley Rd, Lynnfield, MA 01940, USA"//Cart.shared.userAddress.fullAddress
 
         if Cart.shared.orderType == .delivery {
