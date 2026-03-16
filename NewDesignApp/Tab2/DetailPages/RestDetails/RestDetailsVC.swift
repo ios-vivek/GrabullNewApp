@@ -263,12 +263,14 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
     }
     func getCateringData() {
         filteredCateringList = allCateringList
+        print(allCateringList.count)
         if selectedFiler >= 0 {
             let arr: [CustMenuCategory] = self.allCateringList.filter{ ($0.heading.contains(self.allCateringList[selectedFiler].heading)) }
             if arr.count > 0 {
                 filteredCateringList = arr
             }
         }
+        print(filteredCateringList.count)
         
     }
     @IBAction func allBtnAction() {
@@ -498,6 +500,7 @@ extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
         if menu.submenu == "Yes" {
             return menu.submenuList?.flatMap { $0.itemList }.count ?? 0
         }
+        print(menu.itemList.count)
         return menu.itemList.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -581,14 +584,23 @@ extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
                         cell.updateUI(msg: "No Catering Available order from Regular menu")
                         return cell
                     }
-                  let item = self.filteredCateringList[itemSectionIndex].itemList[indexPath.row]
-//                    if item.details == "InnerHeading" {
-//                        let cell = tableView.dequeueReusableCell(withIdentifier: "ItemHeadingTVCell", for: indexPath) as! ItemHeadingTVCell
-//                        cell.selectionStyle = .none
-//                        cell.itemHeadingLbl.text = item.heading
-//                        cell.backgroundColor = .gGray100
-//                        return cell
-//                    } else {
+                    //var item = MenuItem
+                    if self.filteredCateringList[itemSectionIndex].submenu == "Yes" {
+                        let menu = self.filteredCateringList[itemSectionIndex]
+                        let allItems = menu.submenuList?.flatMap { $0.itemList } ?? []
+                       // item = allItems[indexPath.row]
+                        let cell = tableView.dequeueReusableCell(withIdentifier: "ItemTVCell", for: indexPath) as! ItemTVCell
+                        cell.selectionStyle = .none
+                        cell.delegate = self
+                        cell.selectedIndex = indexPath
+                        cell.updateUI(itemlist: allItems[indexPath.row])
+                        cell.dividerImage.isHidden = false
+                        if indexPath.row + 1 == self.filteredCateringList[itemSectionIndex].itemList.count {
+                            cell.dividerImage.isHidden = true
+                        }
+                        return cell
+                    } else {
+                        let item = self.filteredCateringList[itemSectionIndex].itemList[indexPath.row]
                         let cell = tableView.dequeueReusableCell(withIdentifier: "ItemTVCell", for: indexPath) as! ItemTVCell
                         cell.selectionStyle = .none
                         cell.delegate = self
@@ -599,6 +611,24 @@ extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
                             cell.dividerImage.isHidden = true
                         }
                         return cell
+                    }
+//                    if item.details == "InnerHeading" {
+//                        let cell = tableView.dequeueReusableCell(withIdentifier: "ItemHeadingTVCell", for: indexPath) as! ItemHeadingTVCell
+//                        cell.selectionStyle = .none
+//                        cell.itemHeadingLbl.text = item.heading
+//                        cell.backgroundColor = .gGray100
+//                        return cell
+//                    } else {
+//                        let cell = tableView.dequeueReusableCell(withIdentifier: "ItemTVCell", for: indexPath) as! ItemTVCell
+//                        cell.selectionStyle = .none
+//                        cell.delegate = self
+//                        cell.selectedIndex = indexPath
+//                        cell.updateUI(itemlist: item)
+//                        cell.dividerImage.isHidden = false
+//                        if indexPath.row + 1 == self.filteredCateringList[itemSectionIndex].itemList.count {
+//                            cell.dividerImage.isHidden = true
+//                        }
+//                        return cell
                     //}
                 } else {
                     let menu = self.menuList[itemSectionIndex]
