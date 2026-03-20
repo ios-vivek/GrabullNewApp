@@ -320,7 +320,7 @@ extension ItemSizeSelectionPopupVC: UITableViewDelegate, UITableViewDataSource {
             let option = SelectedOption(opID: topping[indexPath.section - 1].optionList![indexPath.row].id, optionHeading: topping[indexPath.section - 1].optionList![indexPath.row].heading, price: Cart.shared.getOptionsPrice(option: topping[indexPath.section - 1].optionList![indexPath.row], sizes: selectedSize >= 0 ? Cart.shared.itemSizes[0] : nil))
             let toppingHeading = topping[indexPath.section - 1].heading
             let selectedOption = SelectedTopping(toppingHeading: toppingHeading, option: [option])
-           let msg = Cart.shared.addAndRemoveToppins(selectedTopping: selectedOption, maxCount: Int(topping[indexPath.section - 1].restChoice))
+           let msg = Cart.shared.addAndRemoveToppins(selectedTopping: selectedOption, maxCount: topping[indexPath.section - 1].choice)
             if msg.count > 0 {
                 self.showToast(message: msg, font: .systemFont(ofSize: 14.0))
             }
@@ -346,13 +346,12 @@ extension ItemSizeSelectionPopupVC: UITableViewDelegate, UITableViewDataSource {
             let sec = section - 1
             let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: "ItemHeaderView") as! ItemHeaderView
             var warningText = ""
-            /*
-            if let rq = self.topping[sec].r {
-                if rq > 0.0 {
-                    warningText = "Must Choose \(Int(rq))"
-                }
+            
+            let rq = self.topping[sec].required
+            if rq > 0 {
+                warningText = "Choose \(rq)"
             }
-            */
+            
             //headerView.headingLbl.text = "\(self.topping[sec].heading) \(warningText)"
             headerView.headingLbl.attributedText = UtilsClass.getOptionAttributedString(str1: self.topping[sec].heading, str2: " \(warningText)")
             headerView.headingLbl.textColor = .black

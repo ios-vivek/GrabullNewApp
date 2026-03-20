@@ -17,15 +17,12 @@ struct ToppingsResponse: Codable {
 struct RestToppingsResponse: Codable {
     let id: String
     let heading: String
-    let choice: String
+    let choice: Int
     let free: String?
   //  let charge: String
     let sides: String
-    let required: String
+    let required: Int
     let optionList: [RestOptionList]?
-    var restChoice: Int {
-      return Int(choice) ?? 0
-    }
 }
 struct RestOptionList: Codable {
     let id: String
