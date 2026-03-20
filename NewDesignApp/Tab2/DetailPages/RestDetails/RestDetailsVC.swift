@@ -530,7 +530,7 @@ extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
            // cell.cateringHide = self.restDetailsData?.ordertypes.contains("Catering") ?? false
             //cell.dineinHide = self.restDetailsData?.ordertypes.contains("Reservation") ?? false
             cell.updateUI(menuType: ["Menu", "Catering", "Deals", "DineIn"], selectedMenuType: selectedMenuType)
-           // cell.configMenu(isActiveCatering: self.restDetailsData?.ordertypes.contains("Catering") ?? false, isActiveDineIn: self.restDetailsData?.ordertypes.contains("Reservation") ?? false)
+            cell.configMenu(isActiveCatering: self.restDetailsData?.catering == "Yes" ? true : false, isActiveDineIn: self.restDetailsData?.dinein == "Yes" ? true : false)
             return cell
         case RestaurentDetailsSection.Menu.rawValue:
             let cell = tableView.dequeueReusableCell(withIdentifier: "FoodMenuTVCell", for: indexPath) as! FoodMenuTVCell
@@ -586,8 +586,17 @@ extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
                     }
                     //var item = MenuItem
                     if self.filteredCateringList[itemSectionIndex].submenu == "Yes" {
+                        
                         let menu = self.filteredCateringList[itemSectionIndex]
                         let allItems = menu.submenuList?.flatMap { $0.itemList } ?? []
+
+//                        if indexPath.row == 0 {
+//                                let cell = tableView.dequeueReusableCell(withIdentifier: "ItemHeadingTVCell", for: indexPath) as! ItemHeadingTVCell
+//                                cell.selectionStyle = .none
+//                            cell.itemHeadingLbl.text = allItems[indexPath.row].heading
+//                                cell.backgroundColor = .gGray100
+//                                return cell
+//                            }
                        // item = allItems[indexPath.row]
                         let cell = tableView.dequeueReusableCell(withIdentifier: "ItemTVCell", for: indexPath) as! ItemTVCell
                         cell.selectionStyle = .none

@@ -383,10 +383,19 @@
                                                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="yt3-8L-fCC">
                                                             <rect key="frame" x="20" y="0.0" width="353" height="35"/>
                                                             <subviews>
-                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6cG-ak-7eF">
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6cG-ak-7eF">
                                                                     <rect key="frame" x="35" y="7" width="143" height="21"/>
                                                                     <constraints>
-                                                                        <constraint firstAttribute="height" constant="21" id="YxV-uU-i7Y"/>
+                                                                        <constraint firstAttribute="height" priority="500" constant="21" id="YxV-uU-i7Y"/>
+                                                                    </constraints>
+                                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                                                    <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EGP-Sm-xJP">
+                                                                    <rect key="frame" x="35" y="7" width="278" height="21"/>
+                                                                    <constraints>
+                                                                        <constraint firstAttribute="height" priority="500" constant="21" id="xHp-r9-WpO"/>
                                                                     </constraints>
                                                                     <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                                     <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -425,9 +434,13 @@
                                                                 <constraint firstItem="ys8-ow-Z2a" firstAttribute="leading" secondItem="yt3-8L-fCC" secondAttribute="leading" constant="10" id="6hP-kS-RQS"/>
                                                                 <constraint firstItem="6cG-ak-7eF" firstAttribute="centerY" secondItem="yt3-8L-fCC" secondAttribute="centerY" id="FJ5-6D-1pf"/>
                                                                 <constraint firstAttribute="trailing" secondItem="dFo-bB-tOS" secondAttribute="trailing" constant="10" id="GL6-bX-5tV"/>
+                                                                <constraint firstAttribute="bottom" secondItem="EGP-Sm-xJP" secondAttribute="bottom" constant="7" id="UTX-sx-Fbi"/>
                                                                 <constraint firstItem="6aD-yZ-ZeE" firstAttribute="centerY" secondItem="yt3-8L-fCC" secondAttribute="centerY" id="bFV-03-CQn"/>
                                                                 <constraint firstItem="6aD-yZ-ZeE" firstAttribute="leading" secondItem="6cG-ak-7eF" secondAttribute="trailing" constant="10" id="bbx-8p-Bnp"/>
                                                                 <constraint firstItem="ys8-ow-Z2a" firstAttribute="centerY" secondItem="yt3-8L-fCC" secondAttribute="centerY" id="drN-lo-dPl"/>
+                                                                <constraint firstItem="dFo-bB-tOS" firstAttribute="leading" secondItem="EGP-Sm-xJP" secondAttribute="trailing" constant="10" id="hRi-Rl-JTg"/>
+                                                                <constraint firstItem="EGP-Sm-xJP" firstAttribute="top" secondItem="yt3-8L-fCC" secondAttribute="top" constant="7" id="lkQ-1o-o0S"/>
+                                                                <constraint firstItem="EGP-Sm-xJP" firstAttribute="leading" secondItem="ys8-ow-Z2a" secondAttribute="trailing" constant="10" id="lmZ-Yd-ThN"/>
                                                                 <constraint firstItem="6cG-ak-7eF" firstAttribute="leading" secondItem="ys8-ow-Z2a" secondAttribute="trailing" constant="10" id="pUE-i0-vwP"/>
                                                             </constraints>
                                                         </view>
@@ -445,6 +458,7 @@
                                                     <outlet property="roundView" destination="yt3-8L-fCC" id="THa-vu-Fo6"/>
                                                     <outlet property="selectedSizeImage" destination="dFo-bB-tOS" id="jW4-3G-WTF"/>
                                                     <outlet property="sizeNameLbl" destination="6cG-ak-7eF" id="td3-gY-6XZ"/>
+                                                    <outlet property="toppingNameLbl" destination="EGP-Sm-xJP" id="Rcz-QQ-Bx2"/>
                                                 </connections>
                                             </tableViewCell>
                                         </prototypes>
@@ -763,7 +777,7 @@
                                 <rect key="frame" x="0.0" y="94" width="393" height="722"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <view key="tableFooterView" contentMode="scaleToFill" id="GgQ-SI-J3U">
-                                    <rect key="frame" x="0.0" y="1181" width="393" height="44"/>
+                                    <rect key="frame" x="0.0" y="944" width="393" height="44"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </view>

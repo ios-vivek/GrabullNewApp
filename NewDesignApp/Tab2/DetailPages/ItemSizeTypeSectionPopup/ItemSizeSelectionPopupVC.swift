@@ -56,7 +56,7 @@ class ItemSizeSelectionPopupVC: UIViewController {
         instructionTxtView.layer.masksToBounds = true
         instructionTxtView.layer.cornerRadius = 10
         instructionTxtView.text = ""
-        itemSelectionTbl.register(UINib(nibName: "ItemHeaderView", bundle: nil), forHeaderFooterViewReuseIdentifier: "ItemHeaderView")
+        itemSelectionTbl.register(UINib(nibName: "OptionsHeaderView", bundle: nil), forHeaderFooterViewReuseIdentifier: "OptionsHeaderView")
         itemSelectionTbl.sectionHeaderTopPadding = 0
         self.view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
         addItemView.layer.cornerRadius = 10
@@ -336,7 +336,7 @@ extension ItemSizeSelectionPopupVC: UITableViewDelegate, UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         if section > 0 {
-            return 50
+            return 30
     }
             return 0
         
@@ -344,17 +344,15 @@ extension ItemSizeSelectionPopupVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if section > 0 {
             let sec = section - 1
-            let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: "ItemHeaderView") as! ItemHeaderView
+            let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: "OptionsHeaderView") as! OptionsHeaderView
             var warningText = ""
             
             let rq = self.topping[sec].required
             if rq > 0 {
                 warningText = "Choose \(rq)"
             }
-            
-            //headerView.headingLbl.text = "\(self.topping[sec].heading) \(warningText)"
+
             headerView.headingLbl.attributedText = UtilsClass.getOptionAttributedString(str1: self.topping[sec].heading, str2: " \(warningText)")
-            headerView.headingLbl.textColor = .black
             headerView.headerViewBckground.backgroundColor = UIColor.gGray100
             return headerView
     }

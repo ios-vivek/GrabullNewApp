@@ -60,6 +60,8 @@
 		E2442C742F1A5A5B0015085D /* RestaurantViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2442C732F1A5A5B0015085D /* RestaurantViewModel.swift */; };
 		E2442C782F1E6F670015085D /* ConfirmOrderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2442C772F1E6F670015085D /* ConfirmOrderViewModel.swift */; };
 		E2558BFC2E5DB7B20015818C /* TopPicksCVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2558BFB2E5DB7B20015818C /* TopPicksCVCell.swift */; };
+		E2609E402F7565C700AAF4A3 /* OptionsHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E2609E3F2F7565C700AAF4A3 /* OptionsHeaderView.xib */; };
+		E2609E412F7565C700AAF4A3 /* OptionsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2609E3E2F7565C700AAF4A3 /* OptionsHeaderView.swift */; };
 		E26503F82D117AC00036A984 /* DineInTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26503F72D117AC00036A984 /* DineInTVCell.swift */; };
 		E26503FA2D117E9C0036A984 /* DineInHistoryResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26503F92D117E9C0036A984 /* DineInHistoryResponse.swift */; };
 		E26503FE2D1304950036A984 /* SearchTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26503FD2D1304940036A984 /* SearchTVCell.swift */; };
@@ -280,6 +282,8 @@
 		E2442C732F1A5A5B0015085D /* RestaurantViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantViewModel.swift; sourceTree = "<group>"; };
 		E2442C772F1E6F670015085D /* ConfirmOrderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmOrderViewModel.swift; sourceTree = "<group>"; };
 		E2558BFB2E5DB7B20015818C /* TopPicksCVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopPicksCVCell.swift; sourceTree = "<group>"; };
+		E2609E3E2F7565C700AAF4A3 /* OptionsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsHeaderView.swift; sourceTree = "<group>"; };
+		E2609E3F2F7565C700AAF4A3 /* OptionsHeaderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = OptionsHeaderView.xib; sourceTree = "<group>"; };
 		E26503F72D117AC00036A984 /* DineInTVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DineInTVCell.swift; sourceTree = "<group>"; };
 		E26503F92D117E9C0036A984 /* DineInHistoryResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DineInHistoryResponse.swift; sourceTree = "<group>"; };
 		E26503FD2D1304940036A984 /* SearchTVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchTVCell.swift; sourceTree = "<group>"; };
@@ -858,6 +862,8 @@
 				E2928B132C7CB4CF007EAC25 /* RestImageGallery */,
 				E2B302F82CB6B4750087D416 /* ItemHeaderView.swift */,
 				E2B302FA2CB6B5710087D416 /* ItemHeaderView.xib */,
+				E2609E3E2F7565C700AAF4A3 /* OptionsHeaderView.swift */,
+				E2609E3F2F7565C700AAF4A3 /* OptionsHeaderView.xib */,
 			);
 			path = RestDetails;
 			sourceTree = "<group>";
@@ -1287,6 +1293,7 @@
 				E2BAD62C2CCA49540016810A /* confetti_food_log.json in Resources */,
 				E2BAD6242CC7EF510016810A /* search_location.json in Resources */,
 				E2BAD6322CCA6CE20016810A /* lottie_search_json.json in Resources */,
+				E2609E402F7565C700AAF4A3 /* OptionsHeaderView.xib in Resources */,
 				E2165D092C65F01700F344FE /* Profile.storyboard in Resources */,
 				E2BAD62B2CCA49540016810A /* adjustment_first_screen.json in Resources */,
 				E2165D0B2C65F03D00F344FE /* History.storyboard in Resources */,
@@ -1387,6 +1394,7 @@
 				E2DBFEDC2CFB27A500A8CB76 /* OrderDetailVC.swift in Sources */,
 				E241D4BE2DE5A8E000EEDB72 /* AsGiftVC.swift in Sources */,
 				E2D2191A2E55AE9900625626 /* SupportVC.swift in Sources */,
+				E2609E412F7565C700AAF4A3 /* OptionsHeaderView.swift in Sources */,
 				E2BAD6772CE74F690016810A /* ChooseAddressTVCell.swift in Sources */,
 				E268A94A2C66306100B8C417 /* BannerCVCell.swift in Sources */,
 				E2BAD65F2CDBBCF10016810A /* LoggedInUserResponse.swift in Sources */,

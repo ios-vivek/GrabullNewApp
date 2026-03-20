@@ -11,7 +11,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="ItemHeaderView" customModule="Grabull" customModuleProvider="target">
+        <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="OptionsHeaderView" customModule="Grabull" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="393" height="37"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
@@ -20,7 +20,7 @@
                     <color key="backgroundColor" name="lightGay100"/>
                 </view>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="35j-Kz-zTh">
-                    <rect key="frame" x="10" y="8" width="363" height="21"/>
+                    <rect key="frame" x="10" y="-2" width="363" height="21"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="21" id="S1k-Vv-fZE"/>
@@ -39,11 +39,11 @@
                 <constraint firstItem="xzh-Hk-Xhh" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="HjH-Qs-FaL"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="35j-Kz-zTh" secondAttribute="trailing" constant="20" id="Orq-2l-kq1"/>
                 <constraint firstItem="xzh-Hk-Xhh" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="WqL-mm-QrU"/>
-                <constraint firstItem="35j-Kz-zTh" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" id="cfw-kF-90B"/>
+                <constraint firstItem="35j-Kz-zTh" firstAttribute="centerY" secondItem="iN0-l3-epB" secondAttribute="centerY" constant="-10" id="cfw-kF-90B"/>
             </constraints>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
-                <outlet property="headerViewBckground" destination="xzh-Hk-Xhh" id="Iaw-Ym-UBF"/>
+                <outlet property="headerViewBckground" destination="xzh-Hk-Xhh" id="2kh-EC-dzj"/>
                 <outlet property="headingLbl" destination="35j-Kz-zTh" id="jxZ-iA-aKu"/>
             </connections>
             <point key="canvasLocation" x="-121.37404580152672" y="-207.3943661971831"/>
