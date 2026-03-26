@@ -348,8 +348,14 @@ extension ItemSizeSelectionPopupVC: UITableViewDelegate, UITableViewDataSource {
             var warningText = ""
             
             let rq = self.topping[sec].required
-            if rq > 0 {
+            let ch = self.topping[sec].choice
+            if rq > 0 && ch > 0 && rq == ch{
                 warningText = "Choose \(rq)"
+            }
+            else if rq > 0 {
+                warningText = "Choose atleast \(rq)"
+            } else {
+                warningText = ""
             }
 
             headerView.headingLbl.attributedText = UtilsClass.getOptionAttributedString(str1: self.topping[sec].heading, str2: " \(warningText)")
