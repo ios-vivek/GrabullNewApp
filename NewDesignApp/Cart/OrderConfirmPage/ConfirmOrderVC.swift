@@ -197,7 +197,9 @@ extension ConfirmOrderVC: UITableViewDelegate, UITableViewDataSource{
         case CellTypeSelected.SendAsGift.rawValue:
             return self.viewModel.orderAsGift == "Yes" ? 2 : 1
         case CellTypeSelected.Redeem.rawValue:
-            return self.viewModel.selectedPaymentType == 1 ? 0 : 1
+            if Float(viewModel.userRewardAmount) ?? 0.0 > 0.0 {
+                return self.viewModel.selectedPaymentType == 1 ? 0 : 1
+            } else {return 0}
 
         default:
             return 1
