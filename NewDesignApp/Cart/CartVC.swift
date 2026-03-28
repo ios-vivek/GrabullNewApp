@@ -81,6 +81,8 @@ class CartVC: UIViewController {
         Cart.shared.rewardAmount = 0.0
         Cart.shared.isTips = false
         Cart.shared.tipsAmount = 0.0
+        Cart.shared.isDonate = false
+        Cart.shared.donateAmount = 0.0
     }
    
     func getAddressesFromApi() {
