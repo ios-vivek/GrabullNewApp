@@ -69,7 +69,7 @@ class Cart {
     var orderNumber = ""
     var supportNumber = ""
     //var menuType = "Menu" //Catering / Menu
-    var tempRestmenu: CustMenuCategory!
+    var tempRestmenu: DisplaySection!
     var tempItemData: MenuItem!
     var tempAllRestmenu = [CustMenuCategory]()
     
@@ -385,7 +385,8 @@ class Cart {
         let allTaxesAmount = calculateTaxConServices(rest: rest, discountedSubTotal: discountedSubTotal, taxAbleSubtotal: taxableSubTotal)
         let taxCalculation = roundValue2Digit(value: allTaxesAmount.tax + allTaxesAmount.con + allTaxesAmount.serviceCharge)
         
-        let total = (subTotal + taxCalculation + deliveryCharge) - offerDiscount.discount
+        var total = (subTotal + taxCalculation + deliveryCharge) - offerDiscount.discount
+        total = Cart.shared.tipsAmount + Cart.shared.donateAmount + total
 
         return CheckoutPrice(
             subTotal: subTotal,
@@ -502,9 +503,9 @@ class Cart {
         
         return type
     }
-    func getAllSizes(menu: CustMenuCategory, item: MenuItem, isCatering: Bool, menuType: String) -> [Sizes] {
+    func getAllSizes(menu: DisplaySection, item: MenuItem, isCatering: Bool, menuType: String) -> [Sizes] {
         var arr = [Sizes]()
-        var heading: String = menu.heading
+        var heading: String = menu.parent
         if isCatering {
 //            if menu.submenu == "Yes" {
 //                let innerMenu = menu.menulist2![0]
@@ -514,19 +515,19 @@ class Cart {
           //  }
         }
         if item.smp > 0 {
-            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.sm)", price: "\(item.smp.to2Decimal())", itemQty: item.minQty, sizeKey: "sm", isCatering: isCatering, serveTray: "\(item.tray == "Yes" ? "(serves \(item.traysm))" : "")"))
+            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.parentID, name: "\(item.sm)", price: "\(item.smp.to2Decimal())", itemQty: item.minQty, sizeKey: "sm", isCatering: isCatering, serveTray: "\(item.tray == "Yes" ? "(serves \(item.traysm))" : "")"))
         }
         if item.mdp > 0 {
-            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.md)", price: "\(item.mdp.to2Decimal())", itemQty: item.minQty, sizeKey: "md", isCatering: isCatering, serveTray: "\(item.tray == "Yes" ? "(serves \(item.traymd))" : "")"))
+            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.parentID, name: "\(item.md)", price: "\(item.mdp.to2Decimal())", itemQty: item.minQty, sizeKey: "md", isCatering: isCatering, serveTray: "\(item.tray == "Yes" ? "(serves \(item.traymd))" : "")"))
         }
         if item.lgp > 0 {
-            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.lg)", price: "\(item.lgp.to2Decimal())", itemQty: item.minQty, sizeKey: "lg", isCatering: isCatering, serveTray: "\(item.tray == "Yes" ? "(serves \(item.traylg))" : "")"))
+            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.parentID, name: "\(item.lg)", price: "\(item.lgp.to2Decimal())", itemQty: item.minQty, sizeKey: "lg", isCatering: isCatering, serveTray: "\(item.tray == "Yes" ? "(serves \(item.traylg))" : "")"))
         }
         if item.exp > 0 {
-            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.ex)", price: "\(item.exp.to2Decimal())", itemQty: item.minQty, sizeKey: "ex", isCatering: isCatering, serveTray: "\(item.tray == "Yes" ? "(serves \(item.trayex))" : "")"))
+            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.parentID, name: "\(item.ex)", price: "\(item.exp.to2Decimal())", itemQty: item.minQty, sizeKey: "ex", isCatering: isCatering, serveTray: "\(item.tray == "Yes" ? "(serves \(item.trayex))" : "")"))
         }
         if item.xlp > 0 {
-            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.id, name: "\(item.xl)", price: "\(item.xlp.to2Decimal())", itemQty: item.minQty, sizeKey: "xl", isCatering: isCatering, serveTray: "\(item.tray == "Yes" ? "(serves \(item.trayxl))" : "")"))
+            arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.parentID, name: "\(item.xl)", price: "\(item.xlp.to2Decimal())", itemQty: item.minQty, sizeKey: "xl", isCatering: isCatering, serveTray: "\(item.tray == "Yes" ? "(serves \(item.trayxl))" : "")"))
         }
         
         return arr

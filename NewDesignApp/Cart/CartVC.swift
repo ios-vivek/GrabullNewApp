@@ -79,6 +79,8 @@ class CartVC: UIViewController {
         }
         Cart.shared.isReward = false
         Cart.shared.rewardAmount = 0.0
+        Cart.shared.isTips = false
+        Cart.shared.tipsAmount = 0.0
     }
    
     func getAddressesFromApi() {
@@ -660,8 +662,9 @@ extension CartVC: OpenItemDetailDelegate {
     func addItemInList(index: IndexPath) {
         let menu = completeItemList[index.section]
         let newItem = completeItemList[index.section].itemList[index.row]
+        let displaySection = DisplaySection.init(parentID: menu.id, parent: menu.heading, title: newItem.heading, items: [newItem])
         Cart.shared.itemData = newItem
-        var newSize = Cart.shared.getAllSizes(menu: menu, item: newItem, isCatering: false, menuType: "")[0]
+        var newSize = Cart.shared.getAllSizes(menu: displaySection, item: newItem, isCatering: false, menuType: "")[0]
             newSize.itemQty = 1
             Cart.shared.itemSizes = [Sizes]()
             Cart.shared.itemSizes.append(newSize)
@@ -671,6 +674,7 @@ extension CartVC: OpenItemDetailDelegate {
         Cart.shared.itemExtra = 0.0
         Cart.shared.addInCart()
         self.refreshView()
+        
     }
     
     func selectedItem(index: IndexPath) {

@@ -46,15 +46,7 @@ class FoodMenuTVCell: UITableViewCell {
             self.featuredCollection.scrollToItem(at:IndexPath(item: selectedFiler, section: 0), at: .right, animated: false)
         }
     }
-    func updateCategoryUI(restItemList: [CustMenuCategory], selectedmenuType: MenuType, selectedFiler : Int) {
-        self.selectedFiler = selectedFiler
-        cateringMenuList = restItemList
-        self.selectedmenuType = selectedmenuType
-        featuredCollection.reloadData()
-        if selectedFiler >= 0 {
-            self.featuredCollection.scrollToItem(at:IndexPath(item: selectedFiler, section: 0), at: .right, animated: false)
-        }
-    }
+
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 

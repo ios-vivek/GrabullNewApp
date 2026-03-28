@@ -445,6 +445,7 @@ class RestaurantVC: UIViewController {
             */
             vc.restDetailsData = customModel
             vc.restData = restData
+            vc.restDetailsRes = success.data.data
 //            ForEach(success.data.resolvedItems) { item in
 //                print("\(item.name ?? "")")
 //            }
