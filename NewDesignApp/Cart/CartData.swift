@@ -385,7 +385,8 @@ class Cart {
         let allTaxesAmount = calculateTaxConServices(rest: rest, discountedSubTotal: discountedSubTotal, taxAbleSubtotal: taxableSubTotal)
         let taxCalculation = roundValue2Digit(value: allTaxesAmount.tax + allTaxesAmount.con + allTaxesAmount.serviceCharge)
         
-        let total = (subTotal + taxCalculation + deliveryCharge) - offerDiscount.discount
+        var total = (subTotal + taxCalculation + deliveryCharge) - offerDiscount.discount
+        total = Cart.shared.tipsAmount + Cart.shared.donateAmount + total
 
         return CheckoutPrice(
             subTotal: subTotal,
