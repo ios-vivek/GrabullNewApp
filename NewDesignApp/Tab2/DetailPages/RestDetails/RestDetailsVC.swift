@@ -942,9 +942,9 @@ extension RestDetailsVC: MenuSelectedDelegate {
 //        }
         //self.restaurantTable.scrollToRow(at: IndexPath(row: 0, section: section + 5), at: .middle, animated: true)
         self.getMenuList()
-        if selectedFiler >= 0 {
-            self.menuHeadingCollection.scrollToItem(at:IndexPath(item: selectedFiler, section: 0), at: .right, animated: false)
-        }
+//        if selectedFiler >= 0 {
+//            self.menuHeadingCollection.scrollToItem(at:IndexPath(item: selectedFiler, section: 0), at: .right, animated: false)
+//        }
 
     }
 }
