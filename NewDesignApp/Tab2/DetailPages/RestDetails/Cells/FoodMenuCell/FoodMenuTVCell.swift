@@ -19,8 +19,7 @@ class FoodMenuTVCell: UITableViewCell {
     @IBOutlet weak var allBtn: UIButton!
 
 
-    var menulist: [CustMenuCategory]?
-    var cateringMenuList = [CustMenuCategory]()
+    var menulist: [DisplaySection]?
     var selectedmenuType = MenuType.menu
     var selectedFiler = -1
     override func awakeFromNib() {
@@ -37,9 +36,9 @@ class FoodMenuTVCell: UITableViewCell {
     @IBAction func allBtnAction() {
         self.delegate?.showAllData()
     }
-    func updateUI(menulist: [CustMenuCategory]?, selectedmenuType: MenuType, selectedFiler : Int) {
+    func updateUI(menulist: [DisplaySection]?, selectedmenuType: MenuType, selectedFiler : Int) {
         self.selectedFiler = selectedFiler
-        self.menulist = menulist
+            self.menulist = menulist
         self.selectedmenuType = selectedmenuType
         featuredCollection.reloadData()
         if selectedFiler >= 0 {
@@ -76,9 +75,6 @@ extension FoodMenuTVCell: UICollectionViewDelegateFlowLayout{
 }
 extension FoodMenuTVCell: UICollectionViewDelegate,UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if selectedmenuType == .catering {
-           return self.cateringMenuList.count
-        }
         return self.menulist?.count ?? 0
     }
     
@@ -86,9 +82,9 @@ extension FoodMenuTVCell: UICollectionViewDelegate,UICollectionViewDataSource{
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FoodMenuCVCell", for: indexPath as IndexPath) as! FoodMenuCVCell
         cell.backgroundColor = .white
         if selectedmenuType == .catering {
-            cell.menu.text = self.cateringMenuList[indexPath.row].heading
+            cell.menu.text = self.menulist?[indexPath.row].title
         }else{
-            cell.menu.text = self.menulist?[indexPath.row].heading ?? ""
+            cell.menu.text = self.menulist?[indexPath.row].parent
         }
         cell.menu.textColor = selectedFiler == indexPath.row ? kOrangeColor : .black
         return cell;

@@ -22,7 +22,7 @@ class ChooseAddressTVCell: UITableViewCell {
     func selectedAddress(selected: Bool) {
         selectedAddressImg.layer.borderWidth = 1
         selectedAddressImg.layer.cornerRadius = 7
-        selectedAddressImg.layer.borderColor = UIColor.gGray100.cgColor
+        selectedAddressImg.layer.borderColor = UIColor.darkGray.cgColor
         selectedAddressImg.layer.backgroundColor = selected ? themeBackgrounColor.cgColor : UIColor.white.cgColor
     }
     func updateUI(selected: Bool) {
