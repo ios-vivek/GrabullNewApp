@@ -27,7 +27,11 @@ class AddressListTVCell: UITableViewCell {
         self.backgroundColor = .white
     }
     func configureUI(address: UserAdd){
-        addressLbl.text = "\(address.add1 ?? "") \(address.add2 ?? ""), \(address.city ?? ""), \(address.state ?? ""), \(address.zip ?? "")"
+        let landmark = address.add2?.isEmpty == false ? "\nLandmark: \(address.add2!)" : ""
+        let street = address.street?.isEmpty == false ? "\(address.street!) " : ""
+
+        
+        addressLbl.text = "\(street)\(address.add1 ?? "") \(landmark) \n\(address.city ?? ""), \(address.state ?? ""), \(address.zip ?? "")"
         if address.type == "Home" {
             addressImage.image = UIImage.init(named: "homeAddress")
         }

@@ -477,7 +477,11 @@ extension CartVC: UITableViewDelegate, UITableViewDataSource{
                 }else {
                     cell.headingLbl.text = "Delivery At:"
                     let address = Cart.shared.userAddress
-                    add = "\(address!.add1 ?? "") \(address!.add2 ?? ""), \(address!.city ?? ""), \(address!.state ?? ""), \(address!.zip ?? "")"
+                    let landmark = address!.add2?.isEmpty == false ? "\nLandmark: \(address!.add2 ?? "")" : ""
+                    let street = address!.street?.isEmpty == false ? "\(address!.street ?? "") " : ""
+
+                    
+                    add = "\(street)\(address!.add1 ?? "") \(landmark) \n\(address!.city ?? ""), \(address!.state ?? ""), \(address!.zip ?? "")"
                     cell.changeAddressBtn.isHidden = false
                     cell.changePhoneBtn.isHidden = false
                     cell.phoneLbl.text = "Phone: \(APPDELEGATE.userResponse?.customer.phone ?? "")"

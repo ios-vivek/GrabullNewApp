@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -458,6 +458,10 @@
 		FF5E8352012665A65486CD64 /* Pods_NewDesignApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NewDesignApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		E257DE002F7E556100EB0614 /* GroceryVCs */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = GroceryVCs; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
 		E2165CEE2C65EFCC00F344FE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -542,6 +546,7 @@
 				E2928B1D2C7DDE2C007EAC25 /* CartView.swift */,
 				E2B46A622CBAADAF00D45C09 /* RestaurantCartDeatils.swift */,
 				E2BAD6332CCA838C0016810A /* Alert.swift */,
+				E257DE002F7E556100EB0614 /* GroceryVCs */,
 				E2EC30612D78774E008F1603 /* DineInReservationVC */,
 				E2BAD5FA2CBE9EF70016810A /* Cart */,
 				E2928B182C7CC787007EAC25 /* Tab3 */,
@@ -1223,6 +1228,9 @@
 			buildRules = (
 			);
 			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				E257DE002F7E556100EB0614 /* GroceryVCs */,
 			);
 			name = NewDesignApp;
 			productName = NewDesignApp;

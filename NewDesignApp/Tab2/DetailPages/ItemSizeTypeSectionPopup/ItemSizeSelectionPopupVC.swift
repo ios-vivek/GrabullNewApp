@@ -353,7 +353,7 @@ extension ItemSizeSelectionPopupVC: UITableViewDelegate, UITableViewDataSource {
                 warningText = "Choose \(rq)"
             }
             else if rq > 0 {
-                warningText = "Choose atleast \(rq)"
+                warningText = "Choose at least \(rq)"
             } else {
                 warningText = ""
             }

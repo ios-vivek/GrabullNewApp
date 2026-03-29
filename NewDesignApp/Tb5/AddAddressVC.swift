@@ -12,6 +12,7 @@ protocol ReloadNewAddressDelegate: AnyObject {
 class AddAddressVC: UIViewController {
     @IBOutlet weak var address1TxtFld: UITextField!
     @IBOutlet weak var address2TxtFld: UITextField!
+    @IBOutlet weak var landmarkTxtFld: UITextField!
     @IBOutlet weak var cityTxtFld: UITextField!
     @IBOutlet weak var stateTxtFld: UITextField!
     @IBOutlet weak var zipcodeTxtFld: UITextField!
@@ -33,11 +34,12 @@ class AddAddressVC: UIViewController {
         addressType.setTextColor()
         addressType.addTarget(self, action: #selector(segmentedControlValueChanged(_:)), for: .valueChanged)
         if isUpdateAddress {
-            address1TxtFld.text = updateUserAdd?.add1
-            address2TxtFld.text = updateUserAdd?.add2
+            address1TxtFld.text = updateUserAdd?.street
+            address2TxtFld.text = updateUserAdd?.add1
             cityTxtFld.text = updateUserAdd?.city
             stateTxtFld.text = updateUserAdd?.state
             zipcodeTxtFld.text = updateUserAdd?.zip
+            landmarkTxtFld.text = updateUserAdd?.add2
             if updateUserAdd?.type == "Home" {
                 addressType.selectedSegmentIndex = 0
             }
@@ -53,6 +55,7 @@ class AddAddressVC: UIViewController {
         self.view.backgroundColor = .white
         address1TxtFld.setPlaceHolderColor(.gGray200)
         address2TxtFld.setPlaceHolderColor(.gGray200)
+        landmarkTxtFld.setPlaceHolderColor(.gGray200)
         cityTxtFld.setPlaceHolderColor(.gGray200)
         zipcodeTxtFld.setPlaceHolderColor(.gGray200)
         stateTxtFld.setPlaceHolderColor(.gGray200)
@@ -77,12 +80,12 @@ class AddAddressVC: UIViewController {
         self.navigationController?.popViewController(animated: true)
     }
     @IBAction func submitAction() {
-        if address1TxtFld.text!.isEmpty {
-            self.showAlert(title: "Error", msg: "Please enter address1.")
-            return
-        }
-        else if address2TxtFld.text!.isEmpty {
-            self.showAlert(title: "Error", msg: "Please enter address2.")
+//        if address1TxtFld.text!.isEmpty {
+//            self.showAlert(title: "Error", msg: "Please enter address.")
+//            return
+//        }
+         if address2TxtFld.text!.isEmpty {
+            self.showAlert(title: "Error", msg: "Please enter address.")
             return
         }
         else if cityTxtFld.text!.isEmpty {
@@ -109,8 +112,9 @@ class AddAddressVC: UIViewController {
     func addAddressService() {
         var parameters = CommonAPIParams.base()
         parameters.merge([
-            "add1" : address1TxtFld.text!,
-            "add2" : address2TxtFld.text!,
+            "street" : address1TxtFld.text ?? "",
+            "add1" : address2TxtFld.text!,
+            "add2" : landmarkTxtFld.text ?? "",
             "city" : cityTxtFld.text!,
             "state" : stateTxtFld.text!,
             "zip" : zipcodeTxtFld.text!,
@@ -122,7 +126,7 @@ class AddAddressVC: UIViewController {
             let alertController = UIAlertController(title: "Success", message: "Address added successfully.", preferredStyle: .alert)
             let OKAction = UIAlertAction(title: "Ok", style: .default) { action in
                 if self.fromCheckoutPage {
-                    let add = UserAdd(id: "0", street: "", add1: self.address1TxtFld.text!, add2: self.address2TxtFld.text!, add3: "", type: self.selectedAddressType, city: self.cityTxtFld.text!, state: self.stateTxtFld.text!, zip: self.zipcodeTxtFld.text!)
+                    let add = UserAdd(id: "0", street: self.address1TxtFld.text ?? "", add1: self.address2TxtFld.text!, add2: self.landmarkTxtFld.text!, add3: "", type: self.selectedAddressType, city: self.cityTxtFld.text!, state: self.stateTxtFld.text!, zip: self.zipcodeTxtFld.text!)
 //                    let deliveryZipsArray = Cart.shared.restDetails.deliveryzip.components(separatedBy: ",")
 //                    if !deliveryZipsArray.contains(self.zipcodeTxtFld.text!) {
 //                        self.showAlert(title: "Error", msg: "Oops! Out of Delivery Radius, We Deliver Within 4 Miles Radius..")
@@ -153,8 +157,9 @@ class AddAddressVC: UIViewController {
     func updateAddressService() {
         var parameters = CommonAPIParams.base()
         parameters.merge([
-            "add1" : address1TxtFld.text!,
-            "add2" : address2TxtFld.text!,
+            "street" : address1TxtFld.text ?? "",
+            "add1" : address2TxtFld.text!,
+            "add2" : landmarkTxtFld.text ?? "",
             "city" : cityTxtFld.text!,
             "state" : stateTxtFld.text!,
             "zip" : zipcodeTxtFld.text!,

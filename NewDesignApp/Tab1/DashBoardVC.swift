@@ -404,5 +404,12 @@ extension DashBoardVC: DashBoardSectionDelegate {
             vc.isDineFilter = true
             self.navigationController?.pushViewController(vc, animated: true)
         }
+        if index == 3 {
+            let story = UIStoryboard.init(name: "FoodSearch", bundle: nil)
+            let vc = story.instantiateViewController(withIdentifier: "GroceryVC") as! GroceryVC
+            //vc.listResponse = success.data.restaurant
+            vc.isDineFilter = true
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
     }
 }

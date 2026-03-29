@@ -21,7 +21,7 @@ enum ProfileItem: String, CaseIterable {
     case myRewards = "My Rewards"
     case referAFriend = "Refer a Friend"
     case referARestaurant = "Refer a Restaurant"
-    case workWithUs = "Work With Us"
+   // case workWithUs = "Work With Us"
     case support = "Help"
     case logout = "Logout"
     
@@ -208,9 +208,9 @@ extension ProfileVC: UITableViewDelegate, UITableViewDataSource {
             case .referARestaurant:
                 let vc = self.viewController(viewController: ReferRestaurantVC.self, storyName: StoryName.Profile.rawValue) as! ReferRestaurantVC
                 self.navigationController?.pushViewController(vc, animated: true)
-            case .workWithUs:
-                let vc = self.viewController(viewController: WorkWithUsVC.self, storyName: StoryName.Profile.rawValue) as! WorkWithUsVC
-                self.navigationController?.pushViewController(vc, animated: true)
+//            case .workWithUs:
+//                let vc = self.viewController(viewController: WorkWithUsVC.self, storyName: StoryName.Profile.rawValue) as! WorkWithUsVC
+//                self.navigationController?.pushViewController(vc, animated: true)
             case .support:
                 let vc = self.viewController(viewController: SupportVC.self, storyName: StoryName.Profile.rawValue) as! SupportVC
                 self.navigationController?.pushViewController(vc, animated: true)
