@@ -20,7 +20,6 @@ class CartVC: UIViewController {
     @IBOutlet weak var titlelbl: UILabel!
     var completeItemList = [CustMenuCategory]()
     var allDisplayItems = [CustMenuCategory]()
-    //var allMenuList = [RestMenu]()
     var isOpen = false
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -108,7 +107,10 @@ class CartVC: UIViewController {
         }
         if APPDELEGATE.userLoggedIn() && Cart.shared.orderType == .delivery {
             addressView.isHidden = cartTableView.isHidden
-            if Cart.shared.userAddress != nil {
+            let add = Cart.shared.userAddress?.fullAddress ?? ""
+            if Cart.shared.userAddress == nil || add == "" || add.isEmpty {
+                addressView.isHidden = false
+            } else {
                 addressView.isHidden = true
             }
         }
@@ -239,7 +241,11 @@ class CartVC: UIViewController {
        // let add = "2 Barnsley Rd, Lynnfield, MA 01940, USA"//Cart.shared.userAddress.fullAddress
 
         if Cart.shared.orderType == .delivery {
-            checkDeliveryAvailability(restID: Cart.shared.restDetails.rid, menuType: getMenuTypesFromItems(), address: add)
+            if add == "" {
+                refreshView()
+            } else {
+                checkDeliveryAvailability(restID: Cart.shared.restDetails.rid, menuType: getMenuTypesFromItems(), address: add)
+            }
         } else {
             contionueAction()
         }

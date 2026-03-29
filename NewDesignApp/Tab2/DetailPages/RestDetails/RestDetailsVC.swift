@@ -34,7 +34,7 @@ enum MenuType: Int {
     case dineIn = 3
 }
 
-class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, ItemAddedInCartDelegate {
+class RestDetailsVC: UIViewController, ItemCellDelegate, ItemAddedInCartDelegate {
     func openSelectSize(index: IndexPath) {
         self.addItemSelection(index: index)
     }
@@ -112,9 +112,6 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
 
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         present(alert, animated: true)
-    }
-    func itemClosed() {
-        closedPopup()
     }
     
     @IBOutlet weak var restaurantTable: UITableView!
@@ -204,14 +201,9 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
     }
     func getAllDataFromListForTable() {
         if let restData = restDetailsRes {
-            
             menuSections = getDataFroDisplayFromList(list: restData.menuList)
             cateringSections = getDataFroDisplayFromList(list: restData.cateringList)
             getAllSpecialDealsMenu()
-//            print("specialSections..\(specialSections.count)")
-//            print("menuSections...\(menuSections.count)")
-//            print("cateringSections...\(cateringSections.count)")
-
         }
     }
     func getDataFroDisplayFromList(list : [MenuCategory]) -> [DisplaySection] {
@@ -318,9 +310,6 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
         if [.deals, .dineIn].contains(selectedMenuType) {
             return false
         }
-//        if selectedMenuType == .catering {
-//            return filteredCateringList.count > 0 ? true : false
-//        }
         return true
     }
     func navigateToMenuDetails(index: IndexPath) {
@@ -370,61 +359,7 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
        // itemData = itemm
         return itemList
     }
-    func openItemDetails(itemlist: RestItemList, index: IndexPath) {
-        /*
-        if(!isOpen)
 
-           {
-               isOpen = true
-           var itemsizes = ""
-            for item in Cart.shared.getAllSizes(menu: self.menuList[index.section - 5], item: itemData, isCatering: self.selectedmenuType == 1 ? true : false) {
-                if itemsizes .isEmpty {
-                    itemsizes = "\(item.name) $\(item.price)"
-                } else {
-                    itemsizes = itemsizes + ", \(item.name) $\(item.price)"
-                }
-            }
-            print("Cart.shared.itemSizes \(itemsizes)")
-            let menuVC = self.viewController(viewController: ItemDetailsVC.self, storyName: StoryName.Main.rawValue) as! ItemDetailsVC
-            menuVC.itemData = itemlist
-            menuVC.index = index
-            menuVC.allSizesWithPrice = itemsizes
-            menuVC.delegate = self
-            menuVC.view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-               self.view.addSubview(menuVC.view)
-            self.addChild(menuVC)
-               menuVC.view.layoutIfNeeded()
-
-               menuVC.view.frame=CGRect(x: 0, y: 0 + UIScreen.main.bounds.size.height, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height);
-
-               UIView.animate(withDuration: 0.3, animations: { () -> Void in
-                   menuVC.view.frame=CGRect(x: 0, y: 0, width: UIScreen.main.bounds.size.width, height: UIScreen.main.bounds.size.height);
-               }) { completion in
-                   self.tabBarController?.tabBar.isHidden = true
-               }
-
-           }else if(isOpen)
-           {
-               closedPopup()
-           }
-        */
-    }
-    func closedPopup() {
-        isOpen = false
-        let viewMenuBack : UIView = view.subviews.last!
-
-          UIView.animate(withDuration: 0.3, animations: { () -> Void in
-              var frameMenu : CGRect = viewMenuBack.frame
-              frameMenu.origin.y = 1 * UIScreen.main.bounds.size.height
-              viewMenuBack.frame = frameMenu
-              viewMenuBack.layoutIfNeeded()
-              viewMenuBack.backgroundColor = UIColor.clear
-          }, completion: { (finished) -> Void in
-              viewMenuBack.removeFromSuperview()
-              self.tabBarController?.tabBar.isHidden = false
-
-          })
-    }
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         //print("dd")
         self.view.endEditing(true)
@@ -470,13 +405,6 @@ class RestDetailsVC: UIViewController, ItemDetailsDelegate, ItemCellDelegate, It
 }
 extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-    
-//        if self.restDetailsData?.menutype[selectedmenuType] == "Specials" {
-//            return RestaurentDetailsSection.Items.rawValue + 1
-//        }
-   //     let itemListCount = self.menuList.count//self.restDetailsData?.menulist?.count ?? 0
-   //     return RestaurentDetailsSection.Items.rawValue + itemListCount
-        
         if selectedMenuType == .menu {
             if selectedFiler > 0 {
                 return RestaurentDetailsSection.Items.rawValue + filteredMenuSections.count
@@ -540,14 +468,7 @@ extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
         }
         return 1
     }
-//    func getItemCount(section: Int, menuList: [CustMenuCategory])-> Int {
-//        let menu = menuList[section - 5]
-//        if menu.submenu == "Yes" {
-//            return menu.submenuList?.flatMap { $0.itemList }.count ?? 0
-//        }
-//        print(menu.itemList.count)
-//        return menu.itemList.count
-//    }
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
         case RestaurentDetailsSection.RestDetails.rawValue:
@@ -602,9 +523,7 @@ extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
                         return cell
                     } else {
                         let cell = tableView.dequeueReusableCell(withIdentifier: "ItemTVCell", for: indexPath) as! ItemTVCell
-//                        print(indexPath.section)
-//                        print(indexPath.row)
-//                        print(sectionOffset)
+
                         let item = self.specialSections[itemSectionIndex].items[indexPath.row]
                         cell.selectionStyle = .none
                         cell.delegate = self
@@ -667,16 +586,11 @@ extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
             }
             let cell = tableView.dequeueReusableCell(withIdentifier: "ItemHeadingTVCell", for: indexPath) as! ItemHeadingTVCell
             cell.selectionStyle = .none
-           // cell.delegate = self
-           // cell.backgroundColor = .blue
-            //cell.updateUI()
             return cell
         }
        
     }
-//    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-//        return "vivek"
-//    }
+
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         
         if section >= RestaurentDetailsSection.Items.rawValue {
@@ -690,13 +604,8 @@ extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         
         if section >= RestaurentDetailsSection.Items.rawValue {
-            //print(section)
-           // print(menuList.count)
             let sec = section - 5
             let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: "ItemHeaderView") as! ItemHeaderView
-//            if self.restDetailsData?.menutype[selectedmenuType] == "Specials" {
-//                return nil
-//            }
             if selectedMenuType == .catering {
                 var sectionHeader = self.cateringSections[sec]
                 if selectedFiler > 0 {
@@ -718,7 +627,6 @@ extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
             }
             headerView.headingLbl.textColor = .black
 
-           // headerView.headingLbl.textColor = self.menuList[sec].submenu == "No" ? .black : .gSkyBlue
             headerView.headerViewBckground.backgroundColor = UIColor.gGray100
             
 
@@ -789,21 +697,7 @@ extension RestDetailsVC: UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return CGSize(width: 0, height: collectionView.frame.height)
     }
-//    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
-//
-//        switch kind {
-//
-//        case UICollectionView.elementKindSectionHeader:
-//            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: "HeaderCollectionView", for: indexPath)
-//            return headerView
-//
-//
-//
-//
-//        default:
-//            assert(false, "Unexpected element kind")
-//        }
-//    }
+
 }
 extension RestDetailsVC: UICollectionViewDelegate,UICollectionViewDataSource{
     func numberOfSections(in collectionView: UICollectionView) -> Int {
@@ -837,13 +731,7 @@ extension RestDetailsVC: UICollectionViewDelegate,UICollectionViewDataSource{
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         selectedFiler = indexPath.row
-//        if selectedmenuType == 1 {
-//            return
-//        }
         self.getMenuList()
-       // self.restaurantTable.scrollToRow(at: IndexPath(row: 0, section: section + 5), at: .middle, animated: true)
-        //self.collectionView.scrollToItem(at:IndexPath(item: indexNumber, section: sectionNumber), at: .right, animated: false)
-
     }
     
     
@@ -857,16 +745,7 @@ extension RestDetailsVC: MenuSelectedDelegate {
     
     func openmenuItemSection(section: Int) {
         selectedFiler = section
-
-//        if selectedmenuType == 1 {
-//            return
-//        }
-        //self.restaurantTable.scrollToRow(at: IndexPath(row: 0, section: section + 5), at: .middle, animated: true)
         self.getMenuList()
-//        if selectedFiler >= 0 {
-//            self.menuHeadingCollection.scrollToItem(at:IndexPath(item: selectedFiler, section: 0), at: .right, animated: false)
-//        }
-
     }
 }
 extension RestDetailsVC: MenuTypeSelectedDelegate {
@@ -895,8 +774,6 @@ extension RestDetailsVC: MenuTypeSelectedDelegate {
 extension RestDetailsVC: OpenCartViewDelegate {
     func openCartView() {
         let vc = self.viewController(viewController: CartVC.self, storyName: StoryName.CartFlow.rawValue) as! CartVC
-       // vc.suggestedItemList = self.allCateringList
-       // vc.allMenuList = self.allMenuList
         Cart.shared.tempAllRestmenu = self.allMenuList
         self.navigationController?.pushViewController(vc, animated: true)
     }
