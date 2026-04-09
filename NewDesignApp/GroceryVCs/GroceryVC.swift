@@ -62,11 +62,12 @@ var gotResponseFromService = false
     }
 
     func getRestDetailFromApi(restid: String, dbname: String) {
-        Cart.shared.dbname = dbname
+        GroceryCartData.shared.dbname = dbname
        
         var parameters = CommonAPIParams.base()
         parameters.merge([
-            "rest_id": restid
+            "rest_id": restid,
+            "dbname" : dbname
         ]) { _, new in new }
         
         UtilsClass.showProgressHud(view: self.view)

@@ -69,16 +69,16 @@ class ItemSizesPopupVC: UIViewController {
         itemNametLbl.text = restmenu.items[0].heading
         itemNametLbl.textColor = kOrangeColor
         itemQty = Int(restmenu.items[0].minQty)
-        if Cart.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType)).count == 1 {
+        if GroceryCartData.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: GroceryCartData.shared.getMenuType(selectedMenuType: selectedMenuType)).count == 1 {
             selectedSize = 0
-            Cart.shared.itemSizes = [Sizes]()
-            Cart.shared.itemSizes.append(Cart.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType))[selectedSize])
+            GroceryCartData.shared.itemSizes = [Sizes]()
+            GroceryCartData.shared.itemSizes.append(GroceryCartData.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: GroceryCartData.shared.getMenuType(selectedMenuType: selectedMenuType))[selectedSize])
         } else {
-            Cart.shared.itemSizes = [Sizes]()
+            GroceryCartData.shared.itemSizes = [Sizes]()
         }
         
-        Cart.shared.selectedTopping = [SelectedTopping]()
-       // Cart.shared.itemSizes = [Sizes]()
+        GroceryCartData.shared.selectedTopping = [SelectedTopping]()
+       // GroceryCartData.shared.itemSizes = [Sizes]()
         /*
         if RestaurantCartDeatils.shared.addedCartItems != nil && RestaurantCartDeatils.shared.addedCartItems.cartLists.count > 0 {
             print("---\(itemData.id)")
@@ -167,10 +167,10 @@ class ItemSizesPopupVC: UIViewController {
             return
         }
         
-        Cart.shared.itemData = restmenu.items[0]
-        Cart.shared.addInCart()
-        Cart.shared.tempRestmenu = restmenu
-        Cart.shared.tempItemData = restmenu.items[0]
+        GroceryCartData.shared.itemData = restmenu.items[0]
+        GroceryCartData.shared.addInCart()
+        GroceryCartData.shared.tempRestmenu = restmenu
+        GroceryCartData.shared.tempItemData = restmenu.items[0]
                    self.dismiss(animated: true) {
                        self.delegate?.itemAddedInTheCart()
                    }
@@ -178,29 +178,29 @@ class ItemSizesPopupVC: UIViewController {
     func setAmountValue() {
         itemCountLbl.text = "\(itemQty)"
         var price: Float = 0.0
-        for item in Cart.shared.itemSizes {
+        for item in GroceryCartData.shared.itemSizes {
             price = Float(item.price)! * Float(itemQty)
         }
         var toppingsPrice: Float = 0.0
-        for topping in Cart.shared.selectedTopping {
+        for topping in GroceryCartData.shared.selectedTopping {
             for option in topping.option {
                 let opPrice = option.price * Float(itemQty)
                 toppingsPrice = toppingsPrice + opPrice
             }
         }
        price = price + toppingsPrice
-        Cart.shared.itemExtra = 0.0
-        Cart.shared.instructionText = ""
-                price = price + Cart.shared.itemExtra
+        GroceryCartData.shared.itemExtra = 0.0
+        GroceryCartData.shared.instructionText = ""
+                price = price + GroceryCartData.shared.itemExtra
 //            }
-        addeditmesPriceBtn.setTitle("    Add Item | \(UtilsClass.getCurrencySymbol())\(Cart.shared.roundValue2Digit(value: price).toString())    ", for: .normal)
+        addeditmesPriceBtn.setTitle("    Add Item | \(UtilsClass.getCurrencySymbol())\(GroceryCartData.shared.roundValue2Digit(value: price).toString())    ", for: .normal)
 
-        Cart.shared.itemSizes = [Sizes]()
+        GroceryCartData.shared.itemSizes = [Sizes]()
         
         if selectedSize >= 0 {
-            var newSize = Cart.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType))[selectedSize]
+            var newSize = GroceryCartData.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: GroceryCartData.shared.getMenuType(selectedMenuType: selectedMenuType))[selectedSize]
             newSize.itemQty = itemQty
-            Cart.shared.itemSizes.append(newSize)
+            GroceryCartData.shared.itemSizes.append(newSize)
         }
         
     }
@@ -211,7 +211,7 @@ extension ItemSizesPopupVC: UITableViewDelegate, UITableViewDataSource {
         return 1
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-            return Cart.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType)).count
+            return GroceryCartData.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: GroceryCartData.shared.getMenuType(selectedMenuType: selectedMenuType)).count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -219,7 +219,7 @@ extension ItemSizesPopupVC: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ItemSizeTVCell", for: indexPath) as! ItemSizeTVCell
             cell.selectionStyle = .none
         cell.backgroundColor = .clear
-            let itemSizes = Cart.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType))
+            let itemSizes = GroceryCartData.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: GroceryCartData.shared.getMenuType(selectedMenuType: selectedMenuType))
             cell.sizeNameLbl.text = itemSizes[indexPath.row].name
             cell.priceLbl.attributedText = cell.priceServeAttributedText(price: "\(UtilsClass.getCurrencySymbol())\(itemSizes[indexPath.row].price) ", serve: "\(itemSizes[indexPath.row].serveTray)")
             cell.updateUIForSelectSize(indexPath: indexPath, sizes: itemSizes, selectedSize: selectedSize)
@@ -230,12 +230,12 @@ extension ItemSizesPopupVC: UITableViewDelegate, UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
             selectedSize = indexPath.row
-            Cart.shared.itemSizes = [Sizes]()
-            Cart.shared.itemSizes.append(Cart.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType))[selectedSize])
-            Cart.shared.selectedTopping = [SelectedTopping]()
+            GroceryCartData.shared.itemSizes = [Sizes]()
+            GroceryCartData.shared.itemSizes.append(GroceryCartData.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: GroceryCartData.shared.getMenuType(selectedMenuType: selectedMenuType))[selectedSize])
+            GroceryCartData.shared.selectedTopping = [SelectedTopping]()
             //selectedOption = -1
        
-        print(Cart.shared.selectedTopping.count)
+        print(GroceryCartData.shared.selectedTopping.count)
         tableView.reloadData()
         setAmountValue()
     }

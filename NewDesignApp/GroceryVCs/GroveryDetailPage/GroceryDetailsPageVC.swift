@@ -18,24 +18,24 @@ class GroceryDetailsPageVC: UIViewController, ItemCellDelegate, ItemSizesPopupDe
     
     func itemAddedInTheCart() {
         self.showToast(message: "Item added in the cart.", font: .boldSystemFont(ofSize: 14.0))
-        cartLbl.text = "\(Cart.shared.cartData.count)"
-        cartView.isHidden = Cart.shared.cartData.count > 0 ? false : true
+        cartLbl.text = "\(GroceryCartData.shared.cartData.count)"
+        cartView.isHidden = GroceryCartData.shared.cartData.count > 0 ? false : true
         cartView.updateUI()
     }
     
     func addItemSelection(index: IndexPath) {
         handleCartBeforeAdd(index: index)
         
-        if Cart.shared.restDetails == nil {
-            Cart.shared.restDetails = Cart.shared.tempRestDetails
+        if GroceryCartData.shared.restDetails == nil {
+            GroceryCartData.shared.restDetails = GroceryCartData.shared.tempRestDetails
             self.navigateToMenuDetails(index: index)
         }
-        else if Cart.shared.restDetails.rid != Cart.shared.tempRestDetails.rid {
-            if Cart.shared.cartData.count > 0 {
-                let alertController = UIAlertController(title: "Replace cart item?", message: "Your cart contains dishes from \(Cart.shared.restDetails.name). Do you want to discart the selection and add dishes from \(Cart.shared.tempRestDetails.name)?", preferredStyle: .alert)
+        else if GroceryCartData.shared.restDetails.rid != GroceryCartData.shared.tempRestDetails.rid {
+            if GroceryCartData.shared.cartData.count > 0 {
+                let alertController = UIAlertController(title: "Replace cart item?", message: "Your cart contains dishes from \(GroceryCartData.shared.restDetails.name). Do you want to discart the selection and add dishes from \(GroceryCartData.shared.tempRestDetails.name)?", preferredStyle: .alert)
                 let OKAction = UIAlertAction(title: "Ok", style: .default) { action in
-                    Cart.shared.cartData.removeAll()
-                    Cart.shared.restDetails = Cart.shared.tempRestDetails
+                    GroceryCartData.shared.cartData.removeAll()
+                    GroceryCartData.shared.restDetails = GroceryCartData.shared.tempRestDetails
                     self.navigateToMenuDetails(index: index)
                     
                 }
@@ -49,41 +49,41 @@ class GroceryDetailsPageVC: UIViewController, ItemCellDelegate, ItemSizesPopupDe
                                  completion:nil)
                 }
             } else {
-                Cart.shared.restDetails = Cart.shared.tempRestDetails
+                GroceryCartData.shared.restDetails = GroceryCartData.shared.tempRestDetails
                 self.navigateToMenuDetails(index: index)
             }
                 }
         else {
-            Cart.shared.restDetails = Cart.shared.tempRestDetails
+            GroceryCartData.shared.restDetails = GroceryCartData.shared.tempRestDetails
             self.navigateToMenuDetails(index: index)
         }
         
     }
     func handleCartBeforeAdd(index: IndexPath) {
-        guard let currentRest = Cart.shared.restDetails else {
-            Cart.shared.restDetails = Cart.shared.tempRestDetails
+        guard let currentRest = GroceryCartData.shared.restDetails else {
+            GroceryCartData.shared.restDetails = GroceryCartData.shared.tempRestDetails
             navigateToMenuDetails(index: index)
             return
         }
 
-        if currentRest.rid != Cart.shared.tempRestDetails.rid,
-           !Cart.shared.cartData.isEmpty {
+        if currentRest.rid != GroceryCartData.shared.tempRestDetails.rid,
+           !GroceryCartData.shared.cartData.isEmpty {
             showReplaceCartAlert(index: index)
         } else {
-            Cart.shared.restDetails = Cart.shared.tempRestDetails
+            GroceryCartData.shared.restDetails = GroceryCartData.shared.tempRestDetails
             navigateToMenuDetails(index: index)
         }
     }
     func showReplaceCartAlert(index: IndexPath) {
         let alert = UIAlertController(
             title: "Replace cart item?",
-            message: "Your cart contains dishes from \(Cart.shared.restDetails.name).",
+            message: "Your cart contains dishes from \(GroceryCartData.shared.restDetails.name).",
             preferredStyle: .alert
         )
 
         alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-            Cart.shared.cartData.removeAll()
-            Cart.shared.restDetails = Cart.shared.tempRestDetails
+            GroceryCartData.shared.cartData.removeAll()
+            GroceryCartData.shared.restDetails = GroceryCartData.shared.tempRestDetails
             self.navigateToMenuDetails(index: index)
         })
 
@@ -109,7 +109,7 @@ class GroceryDetailsPageVC: UIViewController, ItemCellDelegate, ItemSizesPopupDe
     private var specialSections: [DisplaySection] = []
 
     
-    var cartView: CartView!
+    var cartView: GroceryCartView!
     var isOpen = false
     var restData: RestData?
     var restDetailsData: CustomRestDetails?
@@ -121,12 +121,12 @@ class GroceryDetailsPageVC: UIViewController, ItemCellDelegate, ItemSizesPopupDe
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        if restDetailsData != nil && Cart.shared.tempRestDetails != nil {
-            if (restDetailsData!.rid != Cart.shared.tempRestDetails.rid) {
-                Cart.shared.resetTime()
+        if restDetailsData != nil && GroceryCartData.shared.tempRestDetails != nil {
+            if (restDetailsData!.rid != GroceryCartData.shared.tempRestDetails.rid) {
+                GroceryCartData.shared.resetTime()
             }
         }
-        Cart.shared.tempRestDetails = restDetailsData!
+        GroceryCartData.shared.tempRestDetails = restDetailsData!
 
         if restDetailsData!.dinein == "Yes" {
             isReservationAvailable = true
@@ -136,7 +136,7 @@ class GroceryDetailsPageVC: UIViewController, ItemCellDelegate, ItemSizesPopupDe
         navView.backgroundColor = themeBackgrounColor
         let profileTap = UITapGestureRecognizer(target: self, action: #selector(profileTapAction(_:)))
         userProfileIcon.addGestureRecognizer(profileTap)
-        cartView = CartView(frame: CGRect(x: 0, y: self.view.frame.size.height - 70, width: self.view.frame.size.width, height: 70))
+        cartView = GroceryCartView(frame: CGRect(x: 0, y: self.view.frame.size.height - 70, width: self.view.frame.size.width, height: 70))
         self.view.addSubview(cartView)
         cartView.isHidden = true
         menuView.isHidden = true
@@ -163,12 +163,12 @@ class GroceryDetailsPageVC: UIViewController, ItemCellDelegate, ItemSizesPopupDe
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        cartLbl.text = "\(Cart.shared.cartData.count)"
+        cartLbl.text = "\(GroceryCartData.shared.cartData.count)"
         self.allMenuList = [CustMenuCategory]()
         if let meuList = self.restDetailsData?.menuList {
             self.allMenuList = meuList
         }
-        cartView.isHidden = Cart.shared.cartData.count > 0 ? false : true
+        cartView.isHidden = GroceryCartData.shared.cartData.count > 0 ? false : true
         getMenuList()
         setImages()
         getAllDataFromListForTable()
@@ -358,8 +358,8 @@ class GroceryDetailsPageVC: UIViewController, ItemCellDelegate, ItemSizesPopupDe
        
     }
     @objc func profileTapAction(_ sender: UITapGestureRecognizer? = nil) {
-        let vc = self.viewController(viewController: CartVC.self, storyName: StoryName.CartFlow.rawValue) as! CartVC
-        Cart.shared.tempAllRestmenu = self.allMenuList
+        let vc = self.viewController(viewController: GroceryCartVC.self, storyName: StoryName.Grocery.rawValue) as! GroceryCartVC
+        GroceryCartData.shared.tempAllRestmenu = self.allMenuList
         self.navigationController?.pushViewController(vc, animated: true)
     }
     private func loadURLSafari(dineUrl: String) {
@@ -725,7 +725,7 @@ extension GroceryDetailsPageVC: MenuTypeSelectedDelegate {
 extension GroceryDetailsPageVC: OpenCartViewDelegate {
     func openCartView() {
         let vc = self.viewController(viewController: GroceryCartVC.self, storyName: StoryName.Grocery.rawValue) as! GroceryCartVC
-        Cart.shared.tempAllRestmenu = self.allMenuList
+        GroceryCartData.shared.tempAllRestmenu = self.allMenuList
         self.navigationController?.pushViewController(vc, animated: true)
     }
 }

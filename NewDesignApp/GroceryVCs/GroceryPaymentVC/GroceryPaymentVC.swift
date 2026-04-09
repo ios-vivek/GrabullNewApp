@@ -31,18 +31,18 @@ class GroceryPaymentVC: UIViewController {
     var recipientPhone: String = ""
     override func viewDidLoad() {
         super.viewDidLoad()
-        Cart.shared.isTips = false
-        Cart.shared.isDonate = false
-        Cart.shared.tipsAmount = 0.0
-        Cart.shared.donateAmount = 0.0
-        Cart.shared.alternateNumber = ""
-        Cart.shared.isReward =  false
-        Cart.shared.rewardAmount =  0.0
-        Cart.shared.cardNumber = ""
-        Cart.shared.cardCvv = ""
-        Cart.shared.cardExpiry = ""
-        Cart.shared.cardHolder = ""
-        Cart.shared.cardZip = ""
+        GroceryCartData.shared.isTips = false
+        GroceryCartData.shared.isDonate = false
+        GroceryCartData.shared.tipsAmount = 0.0
+        GroceryCartData.shared.donateAmount = 0.0
+        GroceryCartData.shared.alternateNumber = ""
+        GroceryCartData.shared.isReward =  false
+        GroceryCartData.shared.rewardAmount =  0.0
+        GroceryCartData.shared.cardNumber = ""
+        GroceryCartData.shared.cardCvv = ""
+        GroceryCartData.shared.cardExpiry = ""
+        GroceryCartData.shared.cardHolder = ""
+        GroceryCartData.shared.cardZip = ""
         // Do any additional setup after loading the view.
         bindViewModel()
         viewModel.fetchRewards()
@@ -133,7 +133,7 @@ class GroceryPaymentVC: UIViewController {
     }
    
     func addOrder(transactionIdentifier: String) {
-        if ((Cart.shared.restDetails.openStatus.status.contains("Closed") || Cart.shared.restDetails.openStatus.status.contains("closed")) && Cart.shared.orderDate == .ASAP){
+        if ((GroceryCartData.shared.restDetails.openStatus.status.contains("Closed") || GroceryCartData.shared.restDetails.openStatus.status.contains("closed")) && GroceryCartData.shared.orderDate == .ASAP){
             let alertController = UIAlertController(title: "Alert", message: "Restaurant is closed for now. Please change your delivery / pickup timing.", preferredStyle: .alert)
             let OKAction = UIAlertAction(title: "Ok", style: .default) { action in
                 self.clickedOnChangeTime()
@@ -168,11 +168,11 @@ extension GroceryPaymentVC: UITableViewDelegate, UITableViewDataSource{
         switch section {
         case GroceryCellTypes.Donate.rawValue:
             if self.viewModel.selectedPaymentType == 1 {
-                Cart.shared.isDonate = false
-                Cart.shared.donateAmount = 0.0
+                GroceryCartData.shared.isDonate = false
+                GroceryCartData.shared.donateAmount = 0.0
                 return 0
             }
-            return 0//Cart.shared.restDetails.donatechange == "Yes" ? 1 : 0
+            return 0//GroceryCartData.shared.restDetails.donatechange == "Yes" ? 1 : 0
         case GroceryCellTypes.Payment.rawValue:
             if self.viewModel.selectedPaymentType == 2 || self.viewModel.selectedPaymentType == 0 {
                return 1
@@ -182,9 +182,9 @@ extension GroceryPaymentVC: UITableViewDelegate, UITableViewDataSource{
             }
             return 2
         case GroceryCellTypes.Itemdetails.rawValue:
-            return 0//Cart.shared.cartData.count
+            return 0//GroceryCartData.shared.cartData.count
         case GroceryCellTypes.Totalprice.rawValue:
-            return Cart.shared.cartData.count > 0 ? 1 : 0
+            return GroceryCartData.shared.cartData.count > 0 ? 1 : 0
         case GroceryCellTypes.Redeem.rawValue:
             if Float(viewModel.userRewardAmount) ?? 0.0 > 0.0 {
                 return self.viewModel.selectedPaymentType == 1 ? 0 : 1
@@ -199,7 +199,7 @@ extension GroceryPaymentVC: UITableViewDelegate, UITableViewDataSource{
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
         case GroceryCellTypes.Restname.rawValue:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "RestaurantNameTVCell", for: indexPath) as! RestaurantNameTVCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "GroceryStoreNameTVCell", for: indexPath) as! GroceryStoreNameTVCell
             cell.updateUI()
             cell.selectionStyle = .none
             return cell
@@ -213,21 +213,21 @@ extension GroceryPaymentVC: UITableViewDelegate, UITableViewDataSource{
             let cell = tableView.dequeueReusableCell(withIdentifier: "DeliveryAtTVCell", for: indexPath) as! DeliveryAtTVCell
             cell.selectionStyle = .none
             var add = ""
-            if Cart.shared.orderType == .pickup {
+            if GroceryCartData.shared.orderType == .pickup {
                 cell.headingLbl.text = "Pickup From:"
-                add = "\(Cart.shared.restDetails.name)\n\(Cart.shared.restDetails.street) \(Cart.shared.restDetails.address), \(Cart.shared.restDetails.city), \(Cart.shared.restDetails.state), \(Cart.shared.restDetails.zip)"
+                add = "\(GroceryCartData.shared.restDetails.name)\n\(GroceryCartData.shared.restDetails.street) \(GroceryCartData.shared.restDetails.address), \(GroceryCartData.shared.restDetails.city), \(GroceryCartData.shared.restDetails.state), \(GroceryCartData.shared.restDetails.zip)"
                 cell.changeAddressBtn.isHidden = true
                 cell.changePhoneBtn.isHidden = true
-                cell.phoneLbl.text = "Phone: \(Cart.shared.restDetails.phone)"
+                cell.phoneLbl.text = "Phone: \(GroceryCartData.shared.restDetails.phone)"
             }else {
                 cell.headingLbl.text = "Delivery At:"
-                let address = Cart.shared.userAddress
+                let address = GroceryCartData.shared.userAddress
                     add = "\(address!.add1 ?? "") \(address!.add2 ?? ""), \(address!.city ?? ""), \(address!.state ?? ""), \(address!.zip ?? "")"
                     cell.changeAddressBtn.isHidden = false
                     cell.changePhoneBtn.isHidden = false
                     cell.phoneLbl.text = "Phone: \(APPDELEGATE.userResponse?.customer.phone ?? "")"
-                    if Cart.shared.alternateNumber.count == 10 {
-                        cell.phoneLbl.text = "Phone: \(Cart.shared.alternateNumber)"
+                    if GroceryCartData.shared.alternateNumber.count == 10 {
+                        cell.phoneLbl.text = "Phone: \(GroceryCartData.shared.alternateNumber)"
                     }
                 
             }
@@ -293,7 +293,7 @@ extension GroceryPaymentVC: UITableViewDelegate, UITableViewDataSource{
             return cell
         
         default:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "CartPriceDetailsTVCell", for: indexPath) as! CartPriceDetailsTVCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "GroceryPriceDetailsTVCell", for: indexPath) as! GroceryPriceDetailsTVCell
             cell.selectionStyle = .none
             cell.backgroundColor = .white
             cell.emptyCartButton.isHidden = true
@@ -311,7 +311,7 @@ extension GroceryPaymentVC: UITableViewDelegate, UITableViewDataSource{
             cartTableView.reloadData()
         }
         if indexPath.section == GroceryCellTypes.Donate.rawValue {
-            Cart.shared.isDonate.toggle()
+            GroceryCartData.shared.isDonate.toggle()
             cartTableView.reloadData()
         }
     }
@@ -403,15 +403,15 @@ extension GroceryPaymentVC: ChangePhoneNumberDelegate {
 }
 extension GroceryPaymentVC: DateChangedDelegate {
     func dateChanged() {
-        let address = Cart.shared.userAddress
-        if Cart.shared.orderType == .delivery && address == nil {
+        let address = GroceryCartData.shared.userAddress
+        if GroceryCartData.shared.orderType == .delivery && address == nil {
             self.navigationController?.popViewController(animated: true)
         } else {
             cartTableView.reloadData()
         }
     }
 }
-extension GroceryPaymentVC: CheckoutDelegate {
+extension GroceryPaymentVC: GroceryCheckoutDelegate {
     func checkoutAction(){
         self.addOrder(transactionIdentifier: "")
     }

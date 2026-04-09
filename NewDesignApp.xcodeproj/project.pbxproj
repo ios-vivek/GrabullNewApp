@@ -60,6 +60,7 @@
 		E2442C742F1A5A5B0015085D /* RestaurantViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2442C732F1A5A5B0015085D /* RestaurantViewModel.swift */; };
 		E2442C782F1E6F670015085D /* ConfirmOrderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2442C772F1E6F670015085D /* ConfirmOrderViewModel.swift */; };
 		E2558BFC2E5DB7B20015818C /* TopPicksCVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2558BFB2E5DB7B20015818C /* TopPicksCVCell.swift */; };
+		E257DEDC2F87D97000EB0614 /* GroceryCartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E257DEDB2F87D97000EB0614 /* GroceryCartView.swift */; };
 		E2609E402F7565C700AAF4A3 /* OptionsHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E2609E3F2F7565C700AAF4A3 /* OptionsHeaderView.xib */; };
 		E2609E412F7565C700AAF4A3 /* OptionsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2609E3E2F7565C700AAF4A3 /* OptionsHeaderView.swift */; };
 		E26503F82D117AC00036A984 /* DineInTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26503F72D117AC00036A984 /* DineInTVCell.swift */; };
@@ -282,6 +283,7 @@
 		E2442C732F1A5A5B0015085D /* RestaurantViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantViewModel.swift; sourceTree = "<group>"; };
 		E2442C772F1E6F670015085D /* ConfirmOrderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmOrderViewModel.swift; sourceTree = "<group>"; };
 		E2558BFB2E5DB7B20015818C /* TopPicksCVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopPicksCVCell.swift; sourceTree = "<group>"; };
+		E257DEDB2F87D97000EB0614 /* GroceryCartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryCartView.swift; sourceTree = "<group>"; };
 		E2609E3E2F7565C700AAF4A3 /* OptionsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsHeaderView.swift; sourceTree = "<group>"; };
 		E2609E3F2F7565C700AAF4A3 /* OptionsHeaderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = OptionsHeaderView.xib; sourceTree = "<group>"; };
 		E26503F72D117AC00036A984 /* DineInTVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DineInTVCell.swift; sourceTree = "<group>"; };
@@ -544,6 +546,7 @@
 				E2165CF42C65EFCC00F344FE /* AppDelegate.swift */,
 				E2165CF62C65EFCC00F344FE /* SceneDelegate.swift */,
 				E2928B1D2C7DDE2C007EAC25 /* CartView.swift */,
+				E257DEDB2F87D97000EB0614 /* GroceryCartView.swift */,
 				E2B46A622CBAADAF00D45C09 /* RestaurantCartDeatils.swift */,
 				E2BAD6332CCA838C0016810A /* Alert.swift */,
 				E257DE002F7E556100EB0614 /* GroceryVCs */,
@@ -1483,6 +1486,7 @@
 				E2D011382DCA106E00B7AB7C /* RestCouponsCVCell.swift in Sources */,
 				E2165D0D2C65F07000F344FE /* TabBarVC.swift in Sources */,
 				E2BAD6012CBEA4DD0016810A /* CartItemTVCell.swift in Sources */,
+				E257DEDC2F87D97000EB0614 /* GroceryCartView.swift in Sources */,
 				E2442C782F1E6F670015085D /* ConfirmOrderViewModel.swift in Sources */,
 				E211F57F2C7B83FE00309EE7 /* LocationVC.swift in Sources */,
 				E2165D232C65F9D400F344FE /* UtilsClass.swift in Sources */,
