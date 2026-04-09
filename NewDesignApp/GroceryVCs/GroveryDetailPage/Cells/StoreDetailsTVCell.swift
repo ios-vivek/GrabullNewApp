@@ -9,121 +9,39 @@
 import UIKit
 import Alamofire
 
-protocol GalleryDelegate: AnyObject {
-    func selectedGalleryView()
-    func scheduleDateAction()
-}
-
-class RestDetailTVCell: UITableViewCell {
+class StoreDetailsTVCell: UITableViewCell {
     @IBOutlet weak var restImage: UIImageView!
     @IBOutlet weak var restName: UILabel!
     @IBOutlet weak var ratingLbl: UILabel!
     @IBOutlet weak var userRatinglbl: UILabel!
     @IBOutlet weak var reorderedLbl: UILabel!
-    @IBOutlet weak var pickupBtn: UILabel!
-    @IBOutlet weak var deliveryBtn: UILabel!
-    @IBOutlet weak var toggleView: UIView!
     @IBOutlet weak var deliveryTimeLbl: UILabel!
-    @IBOutlet weak var scheduleDateBtn: UIButton!
     @IBOutlet weak var photoCountView: UIView!
     @IBOutlet weak var lblPhotoCount: UILabel!
     @IBOutlet weak var lblAsap: UILabel!
- //   @IBOutlet weak var deliveryPickupTitleLbl: UILabel!
 
 
-    weak var delegate: GalleryDelegate?
 var restData: CustomRestDetails?
 
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-        pickupBtn?.layer.masksToBounds = true
-        deliveryBtn?.layer.masksToBounds = true
-
-        toggleView.layer.cornerRadius = 17
-        deliveryBtn.layer.cornerRadius = 17
-        pickupBtn.layer.cornerRadius = 17
-        toggleView.layer.borderWidth = 1
-        toggleView.layer.borderColor = UIColor.lightGray.cgColor
         photoCountView.layer.cornerRadius = 12
-        scheduleDateBtn.layer.cornerRadius = 8
-        scheduleDateBtn.addTarget(self, action: #selector(scheduleAction), for: .touchUpInside)
-       // pickupBtn.addTarget(self, action: #selector(pickupBtnAction), for: .touchUpInside)
+       
         lblPhotoCount.text = "0 Photos"
         selectedButtonUI()
         let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTap(_:)))
         photoCountView.addGestureRecognizer(tap)
         
-        let pickuptap = UITapGestureRecognizer(target: self, action: #selector(self.pickupBtnAction))
-        pickupBtn.addGestureRecognizer(pickuptap)
-        pickupBtn.isUserInteractionEnabled = true
-        
-        let deliverytap = UITapGestureRecognizer(target: self, action: #selector(self.deliveryBtnAction))
-        deliveryBtn.addGestureRecognizer(deliverytap)
-        deliveryBtn.isUserInteractionEnabled = true
-        
     }
     @objc func handleTap(_ sender: UITapGestureRecognizer? = nil) {
         // handling code
-        self.delegate?.selectedGalleryView()
     }
-    @objc func deliveryBtnAction() {
-        Cart.shared.orderType = .delivery
-        Cart.shared.resetTime()
-        selectedButtonUI()
-    }
-    @objc func pickupBtnAction() {
-        Cart.shared.orderType = .pickup
-        Cart.shared.resetTime()
-        selectedButtonUI()
-    }
-    @objc func scheduleAction() {
-        self.delegate?.scheduleDateAction()
-    }
+
     func selectedButtonUI() {
-        let isDelivery = Cart.shared.orderType == .delivery
-
-        // Button colors
-        pickupBtn.backgroundColor   = isDelivery ? .white : kGreenColor
-        deliveryBtn.backgroundColor = isDelivery ? kGreenColor : .white
-
-        pickupBtn.textColor   = isDelivery ? .black : .white
-        deliveryBtn.textColor = isDelivery ? .white : .black
-
-        // Time & label
-        if isDelivery {
-            deliveryTimeLbl.text = "\(restData?.deliveryTime ?? 0) Mins"
-            lblAsap.text = "Delivery, ASAP"
-        } else {
-            deliveryTimeLbl.text = "\(restData?.pickupTime ?? 0) Mins"
-            lblAsap.text = "Pickup, ASAP"
-        }
-
-        setDate()
-
-        // Restaurant closed handling
-        guard let rest = Cart.shared.tempRestDetails else { return }
-
-        if !rest.isRestaurantOpenToday && Cart.shared.orderDate == .ASAP {
-            lblAsap.text = rest.openStatus.status
-            lblAsap.textColor = .red
-        } else {
-            lblAsap.textColor = .black
-        }
+        lblAsap.text = "Pickup, ASAP"
     }
-    func setDate() {
-        
-        var result = Cart.shared.selectedTime.heading
-            result = result.replacingOccurrences(of: "Delivery", with: "")
-            result = result.replacingOccurrences(of: "Pickup", with: "")
-
-         if Cart.shared.orderType == .pickup {
-             lblAsap.text = "Pickup\(result)"
-         }
-         if Cart.shared.orderType == .delivery {
-             lblAsap.text = "Delivery\(result)"
-         }
-    }
+ 
     func updateUI(data: CustomRestDetails?, restImage: String, galleryImages: [String]) {
         restData = data
         photoCountView.isHidden = galleryImages.count > 0 ? false : true
@@ -144,17 +62,7 @@ var restData: CustomRestDetails?
                print("error--->",error)
            }
        }
-      
-        deliveryBtn.isUserInteractionEnabled = false
-        pickupBtn.isUserInteractionEnabled = false
         
-        if restData!.isDelivery {
-            deliveryBtn.isUserInteractionEnabled = true
-            //selectedButtonUI(isDelivery: true)
-        }
-        if restData!.isPickup  {
-            pickupBtn.isUserInteractionEnabled = true
-        }
         lblAsap.textColor = kGreenColor
         selectedButtonUI()
     }

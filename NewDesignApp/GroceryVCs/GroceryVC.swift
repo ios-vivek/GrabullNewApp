@@ -10,8 +10,6 @@ import SafariServices
 
 class GroceryVC: UIViewController {
     var listResponse = [Restaurant]()
-    var cuisine = ""
-    var isDineFilter = false
     @IBOutlet weak var titleLbl: UILabel!
     @IBOutlet weak var homeCollection: UICollectionView!
 
@@ -41,7 +39,7 @@ var gotResponseFromService = false
         parameters.merge([
             "cust_lat": "\(APPDELEGATE.selectedLocationAddress.latLong.latitude)",
             "cust_long": "\(APPDELEGATE.selectedLocationAddress.latLong.longitude)",
-            "cuisine_type" : cuisine,
+            "cuisine_type" : "",
             "address" : "\(UtilsClass.getFullAddress())"
 
         ]) { _, new in new }
@@ -52,7 +50,6 @@ var gotResponseFromService = false
             //print(success.data.data)
             if success.data.data.restaurants.count > 0 {
                 self.listResponse = success.data.data.restaurants
-                self.dineFilter()
             }
             self.homeCollection.reloadData()
         } ErrorHandler: { error in
@@ -63,13 +60,7 @@ var gotResponseFromService = false
         }
         
     }
-    func dineFilter() {
-        if isDineFilter {
-            let filtered = self.listResponse.filter { $0.dinein.contains("Yes") }
-            self.listResponse = filtered
-        }
-        self.homeCollection.reloadData()
-    }
+
     func getRestDetailFromApi(restid: String, dbname: String) {
         Cart.shared.dbname = dbname
        
@@ -81,8 +72,8 @@ var gotResponseFromService = false
         UtilsClass.showProgressHud(view: self.view)
         WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.restaurantDetail, forModelType: RestDetailsApiResponse.self) { success in
             UtilsClass.hideProgressHud(view: self.view)
-            let story = UIStoryboard.init(name: "OrderFlow", bundle: nil)
-            let vc = story.instantiateViewController(withIdentifier: "RestDetailsVC") as! RestDetailsVC
+            let story = UIStoryboard.init(name: "Grocery", bundle: nil)
+            let vc = story.instantiateViewController(withIdentifier: "GroceryDetailsPageVC") as! GroceryDetailsPageVC
             let customModel = success.data.toCustomModel()
             vc.restDetailsData = customModel
             vc.restDetailsRes = success.data.data
@@ -163,20 +154,8 @@ extension GroceryVC: UICollectionViewDelegate,UICollectionViewDataSource{
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if listResponse.count > 0 {
-            if isDineFilter {
-                loadURLSafari(dineUrl: "\(listResponse[indexPath.row].dineUrl ?? "")/\(APPDELEGATE.userResponse?.customer.customerId ?? "")")
-                /*
-                let story = UIStoryboard.init(name: "OrderFlow", bundle: nil)
-                let popupVC = story.instantiateViewController(withIdentifier: "DineInVC") as! DineInVC
-                popupVC.restaurantID = listResponse[indexPath.row].rid
-                popupVC.comeFromDashBoard = true
-                popupVC.dineUrl = listResponse[indexPath.row].dinein
-                self.navigationController?.pushViewController(popupVC, animated: true)
-                */
-            } else {
                 let rest = self.listResponse[indexPath.row]
                 self.getRestDetailFromApi(restid: rest.rid, dbname: rest.dbname)
-            }
         } else {
                 let vc = self.viewController(viewController: LocationVC.self, storyName: StoryName.Location.rawValue) as! LocationVC
             vc.fromSearch = true
