@@ -9,6 +9,9 @@
 import UIKit
 import Alamofire
 
+protocol GroceryGalleryDelegate: AnyObject {
+    func selectedGalleryView()
+}
 class StoreDetailsTVCell: UITableViewCell {
     @IBOutlet weak var restImage: UIImageView!
     @IBOutlet weak var restName: UILabel!
@@ -19,6 +22,7 @@ class StoreDetailsTVCell: UITableViewCell {
     @IBOutlet weak var photoCountView: UIView!
     @IBOutlet weak var lblPhotoCount: UILabel!
     @IBOutlet weak var lblAsap: UILabel!
+    var delegate: GroceryGalleryDelegate?
 
 
 var restData: CustomRestDetails?
@@ -36,6 +40,7 @@ var restData: CustomRestDetails?
     }
     @objc func handleTap(_ sender: UITapGestureRecognizer? = nil) {
         // handling code
+        self.delegate?.selectedGalleryView()
     }
 
     func selectedButtonUI() {

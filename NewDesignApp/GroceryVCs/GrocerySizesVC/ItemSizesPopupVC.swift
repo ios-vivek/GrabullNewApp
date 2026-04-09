@@ -21,8 +21,6 @@ class ItemSizesPopupVC: UIViewController {
     @IBOutlet weak var cancelView: UIView!
     @IBOutlet weak var itemSelectionTbl: UITableView!
     @IBOutlet weak var itemNametLbl: UILabel!
-    @IBOutlet weak var instructionPlaceholderLbl: UILabel!
-    @IBOutlet weak var instructionTxtView: UITextView!
     @IBOutlet weak var soldOutImage: UIImageView!
 
     var delegate: ItemSizesPopupDelegate?
@@ -32,7 +30,6 @@ class ItemSizesPopupVC: UIViewController {
 
     var selectedSize: Int = -1
     var itemQty: Int = 1
-    var topping = [RestToppingsResponse]()
     var selectedMenuType: MenuType = .menu
 
     override func viewDidLoad() {
@@ -49,13 +46,7 @@ class ItemSizesPopupVC: UIViewController {
         }
         */
         // Do any additional setup after loading the view.
-        instructionTxtView.backgroundColor = .white
-        instructionTxtView.textColor = .black
-        instructionTxtView.delegate = self
-        instructionPlaceholderLbl.isHidden = false
-        instructionTxtView.layer.masksToBounds = true
-        instructionTxtView.layer.cornerRadius = 10
-        instructionTxtView.text = ""
+       
         itemSelectionTbl.register(UINib(nibName: "OptionsHeaderView", bundle: nil), forHeaderFooterViewReuseIdentifier: "OptionsHeaderView")
         itemSelectionTbl.sectionHeaderTopPadding = 0
         self.view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
@@ -96,9 +87,6 @@ class ItemSizesPopupVC: UIViewController {
         }
         */
         self.setAmountValue()
-        //if !itemData.topping.isEmpty {
-            getToppingFromApi()
-       // }
         customQtySetup()
 
     }
@@ -157,34 +145,7 @@ class ItemSizesPopupVC: UIViewController {
         self.dismiss(animated: true)
        
     }
-    func getToppingFromApi() {
-        
-        var parameters = CommonAPIParams.base()
-        parameters.merge([
-            "cust_lat" : "\(APPDELEGATE.selectedLocationAddress.latLong.latitude)",
-            "cust_long" : "\(APPDELEGATE.selectedLocationAddress.latLong.longitude)",
-            "item_id": "\(restmenu.items[0].id)",
 
-        ]) { _, new in new }
-        
-        UtilsClass.showProgressHud(view: self.view)
-        WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.options, forModelType: ToppingsResponse.self) { success in
-            UtilsClass.hideProgressHud(view: self.view)
-            self.topping = [RestToppingsResponse]()
-            for item in success.data.data {
-                if item.optionList!.count > 0 {
-                    self.topping.append(item)
-                }
-            }
-            //self.topping = success.data
-                self.itemSelectionTbl.reloadData()
-           // }
-           
-            
-        } ErrorHandler: { error in
-            UtilsClass.hideProgressHud(view: self.view)
-        }
-    }
     @IBAction func plusAction() {
         //if Int(itemData.qty!) < itemQty {
             itemQty = itemQty + 1
@@ -204,17 +165,6 @@ class ItemSizesPopupVC: UIViewController {
             alert.addAction(UIAlertAction(title: "Ok", style: UIAlertAction.Style.default, handler: nil))
             self.present(alert, animated: true, completion: nil)
             return
-        }
-        
-        for toppings in topping {
-          let msg =  Cart.shared.checkMinimumToppins(topping: toppings)
-            if msg != "not required" {
-                let alert = UIAlertController(title: "Toppings", message: msg, preferredStyle: UIAlertController.Style.alert)
-                alert.addAction(UIAlertAction(title: "Ok", style: UIAlertAction.Style.default, handler: nil))
-                self.present(alert, animated: true, completion: nil)
-                return
-            }
-            
         }
         
         Cart.shared.itemData = restmenu.items[0]
@@ -241,15 +191,8 @@ class ItemSizesPopupVC: UIViewController {
        price = price + toppingsPrice
         Cart.shared.itemExtra = 0.0
         Cart.shared.instructionText = ""
-        let array = instructionTxtView.text.uppercased().components(separatedBy: " ".uppercased())
-        for extraItem in array {
-            if extraItem.contains("extra".uppercased()) {
-                //Cart.shared.itemExtra += Cart.shared.restDetails.extracharge
-            }
-        }
                 price = price + Cart.shared.itemExtra
 //            }
-        Cart.shared.instructionText = instructionTxtView.text
         addeditmesPriceBtn.setTitle("    Add Item | \(UtilsClass.getCurrencySymbol())\(Cart.shared.roundValue2Digit(value: price).toString())    ", for: .normal)
 
         Cart.shared.itemSizes = [Sizes]()
@@ -265,19 +208,10 @@ class ItemSizesPopupVC: UIViewController {
 }
 extension ItemSizesPopupVC: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        if selectedSize >= 0 {
-            return 1 + self.topping.count
-        }
         return 1
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 0 {
             return Cart.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType)).count
-        }
-        if selectedSize >= 0 {
-            return self.topping[section - 1].optionList?.count ?? 0
-        }
-        return 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -285,47 +219,21 @@ extension ItemSizesPopupVC: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "ItemSizeTVCell", for: indexPath) as! ItemSizeTVCell
             cell.selectionStyle = .none
         cell.backgroundColor = .clear
-        if indexPath.section == 0 {
             let itemSizes = Cart.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType))
             cell.sizeNameLbl.text = itemSizes[indexPath.row].name
             cell.priceLbl.attributedText = cell.priceServeAttributedText(price: "\(UtilsClass.getCurrencySymbol())\(itemSizes[indexPath.row].price) ", serve: "\(itemSizes[indexPath.row].serveTray)")
             cell.updateUIForSelectSize(indexPath: indexPath, sizes: itemSizes, selectedSize: selectedSize)
-        }
-        else if indexPath.section > 0 {
-            if selectedSize >= 0 {
-                
-            }
-            cell.updateUIForSelectOption(indexPath: indexPath, option: self.topping[indexPath.section - 1].optionList!, isChecked: Cart.shared.isAddedOption(toppingHeading: self.topping[indexPath.section - 1].heading, optionHeading: self.topping[indexPath.section - 1].optionList![indexPath.row].heading), sizes: selectedSize >= 0 ? Cart.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType))[selectedSize] : nil)
-         }
-        else {
-            cell.sizeNameLbl.text = self.topping[indexPath.row].heading
-            cell.priceLbl.text = ""
-            //cell.updateUIForSelectOption(indexPath: indexPath, option: self.topping.op, selectedSize: selectedSize)
-        }
         cell.backgroundColor = .white
             return cell
         
        
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 0{
             selectedSize = indexPath.row
             Cart.shared.itemSizes = [Sizes]()
             Cart.shared.itemSizes.append(Cart.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType))[selectedSize])
             Cart.shared.selectedTopping = [SelectedTopping]()
             //selectedOption = -1
-        } else {
-           // selectedOption = indexPath.row
-            
-            let option = SelectedOption(opID: topping[indexPath.section - 1].optionList![indexPath.row].id, optionHeading: topping[indexPath.section - 1].optionList![indexPath.row].heading, price: Cart.shared.getOptionsPrice(option: topping[indexPath.section - 1].optionList![indexPath.row], sizes: selectedSize >= 0 ? Cart.shared.itemSizes[0] : nil))
-            let toppingHeading = topping[indexPath.section - 1].heading
-            let selectedOption = SelectedTopping(toppingHeading: toppingHeading, option: [option])
-           let msg = Cart.shared.addAndRemoveToppins(selectedTopping: selectedOption, maxCount: topping[indexPath.section - 1].choice)
-            if msg.count > 0 {
-                self.showToast(message: msg, font: .systemFont(ofSize: 14.0))
-            }
-            
-        }
        
         print(Cart.shared.selectedTopping.count)
         tableView.reloadData()
@@ -335,31 +243,12 @@ extension ItemSizesPopupVC: UITableViewDelegate, UITableViewDataSource {
        return 40
     }
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        if section > 0 {
-            return 30
-    }
             return 0
-        
     }
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if section > 0 {
-            let sec = section - 1
             let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: "OptionsHeaderView") as! OptionsHeaderView
-            var warningText = ""
-            
-            let rq = self.topping[sec].required
-            let ch = self.topping[sec].choice
-            if rq > 0 && ch > 0 && rq == ch{
-                warningText = "Choose \(rq)"
-            }
-            else if rq > 0 {
-                warningText = "Choose at least \(rq)"
-            } else {
-                warningText = ""
-            }
 
-            headerView.headingLbl.attributedText = UtilsClass.getOptionAttributedString(str1: self.topping[sec].heading, str2: " \(warningText)")
-            headerView.headerViewBckground.backgroundColor = UIColor.gGray100
             return headerView
     }
         return nil
@@ -369,24 +258,4 @@ extension ItemSizesPopupVC: UITableViewDelegate, UITableViewDataSource {
         view.endEditing(true)
     }
         
-}
-extension ItemSizesPopupVC: UITextViewDelegate { //If your class is not conforms to the UITextViewDelegate protocol you will not be able to set it as delegate to UITextView
-
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        let currentText = textView.text ?? ""
-        guard let stringRange = Range(range, in: currentText) else { return true }
-        let updatedText = currentText.replacingCharacters(in: stringRange, with: text)
-        return updatedText.count <= 60
-    }
-
-    func textViewDidChange(_ textView: UITextView) {
-        //Handle the text changes here
-        if textView.text.count > 0 {
-            instructionPlaceholderLbl.isHidden = true
-            setAmountValue()
-        } else {
-            instructionPlaceholderLbl.isHidden = false
-        }
-        print(textView.text); //the textView parameter is the textView where text was changed
-    }
 }

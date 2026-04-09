@@ -284,7 +284,7 @@ class GroceryCartVC: UIViewController {
                 }
                 return
             }
-            let vc = self.viewController(viewController: ConfirmOrderVC.self, storyName: StoryName.CartFlow.rawValue) as! ConfirmOrderVC
+            let vc = self.viewController(viewController: GroceryPaymentVC.self, storyName: StoryName.Grocery.rawValue) as! GroceryPaymentVC
             self.navigationController?.pushViewController(vc, animated: true)
         }
         
@@ -582,28 +582,7 @@ extension GroceryCartVC: CheckoutDelegate {
     }
     
     func checkoutAction() {
-        /*
-        if Cart.shared.restDetails.restMindelivery > Cart.shared.getAllPriceDeatils().subTotal {
-            let alertController = UIAlertController(title: "Add more items", message: "Min order \(UtilsClass.getCurrencySymbol())\(Cart.shared.restDetails.restMindelivery) for delivery", preferredStyle: .alert)
-            let OKAction = UIAlertAction(title: "Add", style: .default) { action in
-                self.navigationController?.popViewController(animated: true)
-
-            }
-            let cancel = UIAlertAction(title: "Cancel", style: .cancel) { alert in
-                
-            }
-            alertController.addAction(OKAction)
-            alertController.addAction(cancel)
-            OperationQueue.main.addOperation {
-                self.present(alertController, animated: true,
-                             completion:nil)
-            }
-        } else {
-            let vc = self.viewController(viewController: ConfirmOrderVC.self, storyName: StoryName.CartFlow.rawValue) as! ConfirmOrderVC
-            self.navigationController?.pushViewController(vc, animated: true)
-        }
-        
-     */
+       
     }
    
 }

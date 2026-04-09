@@ -449,6 +449,7 @@ extension GroceryDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "StoreDetailsTVCell", for: indexPath) as! StoreDetailsTVCell
             cell.selectionStyle = .none
             cell.updateUI(data: self.restDetailsData, restImage: restData?.restImgUrl ?? "", galleryImages: self.galleryImages)
+            cell.delegate = self
             return cell
         case GrocerySection.Deals.rawValue:
             let cell = tableView.dequeueReusableCell(withIdentifier: "DealsTVCell", for: indexPath) as! DealsTVCell
@@ -633,17 +634,7 @@ extension GroceryDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
     }
         
 }
-extension GroceryDetailsPageVC: GalleryDelegate {
-    func scheduleDateAction() {
-        let story = UIStoryboard.init(name: "OrderFlow", bundle: nil)
-        let popupVC = story.instantiateViewController(withIdentifier: "ScheduleDateTimeVC") as! ScheduleDateTimeVC
-        popupVC.delegate = self
-        popupVC.isPickupDeliverySettingHide = true
-        popupVC.modalPresentationStyle = .overCurrentContext
-        popupVC.modalTransitionStyle = .crossDissolve
-        self.present(popupVC, animated: true)
-
-    }
+extension GroceryDetailsPageVC: GroceryGalleryDelegate {
     
     func selectedGalleryView() {
         let vc = self.viewController(viewController: RestImageGalleryVC.self, storyName: StoryName.Main.rawValue) as! RestImageGalleryVC
@@ -737,10 +728,4 @@ extension GroceryDetailsPageVC: OpenCartViewDelegate {
         Cart.shared.tempAllRestmenu = self.allMenuList
         self.navigationController?.pushViewController(vc, animated: true)
     }
-}
-extension GroceryDetailsPageVC: DateChangedDelegate {
-    func dateChanged() {
-        restaurantTable.reloadData()
-    }
-    
 }
