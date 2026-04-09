@@ -11,7 +11,7 @@ import Lottie
 import SafariServices
 
 
-class GroceryDetailsPageVC: UIViewController, ItemCellDelegate, ItemAddedInCartDelegate {
+class GroceryDetailsPageVC: UIViewController, ItemCellDelegate, ItemSizesPopupDelegate {
     func openSelectSize(index: IndexPath) {
         self.addItemSelection(index: index)
     }
@@ -291,8 +291,8 @@ class GroceryDetailsPageVC: UIViewController, ItemCellDelegate, ItemAddedInCartD
     }
     func navigateToMenuDetails(index: IndexPath) {
         
-        let story = UIStoryboard.init(name: "OrderFlow", bundle: nil)
-        let popupVC = story.instantiateViewController(withIdentifier: "ItemSizeSelectionPopupVC") as! ItemSizeSelectionPopupVC
+        let story = UIStoryboard.init(name: "Grocery", bundle: nil)
+        let popupVC = story.instantiateViewController(withIdentifier: "ItemSizesPopupVC") as! ItemSizesPopupVC
         if selectedMenuType == .menu {
             var menu = self.menuSections[index.section - sectionOffset]
             if selectedFiler > 0 {
@@ -733,7 +733,7 @@ extension GroceryDetailsPageVC: MenuTypeSelectedDelegate {
 }
 extension GroceryDetailsPageVC: OpenCartViewDelegate {
     func openCartView() {
-        let vc = self.viewController(viewController: CartVC.self, storyName: StoryName.CartFlow.rawValue) as! CartVC
+        let vc = self.viewController(viewController: GroceryCartVC.self, storyName: StoryName.Grocery.rawValue) as! GroceryCartVC
         Cart.shared.tempAllRestmenu = self.allMenuList
         self.navigationController?.pushViewController(vc, animated: true)
     }

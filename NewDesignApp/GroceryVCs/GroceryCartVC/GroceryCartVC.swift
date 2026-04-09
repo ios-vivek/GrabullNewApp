@@ -7,7 +7,7 @@
 
 import UIKit
 
-class CartVC: UIViewController {
+class GroceryCartVC: UIViewController {
     
     @IBOutlet weak var cartTableView: UITableView!
     @IBOutlet weak var emptyView: UIView!
@@ -364,7 +364,7 @@ class CartVC: UIViewController {
     }
 
 }
-extension CartVC: ReloadAddressDelegate {
+extension GroceryCartVC: ReloadAddressDelegate {
     func changedAddress() {
         refreshView()
     }
@@ -378,13 +378,13 @@ extension CartVC: ReloadAddressDelegate {
     }
     
 }
-extension CartVC: ReloadNewAddressDelegate {
+extension GroceryCartVC: ReloadNewAddressDelegate {
     func addednewAddress() {
         refreshView()
     }
     
 }
-extension CartVC: LoginSuccessDelegate {
+extension GroceryCartVC: LoginSuccessDelegate {
     func signupAction() {
         let vc = self.viewController(viewController: SignupVC.self, storyName: StoryName.Profile.rawValue) as! SignupVC
         vc.delegate = self
@@ -398,7 +398,7 @@ extension CartVC: LoginSuccessDelegate {
     }
     }
 }
-extension CartVC: SignupSuccessfullyDelegate {
+extension GroceryCartVC: SignupSuccessfullyDelegate {
     func signupCompleted() {
         self.refreshView()
         if Cart.shared.orderType == .pickup {
@@ -407,7 +407,7 @@ extension CartVC: SignupSuccessfullyDelegate {
 
     }
 }
-extension CartVC: UITableViewDelegate, UITableViewDataSource{
+extension GroceryCartVC: UITableViewDelegate, UITableViewDataSource{
     func numberOfSections(in tableView: UITableView) -> Int {
         if Cart.shared.orderType == .delivery && Cart.shared.userAddress != nil {
             return 4
@@ -511,7 +511,7 @@ extension CartVC: UITableViewDelegate, UITableViewDataSource{
         return UITableView.automaticDimension
     }
 }
-extension CartVC: ChangeAddressDelegate {
+extension GroceryCartVC: ChangeAddressDelegate {
     func changeAddress() {
         let story = UIStoryboard.init(name: "Profile", bundle: nil)
         let popupVC = story.instantiateViewController(withIdentifier: "ChooseAddressVC") as! ChooseAddressVC
@@ -530,12 +530,12 @@ extension CartVC: ChangeAddressDelegate {
         self.present(popupVC, animated: true)
     }
 }
-extension CartVC: ChangePhoneNumberDelegate {
+extension GroceryCartVC: ChangePhoneNumberDelegate {
     func changesNumber() {
         cartTableView.reloadData()
     }
 }
-extension CartVC: DeleteDelegate {
+extension GroceryCartVC: DeleteDelegate {
     func deleteItem(index: Int) {
         Cart.shared.cartData.remove(at: index)
         self.refreshView()
@@ -562,7 +562,7 @@ extension CartVC: DeleteDelegate {
     }
         
 }
-extension CartVC: CheckoutDelegate {
+extension GroceryCartVC: CheckoutDelegate {
     func emptyAction() {
         let alertController = UIAlertController(title: "Empty cart", message: "Are you sure want to empty?", preferredStyle: .alert)
         let OKAction = UIAlertAction(title: "Ok", style: .default) { action in
@@ -607,12 +607,12 @@ extension CartVC: CheckoutDelegate {
     }
    
 }
-extension CartVC: DateChangedDelegate {
+extension GroceryCartVC: DateChangedDelegate {
     func dateChanged() {
         self.proceedAction()
     }
 }
-extension CartVC: ItemDetailsDelegate {
+extension GroceryCartVC: ItemDetailsDelegate {
     func itemClosed() {
         closedPopup()
     }
@@ -670,7 +670,7 @@ extension CartVC: ItemDetailsDelegate {
         }
     }
 }
-extension CartVC: OpenItemDetailDelegate {
+extension GroceryCartVC: OpenItemDetailDelegate {
     func addItemInList(index: IndexPath) {
         let menu = completeItemList[index.section]
         let newItem = completeItemList[index.section].itemList[index.row]

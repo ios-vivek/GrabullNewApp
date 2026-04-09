@@ -59,6 +59,7 @@ enum StoryName: String {
     case Location = "Location"
     case CartFlow = "CartFlow"
     case DineIn = "DineIn"
+    case Grocery = "Grocery"
 }
 
 enum GrocerySection: Int {

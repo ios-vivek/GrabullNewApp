@@ -6,10 +6,10 @@
 //
 
 import UIKit
-protocol ItemAddedInCartDelegate: AnyObject {
+protocol ItemSizesPopupDelegate: AnyObject {
     func itemAddedInTheCart()
 }
-class ItemSizeSelectionPopupVC: UIViewController {
+class ItemSizesPopupVC: UIViewController {
     @IBOutlet weak var addItemView: UIView!
     @IBOutlet weak var plusButton: UIButton!
     @IBOutlet weak var minusButton: UIButton!
@@ -25,7 +25,7 @@ class ItemSizeSelectionPopupVC: UIViewController {
     @IBOutlet weak var instructionTxtView: UITextView!
     @IBOutlet weak var soldOutImage: UIImageView!
 
-    var delegate: ItemAddedInCartDelegate?
+    var delegate: ItemSizesPopupDelegate?
 //let arr = ["Half", "Medium", "Full"]
     var restmenu: DisplaySection!
     //var restmenu: CustMenuCategory!
@@ -263,7 +263,7 @@ class ItemSizeSelectionPopupVC: UIViewController {
     }
 
 }
-extension ItemSizeSelectionPopupVC: UITableViewDelegate, UITableViewDataSource {
+extension ItemSizesPopupVC: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         if selectedSize >= 0 {
             return 1 + self.topping.count
@@ -370,7 +370,7 @@ extension ItemSizeSelectionPopupVC: UITableViewDelegate, UITableViewDataSource {
     }
         
 }
-extension ItemSizeSelectionPopupVC: UITextViewDelegate { //If your class is not conforms to the UITextViewDelegate protocol you will not be able to set it as delegate to UITextView
+extension ItemSizesPopupVC: UITextViewDelegate { //If your class is not conforms to the UITextViewDelegate protocol you will not be able to set it as delegate to UITextView
 
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         let currentText = textView.text ?? ""
