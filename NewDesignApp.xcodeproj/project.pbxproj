@@ -61,6 +61,7 @@
 		E2442C782F1E6F670015085D /* ConfirmOrderViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2442C772F1E6F670015085D /* ConfirmOrderViewModel.swift */; };
 		E2558BFC2E5DB7B20015818C /* TopPicksCVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2558BFB2E5DB7B20015818C /* TopPicksCVCell.swift */; };
 		E257DEDC2F87D97000EB0614 /* GroceryCartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E257DEDB2F87D97000EB0614 /* GroceryCartView.swift */; };
+		E257DFCA2F89F70A00EB0614 /* ImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E257DFC92F89F70A00EB0614 /* ImageExtension.swift */; };
 		E2609E402F7565C700AAF4A3 /* OptionsHeaderView.xib in Resources */ = {isa = PBXBuildFile; fileRef = E2609E3F2F7565C700AAF4A3 /* OptionsHeaderView.xib */; };
 		E2609E412F7565C700AAF4A3 /* OptionsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2609E3E2F7565C700AAF4A3 /* OptionsHeaderView.swift */; };
 		E26503F82D117AC00036A984 /* DineInTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E26503F72D117AC00036A984 /* DineInTVCell.swift */; };
@@ -284,6 +285,7 @@
 		E2442C772F1E6F670015085D /* ConfirmOrderViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmOrderViewModel.swift; sourceTree = "<group>"; };
 		E2558BFB2E5DB7B20015818C /* TopPicksCVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopPicksCVCell.swift; sourceTree = "<group>"; };
 		E257DEDB2F87D97000EB0614 /* GroceryCartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroceryCartView.swift; sourceTree = "<group>"; };
+		E257DFC92F89F70A00EB0614 /* ImageExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageExtension.swift; sourceTree = "<group>"; };
 		E2609E3E2F7565C700AAF4A3 /* OptionsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OptionsHeaderView.swift; sourceTree = "<group>"; };
 		E2609E3F2F7565C700AAF4A3 /* OptionsHeaderView.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = OptionsHeaderView.xib; sourceTree = "<group>"; };
 		E26503F72D117AC00036A984 /* DineInTVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DineInTVCell.swift; sourceTree = "<group>"; };
@@ -462,6 +464,7 @@
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		E257DE002F7E556100EB0614 /* GroceryVCs */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = GroceryVCs; sourceTree = "<group>"; };
+		E257DF202F892C5900EB0614 /* GroceryApiResponses */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = GroceryApiResponses; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -511,6 +514,7 @@
 		E211F5772C78749300309EE7 /* WebServices */ = {
 			isa = PBXGroup;
 			children = (
+				E257DF202F892C5900EB0614 /* GroceryApiResponses */,
 				E23041B22C8CA2D300153C26 /* ApiResponse */,
 				E211F5782C7874AE00309EE7 /* Urls.swift */,
 				E211F57A2C78759100309EE7 /* WebServices.swift */,
@@ -549,6 +553,7 @@
 				E257DEDB2F87D97000EB0614 /* GroceryCartView.swift */,
 				E2B46A622CBAADAF00D45C09 /* RestaurantCartDeatils.swift */,
 				E2BAD6332CCA838C0016810A /* Alert.swift */,
+				E257DFC92F89F70A00EB0614 /* ImageExtension.swift */,
 				E257DE002F7E556100EB0614 /* GroceryVCs */,
 				E2EC30612D78774E008F1603 /* DineInReservationVC */,
 				E2BAD5FA2CBE9EF70016810A /* Cart */,
@@ -1234,6 +1239,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				E257DE002F7E556100EB0614 /* GroceryVCs */,
+				E257DF202F892C5900EB0614 /* GroceryApiResponses */,
 			);
 			name = NewDesignApp;
 			productName = NewDesignApp;
@@ -1396,6 +1402,7 @@
 				E2DBFED82CF0A68B00A8CB76 /* RedeemTVCell.swift in Sources */,
 				E294DF252DAA9ECF00A51A60 /* MoreItemCVCell.swift in Sources */,
 				E268A9632C67D92300B8C417 /* ItemTVCell.swift in Sources */,
+				E257DFCA2F89F70A00EB0614 /* ImageExtension.swift in Sources */,
 				E23041BF2C90695E00153C26 /* ControllerExt.swift in Sources */,
 				E2928B532C8306AE007EAC25 /* HiddenRestVC.swift in Sources */,
 				E2BAD6492CD13ADB0016810A /* DonateTVCell.swift in Sources */,
@@ -1722,7 +1729,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1.27;
 				DEVELOPMENT_TEAM = 6J7UZY2EAL;
-				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NewDesignApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Grabull Shop";
@@ -1764,7 +1770,6 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1.27;
 				DEVELOPMENT_TEAM = 6J7UZY2EAL;
-				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NewDesignApp/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Grabull Shop";

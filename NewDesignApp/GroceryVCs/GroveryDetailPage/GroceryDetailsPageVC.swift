@@ -104,20 +104,22 @@ class GroceryDetailsPageVC: UIViewController, ItemCellDelegate, ItemSizesPopupDe
     private let sectionOffset = GrocerySection.Items.rawValue
     var restDetailsRes: RestDetailsRes?
     private var menuSections: [DisplaySection] = []
-    private var cateringSections: [DisplaySection] = []
-    private var filteredMenuSections: [DisplaySection] = []
-    private var specialSections: [DisplaySection] = []
-
     
     var cartView: GroceryCartView!
     var isOpen = false
-    var restData: RestData?
+   // var restData: RestData?
     var restDetailsData: CustomRestDetails?
     var allMenuList = [CustMenuCategory]()
     var selectedMenuType: MenuType = .menu
     var isReservationAvailable = false
     var selectedFiler = -1
     var galleryImages = [String]()
+    
+    ////use things
+    var storeDetails: StoreDetails?
+    var imageUrl = ""
+
+
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -126,11 +128,11 @@ class GroceryDetailsPageVC: UIViewController, ItemCellDelegate, ItemSizesPopupDe
                 GroceryCartData.shared.resetTime()
             }
         }
-        GroceryCartData.shared.tempRestDetails = restDetailsData!
+       // GroceryCartData.shared.tempRestDetails = restDetailsData!
 
-        if restDetailsData!.dinein == "Yes" {
-            isReservationAvailable = true
-        }
+//        if restDetailsData!.dinein == "Yes" {
+//            isReservationAvailable = true
+//        }
         menuImageView.play()
         menuImageView.loopMode = .loop
         navView.backgroundColor = themeBackgrounColor
@@ -179,62 +181,14 @@ class GroceryDetailsPageVC: UIViewController, ItemCellDelegate, ItemSizesPopupDe
     func getAllDataFromListForTable() {
         if let restData = restDetailsRes {
             menuSections = getDataFroDisplayFromList(list: restData.menuList)
-            cateringSections = getDataFroDisplayFromList(list: restData.cateringList)
-            getAllSpecialDealsMenu()
         }
     }
     func getDataFroDisplayFromList(list : [MenuCategory]) -> [DisplaySection] {
         var sections: [DisplaySection] = []
-        cateringSections = list.flatMap { catering in
-            // If direct items exist
-            if !catering.itemList.isEmpty {
-                sections.append(DisplaySection(
-                    parentID: catering.id, parent: catering.heading,
-                    title: catering.heading,
-                    items: catering.itemList
-                ))
-            }
-            
-            // Handle submenu (IMPORTANT FIX)
-            for subMenu in catering.menuList {
-                sections.append(DisplaySection(
-                    parentID: catering.id, parent: catering.heading,
-                    title: subMenu.heading,
-                    items: subMenu.itemList
-                ))
-            }
-            return sections
-            
-        }
+       
         return sections
     }
-    func getAllSpecialDealsMenu() {
-        guard let offers = restDetailsData?.offer else { return }
-        specialSections = [DisplaySection]()
-        var grouped: [String: DisplaySection] = [:]
-
-        for offer in offers {
-            guard let itemId = offer.itemId else { continue }
-
-            for section in menuSections {
-                if let item = section.items.first(where: { $0.id == itemId }) {
-                    if var existing = grouped[section.parentID] {
-                        existing.items.append(item)
-                        grouped[section.parentID] = existing
-                    } else {
-                        grouped[section.parentID] = DisplaySection(
-                            parentID: section.parentID,
-                            parent: section.parent,
-                            title: section.title,
-                            items: [item]
-                        )
-                    }
-                }
-            }
-        }
-
-        specialSections = Array(grouped.values)
-    }
+   
     func setImages() {
         galleryImages = Array(Set(
             restDetailsData?.menuList
@@ -242,14 +196,11 @@ class GroceryDetailsPageVC: UIViewController, ItemCellDelegate, ItemSizesPopupDe
                 .compactMap { $0.itemImage }
                 .filter { !$0.isEmpty } ?? []
         ))
-        galleryImages.append(self.restData?.restImgUrl ?? "")
+        galleryImages.append(imageUrl)
     }
     func getMenuList() {
         if selectedMenuType == .menu {
-            filteredMenuSections = getMenusData()
-        }
-        else {
-            filteredMenuSections = getCategoryData()
+           // filteredMenuSections = getMenusData()
         }
         menuHeadingCollection.reloadData()
         restaurantTable.reloadData()
@@ -265,16 +216,7 @@ class GroceryDetailsPageVC: UIViewController, ItemCellDelegate, ItemSizesPopupDe
     
     }
     
-    func getCategoryData()-> [DisplaySection]{
-        if selectedFiler >= 0 {
-            let arr: [DisplaySection] = self.cateringSections.filter{ ($0.title.contains(self.cateringSections[selectedFiler].title)) }
-            if arr.count > 0 {
-                return arr
-            }
-        }
-        return [DisplaySection]()
-    
-    }
+ 
 
     @IBAction func allBtnAction() {
         selectedFiler = -1
@@ -293,27 +235,13 @@ class GroceryDetailsPageVC: UIViewController, ItemCellDelegate, ItemSizesPopupDe
         
         let story = UIStoryboard.init(name: "Grocery", bundle: nil)
         let popupVC = story.instantiateViewController(withIdentifier: "ItemSizesPopupVC") as! ItemSizesPopupVC
-        if selectedMenuType == .menu {
             var menu = self.menuSections[index.section - sectionOffset]
             if selectedFiler > 0 {
-                menu = self.filteredMenuSections[index.section - sectionOffset]
-                popupVC.restmenu = DisplaySection.init(parentID: menu.parentID, parent: menu.parent, title: menu.title, items: [menu.items[index.row]])
+               // menu = self.filteredMenuSections[index.section - sectionOffset]
+               // popupVC.restmenu = DisplaySection.init(parentID: menu.parentID, parent: menu.parent, title: menu.title, items: [menu.items[index.row]])
             } else {
-                popupVC.restmenu = DisplaySection.init(parentID: menu.parentID, parent: menu.parent, title: menu.title, items: [menu.items[index.row]])
+               // popupVC.restmenu = DisplaySection.init(parentID: menu.parentID, parent: menu.parent, title: menu.title, items: [menu.items[index.row]])
             }
-        } else if selectedMenuType == .catering {
-            var menu = self.cateringSections[index.section - sectionOffset]
-            if selectedFiler > 0 {
-                menu = self.filteredMenuSections[index.section - sectionOffset]
-                popupVC.restmenu = DisplaySection.init(parentID: menu.parentID, parent: menu.parent, title: menu.title, items: [menu.items[index.row]])
-            } else {
-                popupVC.restmenu = DisplaySection.init(parentID: menu.parentID, parent: menu.parent, title: menu.title, items: [menu.items[index.row]])
-            }
-        }
-        else if selectedMenuType == .deals {
-            let menu = self.specialSections[index.section - sectionOffset]
-            popupVC.restmenu = DisplaySection.init(parentID: menu.parentID, parent: menu.parent, title: menu.title, items: [menu.items[index.row]])
-        }
         popupVC.selectedMenuType = self.selectedMenuType
         popupVC.delegate = self
         popupVC.modalPresentationStyle = .overCurrentContext
@@ -384,23 +312,9 @@ extension GroceryDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         if selectedMenuType == .menu {
             if selectedFiler > 0 {
-                return GrocerySection.Items.rawValue + filteredMenuSections.count
+               // return GrocerySection.Items.rawValue + filteredMenuSections.count
             } else {
                 return GrocerySection.Items.rawValue + menuSections.count
-            }
-        }
-        if selectedMenuType == .deals {
-            let count = specialSections.count > 0 ? specialSections.count : 1
-            return GrocerySection.Items.rawValue + count
-        }
-        if selectedMenuType == .dineIn {
-            return GrocerySection.Items.rawValue + 1
-        }
-        if selectedMenuType == .catering {
-            if selectedFiler > 0 {
-                return GrocerySection.Items.rawValue + filteredMenuSections.count
-            } else {
-                return GrocerySection.Items.rawValue + cateringSections.count
             }
         }
             return GrocerySection.Items.rawValue + menuSections.count
@@ -416,27 +330,8 @@ extension GroceryDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
                 return 0
         }
         if section >= GrocerySection.Items.rawValue {
-            if selectedMenuType == .dineIn {
-                return 0
-            }
-            if selectedMenuType == .deals {
-                if specialSections.count == 0 {
-                    return 1
-                }
-               return specialSections[section - sectionOffset].items.count
-            }
-            if selectedMenuType == .catering {
-                if cateringSections.count == 0 {
-                       return 1
-                   }
-                if selectedFiler > 0 {
-                    return filteredMenuSections[section - sectionOffset].items.count
-                } else {
-                    return cateringSections[section - sectionOffset].items.count
-                }
-            }
             if selectedFiler > 0 {
-                return filteredMenuSections[section - sectionOffset].items.count
+               // return filteredMenuSections[section - sectionOffset].items.count
             }
             return menuSections[section - sectionOffset].items.count
         }
@@ -448,7 +343,7 @@ extension GroceryDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
         case GrocerySection.RestDetails.rawValue:
             let cell = tableView.dequeueReusableCell(withIdentifier: "StoreDetailsTVCell", for: indexPath) as! StoreDetailsTVCell
             cell.selectionStyle = .none
-            cell.updateUI(data: self.restDetailsData, restImage: restData?.restImgUrl ?? "", galleryImages: self.galleryImages)
+            cell.updateUI(data: self.storeDetails, restImage: imageUrl, galleryImages: self.galleryImages)
             cell.delegate = self
             return cell
         case GrocerySection.Deals.rawValue:
@@ -466,72 +361,18 @@ extension GroceryDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "FoodMenuTVCell", for: indexPath) as! FoodMenuTVCell
             cell.selectionStyle = .none
             cell.delegate = self
-            if selectedMenuType == .catering{
-                cell.updateUI(menulist: self.cateringSections, selectedmenuType: selectedMenuType, selectedFiler: self.selectedFiler)
-                cell.featuredCollection.reloadData()
-            } else {
+           
                 cell.updateUI(menulist: self.menuSections, selectedmenuType: selectedMenuType, selectedFiler: self.selectedFiler)
                 cell.featuredCollection.reloadData()
-            }
             return cell
         default:
             if GrocerySection.Items.rawValue >= 0 {
                 let itemSectionIndex = indexPath.section - sectionOffset
 
-                if selectedMenuType == .deals {
-                    if specialSections.count == 0 {
-                        let cell = tableView.dequeueReusableCell(withIdentifier: "NoDataAvailableTVCell", for: indexPath) as! NoDataAvailableTVCell
-                        cell.selectionStyle = .none
-                        cell.updateUI(msg: "No Quick Meals Available order from Regular Menu")
-                        return cell
-                    } else {
-                        let cell = tableView.dequeueReusableCell(withIdentifier: "ItemTVCell", for: indexPath) as! ItemTVCell
-
-                        let item = self.specialSections[itemSectionIndex].items[indexPath.row]
-                        cell.selectionStyle = .none
-                        cell.delegate = self
-                        cell.selectedIndex = indexPath
-                            cell.updateUI(itemlist: item)
-                        cell.dividerImage.isHidden = false
-                        if indexPath.row + 1 == self.specialSections[itemSectionIndex].items.count {
-                            cell.dividerImage.isHidden = true
-                        }
-                        return cell
-                    }
-                }
-
-                if selectedMenuType == .dineIn && !isReservationAvailable{
-                        let cell = tableView.dequeueReusableCell(withIdentifier: "NoDataAvailableTVCell", for: indexPath) as! NoDataAvailableTVCell
-                        cell.selectionStyle = .none
-                        cell.updateUI(msg: "Does not take Reservations.")
-                        return cell
-                }
-                if selectedMenuType == .catering {
-                    if cateringSections.count == 0 {
-                        let cell = tableView.dequeueReusableCell(withIdentifier: "NoDataAvailableTVCell", for: indexPath) as! NoDataAvailableTVCell
-                        cell.selectionStyle = .none
-                        cell.updateUI(msg: "No Catering Available order from Regular menu")
-                        return cell
-                    }
-                    var menu = self.cateringSections[itemSectionIndex]
-                    if selectedFiler > 0 {
-                        menu = self.filteredMenuSections[itemSectionIndex]
-                    }
-                    let cell = tableView.dequeueReusableCell(withIdentifier: "ItemTVCell", for: indexPath) as! ItemTVCell
-                    cell.selectionStyle = .none
-                    cell.delegate = self
-                    cell.selectedIndex = indexPath
-                    cell.updateUI(itemlist: menu.items[indexPath.row])
-                    cell.dividerImage.isHidden = false
-                    if indexPath.row + 1 == menu.items.count {
-                        cell.dividerImage.isHidden = true
-                    }
-                    return cell
-
-                } else {
+               
                     var menu = self.menuSections[itemSectionIndex]
                     if selectedFiler > 0 {
-                        menu = self.filteredMenuSections[itemSectionIndex]
+                       // menu = self.filteredMenuSections[itemSectionIndex]
                     }
 
                     let cell = tableView.dequeueReusableCell(withIdentifier: "ItemTVCell", for: indexPath) as! ItemTVCell
@@ -544,7 +385,7 @@ extension GroceryDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
                         cell.dividerImage.isHidden = true
                     }
                     return cell
-                }
+                
            
             }
             let cell = tableView.dequeueReusableCell(withIdentifier: "ItemHeadingTVCell", for: indexPath) as! ItemHeadingTVCell
@@ -569,25 +410,14 @@ extension GroceryDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
         if section >= GrocerySection.Items.rawValue {
             let sec = section - sectionOffset
             let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: "ItemHeaderView") as! ItemHeaderView
-            if selectedMenuType == .catering {
-                var sectionHeader = self.cateringSections[sec]
-                if selectedFiler > 0 {
-                    sectionHeader = self.filteredMenuSections[sec]
-                }
-                    headerView.headingLbl.text = sectionHeader.title
-                headerView.headingLbl.textColor = .black
-                return headerView
-            }
-            if selectedMenuType == .deals {
-                headerView.headingLbl.text = ""
-            }
-            else {
+        
+            
                 var sectionHeader = self.menuSections[sec]
                 if selectedFiler > 0 {
-                    sectionHeader = self.filteredMenuSections[sec]
+                   // sectionHeader = self.filteredMenuSections[sec]
                 }
                     headerView.headingLbl.text = sectionHeader.title
-            }
+            
             headerView.headingLbl.textColor = .black
 
             headerView.headerViewBckground.backgroundColor = UIColor.gGray100
@@ -620,10 +450,6 @@ extension GroceryDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
             
             if indexPath.section >= GrocerySection.Items.rawValue {
                 switch selectedMenuType {
-                    case .deals:
-                        return specialSections.isEmpty ? 100 : 200
-                    case .dineIn:
-                        return 100
                     default:
                         return 200
                     }
@@ -655,23 +481,13 @@ extension GroceryDetailsPageVC: UICollectionViewDelegate,UICollectionViewDataSou
         return 1
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        //return self.allMenuList.count
-        if selectedMenuType == .catering {
-            return cateringSections.count
-        } else {
             return menuSections.count
-        }
-
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FoodMenuCVCell", for: indexPath as IndexPath) as! FoodMenuCVCell
         cell.backgroundColor = .white
-        if selectedMenuType == .catering {
-            cell.menu.text = cateringSections[indexPath.row].title//self.allMenuList[indexPath.row].heading
-        } else {
             cell.menu.text = menuSections[indexPath.row].title//self.allMenuList[indexPath.row].heading
-        }
             cell.menu.textColor = selectedFiler == indexPath.row ? themeBackgrounColor : .black
         cell.layer.cornerRadius = 8
         cell.layer.borderWidth = 1

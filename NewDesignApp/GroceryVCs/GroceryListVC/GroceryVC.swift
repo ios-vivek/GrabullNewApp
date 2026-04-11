@@ -9,12 +9,10 @@ import UIKit
 import SafariServices
 
 class GroceryVC: UIViewController {
-    var listResponse = [Restaurant]()
+    var viewModel = GroceryViewModel()
     @IBOutlet weak var titleLbl: UILabel!
     @IBOutlet weak var homeCollection: UICollectionView!
-
-
-var gotResponseFromService = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -23,6 +21,7 @@ var gotResponseFromService = false
         self.view.backgroundColor = .white
         homeCollection.backgroundColor = .white
         homeCollection.register(UINib(nibName: "HeaderCollectionView", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "HeaderCollectionView") //elementKindSectionFooter for footerview
+        setupBindings()
     }
     
     @IBAction func backAction() {
@@ -30,73 +29,36 @@ var gotResponseFromService = false
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if listResponse.count == 0 {
-            getRestDataFromApi()
-        }
-    }
-    func getRestDataFromApi() {
-        var parameters = CommonAPIParams.base()
-        parameters.merge([
-            "cust_lat": "\(APPDELEGATE.selectedLocationAddress.latLong.latitude)",
-            "cust_long": "\(APPDELEGATE.selectedLocationAddress.latLong.longitude)",
-            "cuisine_type" : "",
-            "address" : "\(UtilsClass.getFullAddress())"
-
-        ]) { _, new in new }
+        if viewModel.storeList.count == 0 {
             UtilsClass.showProgressHud(view: self.view)
-        WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.resturantList, forModelType: RestaurantListResponse.self) { success in
-            UtilsClass.hideProgressHud(view: self.view)
-            self.gotResponseFromService = true
-            //print(success.data.data)
-            if success.data.data.restaurants.count > 0 {
-                self.listResponse = success.data.data.restaurants
-            }
-            self.homeCollection.reloadData()
-        } ErrorHandler: { error in
-            self.gotResponseFromService = true
-            UtilsClass.hideProgressHud(view: self.view)
-            self.homeCollection.reloadData()
-
+            viewModel.getStorelistFromApi()
         }
-        
+    }
+    private func setupBindings() {
+        viewModel.onUpdate = { [weak self] in
+            guard let self = self else { return }
+            UtilsClass.hideProgressHud(view: self.view)
+            self.homeCollection.reloadData()
+        }
+        viewModel.onError = { [weak self] _ in
+            guard let self = self else { return }
+            UtilsClass.hideProgressHud(view: self.view)
+        }
     }
 
-    func getRestDetailFromApi(restid: String, dbname: String) {
+    func getRestDetailFromApi(restid: String, dbname: String, storeImage: String) {
         GroceryCartData.shared.dbname = dbname
-       
-        var parameters = CommonAPIParams.base()
-        parameters.merge([
-            "rest_id": restid,
-            "dbname" : dbname
-        ]) { _, new in new }
-        
         UtilsClass.showProgressHud(view: self.view)
-        WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.restaurantDetail, forModelType: RestDetailsApiResponse.self) { success in
+        viewModel.getRestDetailFromApi(restid: restid, dbname: dbname) { [weak self] response in
+            guard let self = self else { return }
             UtilsClass.hideProgressHud(view: self.view)
+            guard let successData = response else { return }
             let story = UIStoryboard.init(name: "Grocery", bundle: nil)
             let vc = story.instantiateViewController(withIdentifier: "GroceryDetailsPageVC") as! GroceryDetailsPageVC
-            let customModel = success.data.toCustomModel()
-            vc.restDetailsData = customModel
-            vc.restDetailsRes = success.data.data
+            vc.storeDetails = successData.data
+            vc.imageUrl = storeImage
             self.navigationController?.pushViewController(vc, animated: true)
-            
-        } ErrorHandler: { error in
-            UtilsClass.hideProgressHud(view: self.view)
         }
-    }
-    private func loadURLSafari(dineUrl: String) {
-        let trimmedURL = dineUrl.trimmingCharacters(in: .whitespacesAndNewlines)
-        print("url: \(trimmedURL)")
-
-        guard let url = URL(string: trimmedURL),
-              ["http", "https"].contains(url.scheme?.lowercased() ?? "") else {
-            showAlert(title: "Url not found", msg: "Please try later.")
-            return
-        }
-
-        let safariVC = SFSafariViewController(url: url)
-        safariVC.modalPresentationStyle = .fullScreen
-        present(safariVC, animated: true)
     }
 
 }
@@ -133,17 +95,17 @@ extension GroceryVC: UICollectionViewDelegate,UICollectionViewDataSource{
         1
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if listResponse.count == 0 &&  self.gotResponseFromService {
+        if viewModel.storeList.count == 0 &&  self.viewModel.gotResponseFromService {
             return 1
         }
-        return listResponse.count
+        return viewModel.storeList.count
         
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-            if listResponse.count > 0 {
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeRestCVCell", for: indexPath as IndexPath) as! HomeRestCVCell
-                    cell.updateUIWithOld(index: indexPath.row, restaurant: listResponse[indexPath.row])
+            if viewModel.storeList.count > 0 {
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "StoreCVCell", for: indexPath as IndexPath) as! StoreCVCell
+                    cell.updateStoreUI(index: indexPath.row, store: viewModel.storeList[indexPath.row])
                 cell.backgroundColor = .white
                 return cell;
             } else {
@@ -154,9 +116,9 @@ extension GroceryVC: UICollectionViewDelegate,UICollectionViewDataSource{
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if listResponse.count > 0 {
-                let rest = self.listResponse[indexPath.row]
-                self.getRestDetailFromApi(restid: rest.rid, dbname: rest.dbname)
+        if viewModel.storeList.count > 0 {
+            let store = self.viewModel.storeList[indexPath.row]
+            self.getRestDetailFromApi(restid: store.rid, dbname: store.dbname, storeImage: store.fullImageURL)
         } else {
                 let vc = self.viewController(viewController: LocationVC.self, storyName: StoryName.Location.rawValue) as! LocationVC
             vc.fromSearch = true
@@ -169,7 +131,7 @@ extension GroceryVC: UICollectionViewDelegate,UICollectionViewDataSource{
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = collectionView.frame.width
       
-            if listResponse.count > 0 {
+            if viewModel.storeList.count > 0 {
                 return CGSize(width: width/2 , height: 240)
             } else {
                 return CGSize(width: width , height: 300)

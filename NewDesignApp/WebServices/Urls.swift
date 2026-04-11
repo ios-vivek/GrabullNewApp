@@ -20,6 +20,10 @@ struct AppConfig {
 struct OldServiceType {
     static let BASE = "https://www.webapi.grabull.shop/"
     //static let BASE = "https://www.grabull.com/web-api-ios/"
+    
+    static let groceryList = "/grocury/GetAllGrocuryStorte"
+    static let storeDetailByID = "grocury-details/GetGrocuryStoreById"
+    
     static let resturantList = "restaurant/GetAllRestaurant"
     static let cuisine = "cuisine/"
     static let restaurantDetail = "restaurant-details/GetRestaurantById"

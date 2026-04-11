@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import Alamofire
+import SDWebImage
 
 protocol GroceryGalleryDelegate: AnyObject {
     func selectedGalleryView()
@@ -25,7 +25,7 @@ class StoreDetailsTVCell: UITableViewCell {
     var delegate: GroceryGalleryDelegate?
 
 
-var restData: CustomRestDetails?
+//var restData: CustomRestDetails?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -38,6 +38,14 @@ var restData: CustomRestDetails?
         photoCountView.addGestureRecognizer(tap)
         
     }
+    // ✅ ADD HERE
+       override func prepareForReuse() {
+           super.prepareForReuse()
+           
+           // Reset image to avoid flickering / wrong image
+           restImage.sd_cancelCurrentImageLoad()
+           restImage.image = UIImage(named: "img_midium")
+       }
     @objc func handleTap(_ sender: UITapGestureRecognizer? = nil) {
         // handling code
         self.delegate?.selectedGalleryView()
@@ -47,30 +55,21 @@ var restData: CustomRestDetails?
         lblAsap.text = "Pickup, ASAP"
     }
  
-    func updateUI(data: CustomRestDetails?, restImage: String, galleryImages: [String]) {
-        restData = data
+    func updateUI(data: StoreDetails?, restImage: String, galleryImages: [String]) {
+       // restData = data
         photoCountView.isHidden = galleryImages.count > 0 ? false : true
         lblPhotoCount.text = "\(galleryImages.count) Photos"
-        restName.text = "\(restData?.name ?? "resta neme")"
-        deliveryTimeLbl.text = "\(restData?.deliveryTime ?? 0) Mins"
-        ratingLbl.text = "\(restData?.rating ?? 0)"
-        userRatinglbl.text = "\(restData?.ratingHD1 ?? "")"
-        reorderedLbl.text = "\(restData?.ratingHD2 ?? "")"
-        
-        let url = restImage
-        AF.request( url,method: .get).response{ response in
-          switch response.result {
-           case .success(let responseData):
-               self.restImage.image = UIImage(data: responseData!, scale:1)
-
-           case .failure(let error):
-               print("error--->",error)
-           }
-       }
+        restName.text = "\(data?.name ?? "Name")"
+        deliveryTimeLbl.text = "\(data?.deliveryTime ?? 0) Mins"
+        ratingLbl.text = "\(data?.rating ?? 0)"
+       // userRatinglbl.text = "\(data?.ratingHD1 ?? "")"
+      //  reorderedLbl.text = "\(data?.ratingHD2 ?? "")"
+        self.restImage.setImage(urlString: restImage)
         
         lblAsap.textColor = kGreenColor
         selectedButtonUI()
     }
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
