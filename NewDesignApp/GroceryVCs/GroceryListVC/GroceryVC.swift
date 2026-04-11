@@ -9,7 +9,7 @@ import UIKit
 import SafariServices
 
 class GroceryVC: UIViewController {
-    var listResponse = [Restaurant]()
+    var storeList = [Store]()
     @IBOutlet weak var titleLbl: UILabel!
     @IBOutlet weak var homeCollection: UICollectionView!
 
@@ -30,11 +30,11 @@ var gotResponseFromService = false
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if listResponse.count == 0 {
-            getRestDataFromApi()
+        if storeList.count == 0 {
+            getStorelistFromApi()
         }
     }
-    func getRestDataFromApi() {
+    func getStorelistFromApi() {
         var parameters = CommonAPIParams.base()
         parameters.merge([
             "cust_lat": "\(APPDELEGATE.selectedLocationAddress.latLong.latitude)",
@@ -44,12 +44,12 @@ var gotResponseFromService = false
 
         ]) { _, new in new }
             UtilsClass.showProgressHud(view: self.view)
-        WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.resturantList, forModelType: RestaurantListResponse.self) { success in
+        WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.groceryList, forModelType: StoreResponse.self) { success in
             UtilsClass.hideProgressHud(view: self.view)
             self.gotResponseFromService = true
             //print(success.data.data)
             if success.data.data.restaurants.count > 0 {
-                self.listResponse = success.data.data.restaurants
+                self.storeList = success.data.data.restaurants
             }
             self.homeCollection.reloadData()
         } ErrorHandler: { error in
@@ -133,17 +133,17 @@ extension GroceryVC: UICollectionViewDelegate,UICollectionViewDataSource{
         1
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if listResponse.count == 0 &&  self.gotResponseFromService {
+        if storeList.count == 0 &&  self.gotResponseFromService {
             return 1
         }
-        return listResponse.count
+        return storeList.count
         
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-            if listResponse.count > 0 {
+            if storeList.count > 0 {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeRestCVCell", for: indexPath as IndexPath) as! HomeRestCVCell
-                    cell.updateUIWithOld(index: indexPath.row, restaurant: listResponse[indexPath.row])
+                    cell.updateUIWithOld(index: indexPath.row, restaurant: storeList[indexPath.row])
                 cell.backgroundColor = .white
                 return cell;
             } else {
@@ -154,8 +154,8 @@ extension GroceryVC: UICollectionViewDelegate,UICollectionViewDataSource{
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if listResponse.count > 0 {
-                let rest = self.listResponse[indexPath.row]
+        if storeList.count > 0 {
+                let rest = self.storeList[indexPath.row]
                 self.getRestDetailFromApi(restid: rest.rid, dbname: rest.dbname)
         } else {
                 let vc = self.viewController(viewController: LocationVC.self, storyName: StoryName.Location.rawValue) as! LocationVC
@@ -169,7 +169,7 @@ extension GroceryVC: UICollectionViewDelegate,UICollectionViewDataSource{
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = collectionView.frame.width
       
-            if listResponse.count > 0 {
+            if storeList.count > 0 {
                 return CGSize(width: width/2 , height: 240)
             } else {
                 return CGSize(width: width , height: 300)
