@@ -6,11 +6,8 @@
 //
 
 import UIKit
-protocol GroceryItemCellDelegate {
-    func addItemSelection(index: IndexPath)
-}
 
-class GroceryItemTVCell: UITableViewCell {
+class Testvc: UITableViewCell {
     @IBOutlet weak var vegNonVegFoodImage: UIImageView!
     @IBOutlet weak var itemNameLbl: UILabel!
     @IBOutlet weak var itemPriceLbl: UILabel!
@@ -29,7 +26,6 @@ class GroceryItemTVCell: UITableViewCell {
 
 
     var selectedIndex: IndexPath!
-     var delegate: GroceryItemCellDelegate?
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -48,7 +44,6 @@ class GroceryItemTVCell: UITableViewCell {
    
     @objc func handleTap(_ sender: UITapGestureRecognizer? = nil) {
         // handling code
-        delegate?.addItemSelection(index: selectedIndex)
     }
     func updateUI(itemlist: GroceryMenuItem) {
         itemImage.backgroundColor = .gGray100
