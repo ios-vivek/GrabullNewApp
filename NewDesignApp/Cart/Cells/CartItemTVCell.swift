@@ -42,7 +42,8 @@ var index = 0
         } else {
             name = " (\(size.manuName))"
         }
-        itemName.text = item.restItem.heading + name
+        let itemsizename = item.restItemSizes[0].name.count == 0 ? "" : " (\(item.restItemSizes[0].name))"
+        itemName.text = item.restItem.heading + itemsizename + name
         itemQtyLbl.text = "\(size.itemQty)"
         let price = self.setAmountValue(sizes: size, toppings: item.restItemTopping)
         let pt = Cart.shared.roundValue2Digit(value: (price + item.extra))

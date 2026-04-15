@@ -58,7 +58,7 @@ final class ConfirmOrderViewModel {
             let toppings = item.restItemTopping.flatMap { $0.option }
 
             let toppingText = toppings.map {
-                $0.price > 0 ? "\($0.optionHeading) \($0.price)" : $0.optionHeading
+                $0.price > 0 ? "\($0.optionHeading) $\($0.price)" : $0.optionHeading
             }.joined(separator: " | ")
 
             let toppingAmount = Cart.shared.roundValue2Digit(
@@ -81,9 +81,9 @@ final class ConfirmOrderViewModel {
                 tax: item.restItem.tax,
                 menutype: size.menuType,
                 addedInst: item.instructionText,
-                sizeh: size.sizeKey,
+                sizeh: size.name,
                 id: item.restItem.id,
-                size: size.name,
+                size: size.sizeKey,
                 price: "\(size.price)",
                 heading: item.restItem.heading,
                 qty: "\(size.itemQty)"

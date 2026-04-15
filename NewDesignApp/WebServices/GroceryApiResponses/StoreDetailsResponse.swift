@@ -39,6 +39,21 @@ struct StoreDetails: Codable {
     let details: String?
     let payByCard: String?
     let menuList: [GroceryMenuCategory]?
+    let status: String
+    var storeAvailable: String {
+        return status == "Active" ? "" : "Store does not take online orders"
+    }
+    var showDeliveryTime: String {
+        guard let deliveryTime = deliveryTime, deliveryTime > 0 else {
+            return ""
+        }
+
+        if deliveryTime == 1 {
+            return "Next day delivery"
+        } else {
+            return "\(deliveryTime) days delivery"
+        }
+    }
 }
 
 struct GroceryMenuCategory: Codable {
@@ -59,9 +74,13 @@ struct GroceryMenuItem: Codable {
 }
 
 struct SizeOption: Codable {
-    let id: String?
-    let heading: String?
-    let details: String?
+    let name: String?
     let price: Double?
-    let status: String?
+}
+extension Array where Element == SizeOption {
+    func sortedByPrice() -> [SizeOption] {
+        return self.sorted {
+            ($0.price ?? 0) < ($1.price ?? 0)
+        }
+    }
 }

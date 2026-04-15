@@ -33,7 +33,6 @@ class StoreDetailsTVCell: UITableViewCell {
         photoCountView.layer.cornerRadius = 12
        
         lblPhotoCount.text = "0 Photos"
-        selectedButtonUI()
         let tap = UITapGestureRecognizer(target: self, action: #selector(self.handleTap(_:)))
         photoCountView.addGestureRecognizer(tap)
         
@@ -50,24 +49,20 @@ class StoreDetailsTVCell: UITableViewCell {
         // handling code
         self.delegate?.selectedGalleryView()
     }
-
-    func selectedButtonUI() {
-        lblAsap.text = "Pickup, ASAP"
-    }
  
     func updateUI(data: StoreDetails?, restImage: String, galleryImages: [String]) {
        // restData = data
         photoCountView.isHidden = galleryImages.count > 0 ? false : true
         lblPhotoCount.text = "\(galleryImages.count) Photos"
         restName.text = "\(data?.name ?? "Name")"
-        deliveryTimeLbl.text = "\(data?.deliveryTime ?? 0) Mins"
+        deliveryTimeLbl.text = data?.showDeliveryTime
         ratingLbl.text = "\(data?.rating ?? 0)"
        // userRatinglbl.text = "\(data?.ratingHD1 ?? "")"
       //  reorderedLbl.text = "\(data?.ratingHD2 ?? "")"
         self.restImage.setImage(urlString: restImage)
         
         lblAsap.textColor = kGreenColor
-        selectedButtonUI()
+        lblAsap.text = data?.storeAvailable
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {
