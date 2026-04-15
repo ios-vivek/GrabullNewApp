@@ -11,7 +11,7 @@ import Lottie
 import SafariServices
 
 
-class GroceryDetailsPageVC: UIViewController, ItemCellDelegate, ItemSizesPopupDelegate {
+class GroceryDetailsPageVC: UIViewController, GroceryItemCellDelegate, ItemSizesPopupDelegate {
     func openSelectSize(index: IndexPath) {
         self.addItemSelection(index: index)
     }
@@ -118,6 +118,7 @@ class GroceryDetailsPageVC: UIViewController, ItemCellDelegate, ItemSizesPopupDe
     ////use things
     var storeDetails: StoreDetails?
     var imageUrl = ""
+    private var displaySectionsMenus = [GroceryMenuCategory]()
 
 
 
@@ -175,8 +176,17 @@ class GroceryDetailsPageVC: UIViewController, ItemCellDelegate, ItemSizesPopupDe
         setImages()
         getAllDataFromListForTable()
 
-        restaurantTable.reloadData()
+        getSectionArray()
 
+    }
+    func getSectionArray() {
+        guard let menus = storeDetails?.menuList else {
+            displaySectionsMenus = []
+            return
+        }
+        
+        displaySectionsMenus = menus
+        restaurantTable.reloadData()
     }
     func getAllDataFromListForTable() {
         if let restData = restDetailsRes {
@@ -290,34 +300,18 @@ class GroceryDetailsPageVC: UIViewController, ItemCellDelegate, ItemSizesPopupDe
         GroceryCartData.shared.tempAllRestmenu = self.allMenuList
         self.navigationController?.pushViewController(vc, animated: true)
     }
-    private func loadURLSafari(dineUrl: String) {
-        let trimmedURL = dineUrl.trimmingCharacters(in: .whitespacesAndNewlines)
-        print("url: \(trimmedURL)")
-
-        guard let url = URL(string: trimmedURL),
-              ["http", "https"].contains(url.scheme?.lowercased() ?? "") else {
-            //hideProgress()
-            return
-        }
-
-        UtilsClass.hideProgressHud(view: self.view)
-
-        let safariVC = SFSafariViewController(url: url)
-        safariVC.modalPresentationStyle = .fullScreen
-        present(safariVC, animated: true)
-    }
 
 }
 extension GroceryDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        if selectedMenuType == .menu {
-            if selectedFiler > 0 {
+       // if selectedMenuType == .menu {
+            //if selectedFiler > 0 {
                // return GrocerySection.Items.rawValue + filteredMenuSections.count
-            } else {
-                return GrocerySection.Items.rawValue + menuSections.count
-            }
-        }
-            return GrocerySection.Items.rawValue + menuSections.count
+           // } else {
+        return GrocerySection.Items.rawValue + displaySectionsMenus.count
+       //     }
+      //  }
+      //      return GrocerySection.Items.rawValue + menuSections.count
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == GrocerySection.Menu.rawValue {
@@ -330,10 +324,8 @@ extension GroceryDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
                 return 0
         }
         if section >= GrocerySection.Items.rawValue {
-            if selectedFiler > 0 {
-               // return filteredMenuSections[section - sectionOffset].items.count
-            }
-            return menuSections[section - sectionOffset].items.count
+            let itemCount = displaySectionsMenus[section - sectionOffset].itemList?.count ?? 0
+            return itemCount
         }
         return 1
     }
@@ -358,32 +350,25 @@ extension GroceryDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
          //   cell.updateUI(featuredItems: self.restDetailsData?.featured_item)
             return cell
         case GrocerySection.Menu.rawValue:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "FoodMenuTVCell", for: indexPath) as! FoodMenuTVCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "GroceryMenuTVCell", for: indexPath) as! GroceryMenuTVCell
             cell.selectionStyle = .none
             cell.delegate = self
            
-                cell.updateUI(menulist: self.menuSections, selectedmenuType: selectedMenuType, selectedFiler: self.selectedFiler)
+                cell.updateUI(menulist: self.displaySectionsMenus, selectedFiler: self.selectedFiler)
                 cell.featuredCollection.reloadData()
             return cell
         default:
             if GrocerySection.Items.rawValue >= 0 {
-                let itemSectionIndex = indexPath.section - sectionOffset
-
-               
-                    var menu = self.menuSections[itemSectionIndex]
-                    if selectedFiler > 0 {
-                       // menu = self.filteredMenuSections[itemSectionIndex]
-                    }
-
-                    let cell = tableView.dequeueReusableCell(withIdentifier: "ItemTVCell", for: indexPath) as! ItemTVCell
+                let menu = displaySectionsMenus[indexPath.section - sectionOffset]
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "GroceryItemTVCell", for: indexPath) as! GroceryItemTVCell
                     cell.selectionStyle = .none
-                    cell.delegate = self
+                    //cell.delegate = self
                     cell.selectedIndex = indexPath
-                    cell.updateUI(itemlist: menu.items[indexPath.row])
+                cell.updateUI(itemlist: menu.itemList![indexPath.row])
                     cell.dividerImage.isHidden = false
-                    if indexPath.row + 1 == menu.items.count {
+              if indexPath.row + 1 == menu.itemList!.count {
                         cell.dividerImage.isHidden = true
-                    }
+                }
                     return cell
                 
            
@@ -410,19 +395,10 @@ extension GroceryDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
         if section >= GrocerySection.Items.rawValue {
             let sec = section - sectionOffset
             let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: "ItemHeaderView") as! ItemHeaderView
-        
-            
-                var sectionHeader = self.menuSections[sec]
-                if selectedFiler > 0 {
-                   // sectionHeader = self.filteredMenuSections[sec]
-                }
-                    headerView.headingLbl.text = sectionHeader.title
-            
+                let sectionHeader = displaySectionsMenus[sec]
+                    headerView.headingLbl.text = sectionHeader.heading
             headerView.headingLbl.textColor = .black
-
             headerView.headerViewBckground.backgroundColor = UIColor.gGray100
-            
-
             return headerView
     }
         return nil
@@ -481,13 +457,13 @@ extension GroceryDetailsPageVC: UICollectionViewDelegate,UICollectionViewDataSou
         return 1
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-            return menuSections.count
+            return displaySectionsMenus.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FoodMenuCVCell", for: indexPath as IndexPath) as! FoodMenuCVCell
         cell.backgroundColor = .white
-            cell.menu.text = menuSections[indexPath.row].title//self.allMenuList[indexPath.row].heading
+            cell.menu.text = displaySectionsMenus[indexPath.row].heading//self.allMenuList[indexPath.row].heading
             cell.menu.textColor = selectedFiler == indexPath.row ? themeBackgrounColor : .black
         cell.layer.cornerRadius = 8
         cell.layer.borderWidth = 1
@@ -504,7 +480,7 @@ extension GroceryDetailsPageVC: UICollectionViewDelegate,UICollectionViewDataSou
     
     
 }
-extension GroceryDetailsPageVC: MenuSelectedDelegate {
+extension GroceryDetailsPageVC: GroceryMenuSelectedDelegate {
     func showAllData() {
         selectedFiler = -1
         self.getMenuList()
@@ -522,20 +498,6 @@ extension GroceryDetailsPageVC: MenuTypeSelectedDelegate {
         self.getMenuList()
         restaurantTable.reloadData()
         menuHeadingCollection.reloadData()
-        if menuType == .dineIn && isReservationAvailable {
-            self.selectedMenuType = .menu
-            self.restaurantTable.reloadData()
-            loadURLSafari(dineUrl: "\(self.restDetailsData?.dineUrl ?? "")/\(APPDELEGATE.userResponse?.customer.customerId ?? "")")
-            /*
-            let story = UIStoryboard.init(name: "OrderFlow", bundle: nil)
-            let popupVC = story.instantiateViewController(withIdentifier: "DineInVC") as! DineInVC
-          print("DineIn url: \(self.restDetailsData?.dineUrl ?? "")/\(APPDELEGATE.userResponse?.customer.customerId ?? "")")
-            popupVC.dineUrl = "\(self.restDetailsData?.dineUrl ?? "")/\(APPDELEGATE.userResponse?.customer.customerId ?? "")"
-            self.selectedMenuType = .menu
-            self.restaurantTable.reloadData()
-            self.navigationController?.pushViewController(popupVC, animated: true)
-            */
-        }
     }
 }
 extension GroceryDetailsPageVC: OpenCartViewDelegate {
