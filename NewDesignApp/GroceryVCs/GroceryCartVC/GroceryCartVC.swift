@@ -27,12 +27,12 @@ class GroceryCartVC: UIViewController {
         var firstPart = "Order"
         var secondPart = ""
         titlelbl.text = "Order"
-        if GroceryCartData.shared.restDetails != nil {
+        if GroceryCartData.shared.storeDetails != nil {
             firstPart = ""
-            fullText = "\(GroceryCartData.shared.restDetails.name)"
-            secondPart = "\(GroceryCartData.shared.restDetails.name)"
+            fullText = "\(GroceryCartData.shared.storeDetails?.name ?? "")"
+            secondPart = "\(GroceryCartData.shared.storeDetails?.name ?? "")"
             
-            if GroceryCartData.shared.userAddress == nil && APPDELEGATE.userLoggedIn(){
+            if GroceryCartData.shared.userAddress == nil && APPDELEGATE.userLoggedIn() {
                 for address in APPDELEGATE.userResponse!.customer.address {
                     if APPDELEGATE.selectedLocationAddress.zipcode == address.zip {
                         GroceryCartData.shared.userAddress = address
@@ -40,6 +40,7 @@ class GroceryCartVC: UIViewController {
                     }
                 }
             }
+            
             
         }
         
@@ -73,6 +74,7 @@ class GroceryCartVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         refreshView()
+        /*
         if GroceryCartData.shared.orderType == .delivery {
             self.getAddressesFromApi()
         }
@@ -82,6 +84,7 @@ class GroceryCartVC: UIViewController {
         GroceryCartData.shared.tipsAmount = 0.0
         GroceryCartData.shared.isDonate = false
         GroceryCartData.shared.donateAmount = 0.0
+        */
     }
    
     func getAddressesFromApi() {
@@ -97,38 +100,34 @@ class GroceryCartVC: UIViewController {
         }
     }
     func refreshView() {
-        emptyView.isHidden = GroceryCartData.shared.cartData.count > 0 ? true : false
-        cartTableView.isHidden = GroceryCartData.shared.cartData.count > 0 ? false : true
+        emptyView.isHidden = !GroceryCartData.shared.cartItems.isEmpty
+        cartTableView.isHidden = GroceryCartData.shared.cartItems.isEmpty
         loginView.isHidden = true
         addressView.isHidden = true
         proceedView.isHidden = true
         if !APPDELEGATE.userLoggedIn() {
             loginView.isHidden = cartTableView.isHidden
         }
-        if APPDELEGATE.userLoggedIn() && GroceryCartData.shared.orderType == .delivery {
+        if APPDELEGATE.userLoggedIn() {
             addressView.isHidden = cartTableView.isHidden
             let add = GroceryCartData.shared.userAddress?.fullAddress ?? ""
             if GroceryCartData.shared.userAddress == nil || add == "" || add.isEmpty {
                 addressView.isHidden = false
             } else {
                 addressView.isHidden = true
+                proceedView.isHidden = false
             }
         }
-        if APPDELEGATE.userLoggedIn() && GroceryCartData.shared.orderType == .pickup {
-            proceedView.isHidden = cartTableView.isHidden
-        }
-        else if APPDELEGATE.userLoggedIn() && GroceryCartData.shared.orderType == .delivery {
-            proceedView.isHidden = !addressView.isHidden
-        }
-        let val = GroceryCartData.shared.roundValue2Digit(value: GroceryCartData.shared.getAllPriceDeatils().total)
+//        if APPDELEGATE.userLoggedIn() && Cart.shared.orderType == .delivery {
+//            proceedView.isHidden = !addressView.isHidden
+//        }
+        let val = GroceryCartData.shared.totalPrice
         proceedBtn.setFontWithString(text: "Proceed: \(UtilsClass.getCurrencySymbol())\(val)", fontSize: 12)
-        //let completemeal = ["2022062007443232", "2022062007333515"]
-            // GroceryCartData.shared.restDetails.completeMealList = [String]()
-        //GroceryCartData.shared.restDetails.completeMealList.append(contentsOf: completemeal)
         getAllItemsForNextVCDisplay()
         self.cartTableView.reloadData()
     }
     func getAllItemsForNextVCDisplay() {
+        /*
 
            allDisplayItems = []
 
@@ -148,49 +147,8 @@ class GroceryCartVC: UIViewController {
            }
 
            removeItemFromCompleteMealList()
+        */
        }
-    func addItemInCompleteMeal(
-        menuItem: CustMenuCategory,
-        item: CartItemList,
-        itemData: MenuItem
-    ) {
-
-        guard
-            item.restItem.completeMeal == 1,
-            GroceryCartData.shared.restDetails.completeMeal.contains(itemData.id)
-        else { return }
-
-
-        // ✅ check duplicate using itemData.id
-        let alreadyExists = allDisplayItems.contains {
-            $0.itemList.first?.id == itemData.id
-        }
-
-        guard !alreadyExists else { return }
-
-
-        // ✅ FIX: ADD ONLY THIS ITEM
-        let menu = CustMenuCategory(
-            id: menuItem.id,
-            heading: menuItem.heading, submenu: menuItem.submenu,
-            itemList: [itemData], submenuList: menuItem.submenuList   // ⭐⭐⭐ MOST IMPORTANT FIX
-        )
-
-        allDisplayItems.append(menu)
-    }
-    func removeItemFromCompleteMealList() {
-
-        let cartItemIDs = Set(
-            GroceryCartData.shared.cartData.map { $0.restItem.id }
-        )
-
-        allDisplayItems = allDisplayItems.filter {
-            guard let id = $0.itemList.first?.id else { return false }
-            return !cartItemIDs.contains(id)
-        }
-
-        completeItemList = allDisplayItems
-    }
    
     @IBAction func backAction() {
         self.navigationController?.popViewController(animated: true)
@@ -211,6 +169,7 @@ class GroceryCartVC: UIViewController {
     }
 
     func getMenuTypesFromItems()-> String {
+        /*
         var menuType = "Regular"
         if GroceryCartData.shared.orderType == .delivery {
             let types = Set(
@@ -227,9 +186,11 @@ class GroceryCartVC: UIViewController {
                 menuType = "Regular"
             }
         }
-        return menuType
+        */
+        return "menuType"
     }
     @IBAction func proceedAction() {
+/*
         let add = GroceryCartData.shared.userAddress?.fullAddress ?? ""
        // let add = "2 Barnsley Rd, Lynnfield, MA 01940, USA"//GroceryCartData.shared.userAddress.fullAddress
 
@@ -242,8 +203,10 @@ class GroceryCartVC: UIViewController {
         } else {
             contionueAction()
         }
+       */
     }
    func contionueAction() {
+       /*
         if GroceryCartData.shared.orderType == .delivery && GroceryCartData.shared.restDetails.minDelivery > GroceryCartData.shared.getAllPriceDeatils().subTotal {
             let alertController = UIAlertController(title: "Add more items", message: "Min order \(UtilsClass.getCurrencySymbol())\(GroceryCartData.shared.restDetails.minDelivery) for delivery", preferredStyle: .alert)
             let OKAction = UIAlertAction(title: "Add", style: .default) { action in
@@ -263,7 +226,7 @@ class GroceryCartVC: UIViewController {
             let vc = self.viewController(viewController: GroceryPaymentVC.self, storyName: StoryName.Grocery.rawValue) as! GroceryPaymentVC
             self.navigationController?.pushViewController(vc, animated: true)
         }
-        
+        */
       
     }
     
@@ -369,23 +332,23 @@ extension GroceryCartVC: LoginSuccessDelegate {
     
     func loginCompleted() {
         self.refreshView()
-        if GroceryCartData.shared.orderType == .pickup {
-            self.proceedAction()
-    }
+//        if GroceryCartData.shared.orderType == .pickup {
+//            self.proceedAction()
+//    }
     }
 }
 extension GroceryCartVC: SignupSuccessfullyDelegate {
     func signupCompleted() {
         self.refreshView()
-        if GroceryCartData.shared.orderType == .pickup {
-            self.proceedAction()
-    }
+//        if GroceryCartData.shared.orderType == .pickup {
+//            self.proceedAction()
+//    }
 
     }
 }
 extension GroceryCartVC: UITableViewDelegate, UITableViewDataSource{
     func numberOfSections(in tableView: UITableView) -> Int {
-        if GroceryCartData.shared.orderType == .delivery && GroceryCartData.shared.userAddress != nil {
+        if GroceryCartData.shared.userAddress != nil {
             return 4
         }
         return 3
@@ -393,7 +356,7 @@ extension GroceryCartVC: UITableViewDelegate, UITableViewDataSource{
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
-            return GroceryCartData.shared.cartData.count + 1
+            return GroceryCartData.shared.cartItems.count + 1
         }
         if section == 1 {
             return completeItemList.count > 0 ? 1 : 0
@@ -442,15 +405,9 @@ extension GroceryCartVC: UITableViewDelegate, UITableViewDataSource{
         else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "DeliveryAtTVCell", for: indexPath) as! DeliveryAtTVCell
             cell.selectionStyle = .none
-            if GroceryCartData.shared.cartData.count > 0 {
+            if GroceryCartData.shared.cartItems.count > 0 {
                 var add = ""
-                if GroceryCartData.shared.orderType == .pickup {
-                    cell.headingLbl.text = "Pickup From:"
-                    add = "\(GroceryCartData.shared.restDetails.address), \(GroceryCartData.shared.restDetails.city), \(GroceryCartData.shared.restDetails.state), \(GroceryCartData.shared.restDetails.zip)"
-                    cell.changeAddressBtn.isHidden = true
-                    cell.changePhoneBtn.isHidden = true
-                    cell.phoneLbl.text = "Phone: \(GroceryCartData.shared.restDetails.phone)"
-                }else {
+               
                     cell.headingLbl.text = "Delivery At:"
                     let address = GroceryCartData.shared.userAddress
                     let landmark = address!.add2?.isEmpty == false ? "\nLandmark: \(address!.add2 ?? "")" : ""
@@ -464,14 +421,11 @@ extension GroceryCartVC: UITableViewDelegate, UITableViewDataSource{
                     if GroceryCartData.shared.alternateNumber.count == 10 {
                         cell.phoneLbl.text = "Phone: \(GroceryCartData.shared.alternateNumber)"
                     }
-                    
-                }
-                
                 cell.delegate = self
                 cell.deliveryAtLbl.text = add
             }
             
-           
+             
             return cell
         }
         
@@ -507,42 +461,42 @@ extension GroceryCartVC: ChangeAddressDelegate {
     }
 }
 extension GroceryCartVC: ChangePhoneNumberDelegate {
-    func changesNumber() {
+    func changesNumber(updatedNumber: String) {
+        GroceryCartData.shared.alternateNumber = updatedNumber
         cartTableView.reloadData()
     }
 }
-extension GroceryCartVC: GroceryDeleteDelegate {
+extension GroceryCartVC: GroceryCartItemDelegate {
     func deleteItem(index: Int) {
-        GroceryCartData.shared.cartData.remove(at: index)
+        guard GroceryCartData.shared.cartItems.indices.contains(index) else { return }
+        let itemId = GroceryCartData.shared.cartItems[index].id
+        GroceryCartData.shared.removeItem(with: itemId)
         self.refreshView()
-        /*
-        let alertController = UIAlertController(title: "Delete", message: "Are you sure want to delete item?", preferredStyle: .alert)
-        let OKAction = UIAlertAction(title: "Ok", style: .default) { action in
-            GroceryCartData.shared.cartData.remove(at: index)
-            self.refreshView()
+    }
 
-        }
-        let cancel = UIAlertAction(title: "Cancel", style: .cancel) { alert in
-            
-        }
-        alertController.addAction(OKAction)
-        alertController.addAction(cancel)
-        OperationQueue.main.addOperation {
-            self.present(alertController, animated: true,
-                         completion:nil)
-        }
-         */
-    }
-    func refereshItemList() {
+    func refreshItemList() {
         self.refreshView()
     }
-        
+
+    func updateQuantity(index: Int, change: Int) {
+        guard GroceryCartData.shared.cartItems.indices.contains(index) else { return }
+        let cartItem = GroceryCartData.shared.cartItems[index]
+        let newQuantity = cartItem.quantity + change
+
+        if newQuantity <= 0 {
+            GroceryCartData.shared.removeItem(with: cartItem.id)
+        } else {
+            GroceryCartData.shared.updateQuantity(for: cartItem.id, newQuantity: newQuantity)
+        }
+
+        self.refreshView()
+    }
 }
 extension GroceryCartVC: GroceryCheckoutDelegate {
     func emptyAction() {
         let alertController = UIAlertController(title: "Empty cart", message: "Are you sure want to empty?", preferredStyle: .alert)
         let OKAction = UIAlertAction(title: "Ok", style: .default) { action in
-            GroceryCartData.shared.cartData.removeAll()
+            GroceryCartData.shared.clearCart()
             self.refreshView()
         }
         let cancel = UIAlertAction(title: "Cancel", style: .cancel) { alert in
@@ -554,7 +508,7 @@ extension GroceryCartVC: GroceryCheckoutDelegate {
             self.present(alertController, animated: true,
                          completion:nil)
         }
-        
+
     }
     
     func checkoutAction() {
@@ -577,6 +531,7 @@ extension GroceryCartVC: ItemDetailsDelegate {
     }
     
     func addItemSelection(index: IndexPath) {
+        /*
         if GroceryCartData.shared.restDetails == nil {
             GroceryCartData.shared.restDetails = GroceryCartData.shared.tempRestDetails
             //self.navigateToMenuDetails(index: index)
@@ -623,10 +578,12 @@ extension GroceryCartVC: ItemDetailsDelegate {
             self.closedPopup()
             self.refreshView()
         }
+        */
     }
 }
 extension GroceryCartVC: OpenItemDetailDelegate {
     func addItemInList(index: IndexPath) {
+        /*
         let menu = completeItemList[index.section]
         let newItem = completeItemList[index.section].itemList[index.row]
         let displaySection = DisplaySection.init(parentID: menu.id, parent: menu.heading, title: newItem.heading, items: [newItem])
@@ -641,6 +598,7 @@ extension GroceryCartVC: OpenItemDetailDelegate {
         GroceryCartData.shared.itemExtra = 0.0
         GroceryCartData.shared.addInCart()
         self.refreshView()
+        */
         
     }
     

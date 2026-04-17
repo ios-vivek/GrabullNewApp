@@ -7,9 +7,10 @@
 
 import UIKit
 
-protocol GroceryDeleteDelegate: AnyObject {
+protocol GroceryCartItemDelegate: AnyObject {
     func deleteItem(index: Int)
-    func refereshItemList()
+    func refreshItemList()
+    func updateQuantity(index: Int, change: Int)
 }
 
 class GroceryCartItemTVCell: UITableViewCell {
@@ -22,8 +23,8 @@ class GroceryCartItemTVCell: UITableViewCell {
     @IBOutlet weak var plusButton: UIButton!
     @IBOutlet weak var minusButton: UIButton!
     @IBOutlet weak var plusMinusView: UIView!
-var index = 0
-    weak var delegate: GroceryDeleteDelegate?
+    private var cartIndex: Int = 0
+    weak var delegate: GroceryCartItemDelegate?
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -33,89 +34,24 @@ var index = 0
 
     }
     func updateUI(index: Int) {
-        self.index = index
-        let item = GroceryCartData.shared.cartData[index]
-        let size = item.restItemSizes.first!
-        var name = ""
-        if size.isCatering {
-            name = " \(size.isCatering ? " (Caterging)" : "")"
-        } else {
-            name = " (\(size.manuName))"
-        }
-        itemName.text = item.restItem.heading + name
-        itemQtyLbl.text = "\(size.itemQty)"
-        let price = self.setAmountValue(sizes: size, toppings: item.restItemTopping)
-        let pt = GroceryCartData.shared.roundValue2Digit(value: (price + item.extra))
+        cartIndex = index
+        let item = GroceryCartData.shared.cartItems[index]
 
-        itemPrice.text = "\(UtilsClass.getCurrencySymbol())\(pt.toString())"
-        
-        var toppings = ""
-        for topping in item.restItemTopping {
-            for option in topping.option {
-                var opPrice = ""
-                if option.price > 0 {
-                    opPrice = " $\(option.price)"
-                }
-                if toppings.count == 0 {
-                    toppings = "\(option.optionHeading)\(opPrice)"
-                } else {
-                    toppings = "\(toppings) | \(option.optionHeading)\(opPrice)"
-                }
-            }
-        }
-        itemToppings.text = toppings
-        itemToppings.isHidden = false
-        if itemToppings.text?.count == 0 {
-            itemToppings.isHidden = true
-        }
+        itemName.text = item.item.heading
+        itemQtyLbl.text = "\(item.quantity)"
+        itemPrice.text = "\(UtilsClass.getCurrencySymbol())\(item.totalPrice.toString())"
         instructionLbl.text = ""
-        if item.instructionText.count > 0 {
-            instructionLbl.attributedText = self.configureSplInstText(text1: "Spl Inst: ", text: "\(item.instructionText)")
-        }
+        itemToppings.text = ""
     }
+
     @IBAction func plusAction() {
-        var item = GroceryCartData.shared.cartData[index]
-        var size = item.restItemSizes.first!
-        size.itemQty = size.itemQty + 1
-        itemQtyLbl.text = "\(size.itemQty)"
-        GroceryCartData.shared.cartData.remove(at: index)
-        item.restItemSizes.remove(at: 0)
-        item.restItemSizes.append(size)
-        GroceryCartData.shared.cartData.insert(item, at: index)
-        self.delegate?.refereshItemList()
+        delegate?.updateQuantity(index: cartIndex, change: 1)
     }
+
     @IBAction func minusAction() {
-        print("index: \(index)")
-        var item = GroceryCartData.shared.cartData[index]
-        var size = item.restItemSizes.first!
-        size.itemQty = size.itemQty - 1
-        itemQtyLbl.text = "\(size.itemQty)"
-        
-        if  size.itemQty == 0 {
-            delegate?.deleteItem(index: index)
-        } else {
-            GroceryCartData.shared.cartData.remove(at: index)
-            item.restItemSizes.remove(at: 0)
-            item.restItemSizes.append(size)
-            GroceryCartData.shared.cartData.insert(item, at: index)
-            self.delegate?.refereshItemList()
-        }
+        delegate?.updateQuantity(index: cartIndex, change: -1)
     }
-    func setAmountValue(sizes: Sizes, toppings: [SelectedTopping])-> Float {
-        var price: Float = 0.0
-        price = Float(sizes.price)! * Float(sizes.itemQty)
-
-        var toppingsPrice: Float = 0.0
-        for topping in toppings {
-            for option in topping.option {
-                toppingsPrice = toppingsPrice + (Float(option.price) * Float(sizes.itemQty))
-            }
-        }
-       price = price + toppingsPrice
-        
-        return price
-
-    }
+   
     @IBAction func deleteItem(sender: UIButton) {
         delegate?.deleteItem(index: sender.tag)
     }

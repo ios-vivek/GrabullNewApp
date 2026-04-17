@@ -19,7 +19,7 @@ class GroceryMenuTVCell: UITableViewCell {
     @IBOutlet weak var allBtn: UIButton!
 
 
-    var menulist = [GroceryMenuCategory]()
+    var menulist = [ExpandedGroceryMenuCategory]()
     var selectedFiler = -1
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -35,7 +35,7 @@ class GroceryMenuTVCell: UITableViewCell {
     @IBAction func allBtnAction() {
         self.delegate?.showAllData()
     }
-    func updateUI(menulist: [GroceryMenuCategory], selectedFiler : Int) {
+    func updateUI(menulist: [ExpandedGroceryMenuCategory], selectedFiler : Int) {
         self.selectedFiler = selectedFiler
             self.menulist = menulist
         featuredCollection.reloadData()
@@ -64,7 +64,12 @@ extension GroceryMenuTVCell: UICollectionViewDelegate,UICollectionViewDataSource
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FoodMenuCVCell", for: indexPath as IndexPath) as! FoodMenuCVCell
         cell.backgroundColor = .white
-            cell.menu.text = self.menulist[indexPath.row].heading
+        let menu = self.menulist[indexPath.row]
+        if let subHeading = menu.subHeading, !subHeading.isEmpty {
+            cell.menu.text = subHeading
+        } else {
+            cell.menu.text = menu.parentHeading
+        }
         cell.menu.textColor = selectedFiler == indexPath.row ? kOrangeColor : .black
         return cell;
 

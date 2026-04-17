@@ -481,7 +481,8 @@ extension ConfirmOrderVC: ReloadNewAddressDelegate {
     
 }
 extension ConfirmOrderVC: ChangePhoneNumberDelegate {
-    func changesNumber() {
+    func changesNumber(updatedNumber: String) {
+        Cart.shared.alternateNumber = updatedNumber
         cartTableView.reloadData()
     }
 }

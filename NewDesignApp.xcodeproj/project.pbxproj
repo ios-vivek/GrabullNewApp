@@ -215,6 +215,7 @@
 		E2DBFEDE2CFB2C2A00A8CB76 /* OrderDetailsTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DBFEDD2CFB2C2A00A8CB76 /* OrderDetailsTVCell.swift */; };
 		E2DBFEE02CFB2CD100A8CB76 /* DeliveryAddressTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DBFEDF2CFB2CD100A8CB76 /* DeliveryAddressTVCell.swift */; };
 		E2DBFEE22CFB5F2200A8CB76 /* OrderItemsTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2DBFEE12CFB5F2200A8CB76 /* OrderItemsTVCell.swift */; };
+		E2E7FFAC2F90E4A900914ADD /* groceryDetails.json in Resources */ = {isa = PBXBuildFile; fileRef = E2E7FFAB2F90E4A900914ADD /* groceryDetails.json */; };
 		E2E885312CA440B600AEF385 /* GoogleAddressResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E885302CA440B600AEF385 /* GoogleAddressResponse.swift */; };
 		E2E885332CA443E000AEF385 /* AddressTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E885322CA443E000AEF385 /* AddressTVCell.swift */; };
 		E2E885352CABFFAB00AEF385 /* RestaurantDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2E885342CABFFAB00AEF385 /* RestaurantDetails.swift */; };
@@ -443,6 +444,7 @@
 		E2DBFEDD2CFB2C2A00A8CB76 /* OrderDetailsTVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetailsTVCell.swift; sourceTree = "<group>"; };
 		E2DBFEDF2CFB2CD100A8CB76 /* DeliveryAddressTVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeliveryAddressTVCell.swift; sourceTree = "<group>"; };
 		E2DBFEE12CFB5F2200A8CB76 /* OrderItemsTVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderItemsTVCell.swift; sourceTree = "<group>"; };
+		E2E7FFAB2F90E4A900914ADD /* groceryDetails.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = groceryDetails.json; sourceTree = "<group>"; };
 		E2E885302CA440B600AEF385 /* GoogleAddressResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAddressResponse.swift; sourceTree = "<group>"; };
 		E2E885322CA443E000AEF385 /* AddressTVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressTVCell.swift; sourceTree = "<group>"; };
 		E2E885342CABFFAB00AEF385 /* RestaurantDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestaurantDetails.swift; sourceTree = "<group>"; };
@@ -546,6 +548,7 @@
 			children = (
 				E28EA9532E89366A0030CCC5 /* NewDesignApp.entitlements */,
 				E2D011452DD1F45700B7AB7C /* PrivacyInfo.xcprivacy */,
+				E2E7FFAB2F90E4A900914ADD /* groceryDetails.json */,
 				E2BAD61A2CC7E85D0016810A /* ImageAssets */,
 				E2165CF42C65EFCC00F344FE /* AppDelegate.swift */,
 				E2165CF62C65EFCC00F344FE /* SceneDelegate.swift */,
@@ -1313,6 +1316,7 @@
 				E2609E402F7565C700AAF4A3 /* OptionsHeaderView.xib in Resources */,
 				E2165D092C65F01700F344FE /* Profile.storyboard in Resources */,
 				E2BAD62B2CCA49540016810A /* adjustment_first_screen.json in Resources */,
+				E2E7FFAC2F90E4A900914ADD /* groceryDetails.json in Resources */,
 				E2165D0B2C65F03D00F344FE /* History.storyboard in Resources */,
 				E2BAD6302CCA6CDA0016810A /* food_history.json in Resources */,
 				E2EC30652D7877B6008F1603 /* DineIn.storyboard in Resources */,
@@ -1727,7 +1731,7 @@
 				CODE_SIGN_ENTITLEMENTS = NewDesignApp/NewDesignApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.27;
+				CURRENT_PROJECT_VERSION = 1.28;
 				DEVELOPMENT_TEAM = 6J7UZY2EAL;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NewDesignApp/Info.plist;
@@ -1768,7 +1772,7 @@
 				CODE_SIGN_ENTITLEMENTS = NewDesignApp/NewDesignApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.27;
+				CURRENT_PROJECT_VERSION = 1.28;
 				DEVELOPMENT_TEAM = 6J7UZY2EAL;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NewDesignApp/Info.plist;

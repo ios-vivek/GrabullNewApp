@@ -531,7 +531,8 @@ extension CartVC: ChangeAddressDelegate {
     }
 }
 extension CartVC: ChangePhoneNumberDelegate {
-    func changesNumber() {
+    func changesNumber(updatedNumber: String) {
+        Cart.shared.alternateNumber = updatedNumber
         cartTableView.reloadData()
     }
 }

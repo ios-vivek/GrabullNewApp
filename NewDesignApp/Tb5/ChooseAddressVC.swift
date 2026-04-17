@@ -70,6 +70,7 @@ extension ChooseAddressVC: UITableViewDelegate, UITableViewDataSource {
 
 
         Cart.shared.userAddress = APPDELEGATE.userResponse!.customer.address[indexPath.row]
+        GroceryCartData.shared.userAddress = APPDELEGATE.userResponse!.customer.address[indexPath.row]
         self.dismiss(animated: true) {
             self.delegate?.changedAddress()
         }

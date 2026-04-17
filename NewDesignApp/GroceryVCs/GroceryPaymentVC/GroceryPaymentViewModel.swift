@@ -38,7 +38,7 @@ final class GroceryPaymentViewModel {
         ) { [weak self] success in
             guard let self else { return }
             self.userRewardAmount = success.data.data.rewards.toString()
-            GroceryCartData.shared.rewardAmount = success.data.data.rewards
+           // GroceryCartData.shared.rewardAmount = success.data.data.rewards
             self.hideLoader?()
             self.reloadTable?()
         } ErrorHandler: { [weak self] error in
@@ -47,11 +47,13 @@ final class GroceryPaymentViewModel {
     }
     
     func hideCard() -> Bool {
-        GroceryCartData.shared.isReward && GroceryCartData.shared.getTotalPrice() == 0
+        return false
+        //GroceryCartData.shared.isReward && GroceryCartData.shared.getTotalPrice() == 0
     }
-    
+    /*
     // MARK: - Items Payload
     func buildItemList() -> [CartItem] {
+        /*
         GroceryCartData.shared.cartData.compactMap { item in
             guard let size = item.restItemSizes.first else { return nil }
 
@@ -89,8 +91,9 @@ final class GroceryPaymentViewModel {
                 qty: "\(size.itemQty)"
             )
         }
+        */
     }
-    
+    */
     func checkPaymentType(recipientFName: String,
                           recipientLName: String,
                           recipientPhone: String,
@@ -98,10 +101,10 @@ final class GroceryPaymentViewModel {
         switch selectedPaymentType {
         case 1:
             payBy = .Gift
-            if GroceryCartData.shared.giftNumber.isEmpty {
-                showError?("Please enter gift number")
-                return
-            }
+//            if GroceryCartData.shared.giftNumber.isEmpty {
+//                showError?("Please enter gift number")
+//                return
+//            }
             placeOrder(recipientFName: recipientFName, recipientLName: recipientLName, recipientPhone: recipientPhone, transactionIdentifier: transactionIdentifier)
         default:
             payBy = .Stripe
@@ -116,6 +119,7 @@ final class GroceryPaymentViewModel {
         recipientPhone: String,
         transactionIdentifier: String
     ) {
+        /*
             showLoader?()
             
             // MARK: - Hold Date / Time
@@ -227,7 +231,7 @@ final class GroceryPaymentViewModel {
             self.hideLoader?()
             self.showError?(errorMessage)
         }
-
+*/
     }
     
     func setTempdata(temp: CartRequest) {
@@ -275,8 +279,8 @@ final class GroceryPaymentViewModel {
         self.showLoader?()
         WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.stripeConfirmedOrder, forModelType: StripeConfirmResponse.self) { success in
             self.hideLoader?()
-            GroceryCartData.shared.orderNumber = success.data.data.orderId
-            GroceryCartData.shared.supportNumber = success.data.data.support
+          //  GroceryCartData.shared.orderNumber = success.data.data.orderId
+          //  GroceryCartData.shared.supportNumber = success.data.data.support
             self.orderPlaced?()
             
         } ErrorHandler: { error in

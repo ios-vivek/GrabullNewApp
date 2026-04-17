@@ -8,88 +8,8 @@
 
 import UIKit
 import Lottie
-import SafariServices
 
-
-class GroceryDetailsPageVC: UIViewController, GroceryItemCellDelegate, ItemSizesPopupDelegate {
-    func openSelectSize(index: IndexPath) {
-        self.addItemSelection(index: index)
-    }
-    
-    func itemAddedInTheCart() {
-        self.showToast(message: "Item added in the cart.", font: .boldSystemFont(ofSize: 14.0))
-        cartLbl.text = "\(GroceryCartData.shared.cartData.count)"
-        cartView.isHidden = GroceryCartData.shared.cartData.count > 0 ? false : true
-        cartView.updateUI()
-    }
-    
-    func addItemSelection(index: IndexPath) {
-        handleCartBeforeAdd(index: index)
-        
-        if GroceryCartData.shared.restDetails == nil {
-            GroceryCartData.shared.restDetails = GroceryCartData.shared.tempRestDetails
-            self.navigateToMenuDetails(index: index)
-        }
-        else if GroceryCartData.shared.restDetails.rid != GroceryCartData.shared.tempRestDetails.rid {
-            if GroceryCartData.shared.cartData.count > 0 {
-                let alertController = UIAlertController(title: "Replace cart item?", message: "Your cart contains dishes from \(GroceryCartData.shared.restDetails.name). Do you want to discart the selection and add dishes from \(GroceryCartData.shared.tempRestDetails.name)?", preferredStyle: .alert)
-                let OKAction = UIAlertAction(title: "Ok", style: .default) { action in
-                    GroceryCartData.shared.cartData.removeAll()
-                    GroceryCartData.shared.restDetails = GroceryCartData.shared.tempRestDetails
-                    self.navigateToMenuDetails(index: index)
-                    
-                }
-                let cancel = UIAlertAction(title: "Cancel", style: .cancel) { alert in
-                    
-                }
-                alertController.addAction(OKAction)
-                alertController.addAction(cancel)
-                OperationQueue.main.addOperation {
-                    self.present(alertController, animated: true,
-                                 completion:nil)
-                }
-            } else {
-                GroceryCartData.shared.restDetails = GroceryCartData.shared.tempRestDetails
-                self.navigateToMenuDetails(index: index)
-            }
-                }
-        else {
-            GroceryCartData.shared.restDetails = GroceryCartData.shared.tempRestDetails
-            self.navigateToMenuDetails(index: index)
-        }
-        
-    }
-    func handleCartBeforeAdd(index: IndexPath) {
-        guard let currentRest = GroceryCartData.shared.restDetails else {
-            GroceryCartData.shared.restDetails = GroceryCartData.shared.tempRestDetails
-            navigateToMenuDetails(index: index)
-            return
-        }
-
-        if currentRest.rid != GroceryCartData.shared.tempRestDetails.rid,
-           !GroceryCartData.shared.cartData.isEmpty {
-            showReplaceCartAlert(index: index)
-        } else {
-            GroceryCartData.shared.restDetails = GroceryCartData.shared.tempRestDetails
-            navigateToMenuDetails(index: index)
-        }
-    }
-    func showReplaceCartAlert(index: IndexPath) {
-        let alert = UIAlertController(
-            title: "Replace cart item?",
-            message: "Your cart contains dishes from \(GroceryCartData.shared.restDetails.name).",
-            preferredStyle: .alert
-        )
-
-        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-            GroceryCartData.shared.cartData.removeAll()
-            GroceryCartData.shared.restDetails = GroceryCartData.shared.tempRestDetails
-            self.navigateToMenuDetails(index: index)
-        })
-
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        present(alert, animated: true)
-    }
+class GroceryDetailsPageVC: UIViewController {
     
     @IBOutlet weak var restaurantTable: UITableView!
     @IBOutlet weak var navView: UIView!
@@ -102,38 +22,23 @@ class GroceryDetailsPageVC: UIViewController, GroceryItemCellDelegate, ItemSizes
     @IBOutlet weak var allBtn: UIButton!
     
     private let sectionOffset = GrocerySection.Items.rawValue
-    var restDetailsRes: RestDetailsRes?
-    private var menuSections: [DisplaySection] = []
-    
+    //var restDetailsRes: RestDetailsRes?
     var cartView: GroceryCartView!
     var isOpen = false
-   // var restData: RestData?
-    var restDetailsData: CustomRestDetails?
-    var allMenuList = [CustMenuCategory]()
-    var selectedMenuType: MenuType = .menu
-    var isReservationAvailable = false
     var selectedFiler = -1
     var galleryImages = [String]()
     
     ////use things
     var storeDetails: StoreDetails?
     var imageUrl = ""
-    private var displaySectionsMenus = [GroceryMenuCategory]()
+    private var allSectionsMenus = [ExpandedGroceryMenuCategory]()
+    private var displaySectionsMenus = [ExpandedGroceryMenuCategory]()
 
 
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        if restDetailsData != nil && GroceryCartData.shared.tempRestDetails != nil {
-            if (restDetailsData!.rid != GroceryCartData.shared.tempRestDetails.rid) {
-                GroceryCartData.shared.resetTime()
-            }
-        }
-       // GroceryCartData.shared.tempRestDetails = restDetailsData!
-
-//        if restDetailsData!.dinein == "Yes" {
-//            isReservationAvailable = true
-//        }
+ 
         menuImageView.play()
         menuImageView.loopMode = .loop
         navView.backgroundColor = themeBackgrounColor
@@ -144,7 +49,6 @@ class GroceryDetailsPageVC: UIViewController, GroceryItemCellDelegate, ItemSizes
         cartView.isHidden = true
         menuView.isHidden = true
         restaurantName.isHidden = true
-        restaurantName.text = "\(restDetailsData?.name ?? "")"
         restaurantTable.register(UINib(nibName: "ItemHeaderView", bundle: nil), forHeaderFooterViewReuseIdentifier: "ItemHeaderView")
         restaurantTable.sectionHeaderTopPadding = 0
         menuView.backgroundColor = .gGray100
@@ -166,67 +70,83 @@ class GroceryDetailsPageVC: UIViewController, GroceryItemCellDelegate, ItemSizes
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        cartLbl.text = "\(GroceryCartData.shared.cartData.count)"
-        self.allMenuList = [CustMenuCategory]()
-        if let meuList = self.restDetailsData?.menuList {
-            self.allMenuList = meuList
-        }
-        cartView.isHidden = GroceryCartData.shared.cartData.count > 0 ? false : true
+        cartLbl.text = "\(GroceryCartData.shared.cartItems.count)"
+        cartView.isHidden = GroceryCartData.shared.cartItems.count > 0 ? false : true
         getMenuList()
-        setImages()
-        getAllDataFromListForTable()
-
         getSectionArray()
+        setImages()
+        GroceryCartData.shared.tempStoreDetails = self.storeDetails
 
     }
     func getSectionArray() {
         guard let menus = storeDetails?.menuList else {
+            allSectionsMenus = []
             displaySectionsMenus = []
             return
         }
         
-        displaySectionsMenus = menus
-        restaurantTable.reloadData()
+        allSectionsMenus = expandSubmenuCategories(menus)
+        getMenuList()
     }
-    func getAllDataFromListForTable() {
-        if let restData = restDetailsRes {
-            menuSections = getDataFroDisplayFromList(list: restData.menuList)
+    
+    func expandSubmenuCategories(_ categories: [GroceryMenuCategory]) -> [ExpandedGroceryMenuCategory] {
+        var expanded: [ExpandedGroceryMenuCategory] = []
+        
+        for category in categories {
+            if category.hasSuperMenu == true, let submenus = category.itemListSub {
+                // Add each submenu as a separate expanded category with parent info
+                for submenu in submenus {
+                    let expandedCategory = ExpandedGroceryMenuCategory(
+                        parentId: category.id,
+                        parentHeading: category.heading,
+                        subHeadingId: submenu.id,
+                        subHeading: submenu.heading,
+                        itemList: submenu.itemList
+                    )
+                    expanded.append(expandedCategory)
+                }
+            } else {
+                // Keep regular categories as is
+                let expandedCategory = ExpandedGroceryMenuCategory(
+                    parentId: category.id,
+                    parentHeading: category.heading,
+                    subHeadingId: nil,
+                    subHeading: nil,
+                    itemList: category.itemList
+                )
+                expanded.append(expandedCategory)
+            }
         }
-    }
-    func getDataFroDisplayFromList(list : [MenuCategory]) -> [DisplaySection] {
-        var sections: [DisplaySection] = []
-       
-        return sections
+        
+        return expanded
     }
    
     func setImages() {
         galleryImages = Array(Set(
-            restDetailsData?.menuList
-                .flatMap { $0.itemList }
+            displaySectionsMenus
+                .flatMap { $0.itemList ?? [] }
                 .compactMap { $0.itemImage }
-                .filter { !$0.isEmpty } ?? []
+                .filter { !$0.isEmpty }
         ))
-        galleryImages.append(imageUrl)
+        if !imageUrl.isEmpty {
+            galleryImages.append(imageUrl)
+        }
     }
     func getMenuList() {
-        if selectedMenuType == .menu {
-           // filteredMenuSections = getMenusData()
+        if selectedFiler == -1 {
+            // Show all sections
+            displaySectionsMenus = allSectionsMenus
+        } else if selectedFiler >= 0 && selectedFiler < allSectionsMenus.count {
+            // Show only the selected section
+            displaySectionsMenus = [allSectionsMenus[selectedFiler]]
+        } else {
+            // Fallback to all sections if index is invalid
+            displaySectionsMenus = allSectionsMenus
         }
+        
         menuHeadingCollection.reloadData()
         restaurantTable.reloadData()
     }
-    func getMenusData()-> [DisplaySection]{
-        if selectedFiler >= 0 {
-            let arr: [DisplaySection] = self.menuSections.filter{ ($0.parent.contains(self.menuSections[selectedFiler].parent)) }
-            if arr.count > 0 {
-                return arr
-            }
-        }
-        return [DisplaySection]()
-    
-    }
-    
- 
 
     @IBAction func allBtnAction() {
         selectedFiler = -1
@@ -235,30 +155,27 @@ class GroceryDetailsPageVC: UIViewController, GroceryItemCellDelegate, ItemSizes
     @IBAction func backAction() {
         self.navigationController?.popViewController(animated: true)
     }
-    func showMenuOption()-> Bool {
-        if [.deals, .dineIn].contains(selectedMenuType) {
-            return false
-        }
-        return true
-    }
     func navigateToMenuDetails(index: IndexPath) {
         
         let story = UIStoryboard.init(name: "Grocery", bundle: nil)
         let popupVC = story.instantiateViewController(withIdentifier: "ItemSizesPopupVC") as! ItemSizesPopupVC
-            var menu = self.menuSections[index.section - sectionOffset]
-            if selectedFiler > 0 {
-               // menu = self.filteredMenuSections[index.section - sectionOffset]
-               // popupVC.restmenu = DisplaySection.init(parentID: menu.parentID, parent: menu.parent, title: menu.title, items: [menu.items[index.row]])
-            } else {
-               // popupVC.restmenu = DisplaySection.init(parentID: menu.parentID, parent: menu.parent, title: menu.title, items: [menu.items[index.row]])
-            }
-        popupVC.selectedMenuType = self.selectedMenuType
+        let menu = displaySectionsMenus[index.section - sectionOffset]
+        
+        guard let item = menu.itemList?[index.row] else {
+            return // Invalid index or no items
+        }
+        
+        popupVC.groceryMenuWithItem = GroceryMenuWithItem(
+            parentId: menu.parentId,
+            parentHeading: menu.parentHeading,
+            subHeadingId: menu.subHeadingId,
+            subHeading: menu.subHeading,
+            item: item
+        )
         popupVC.delegate = self
         popupVC.modalPresentationStyle = .overCurrentContext
         popupVC.modalTransitionStyle = .crossDissolve
         self.present(popupVC, animated: true)
-         
-        
     }
     func getItem(index: IndexPath, list: [CustMenuCategory])-> CustMenuCategory {
         let itemList = list[index.section - 5]
@@ -283,12 +200,7 @@ class GroceryDetailsPageVC: UIViewController, GroceryItemCellDelegate, ItemSizes
         
         if let _ = scrollView as? UITableView {
             let yPosition = -( scrollView.contentOffset.y+1)
-           // print(yPosition)
-//            if self.restDetailsData?.menutype[selectedmenuType] != "Specials" {
-            if ![.deals, .dineIn].contains(selectedMenuType) {
                 menuView.isHidden = yPosition >= -577 ? true : false
-            }
-//            }
             restaurantName.isHidden = yPosition >= -177 ? true : false
             } else if let _ = scrollView as? UICollectionView {
               print("collectionview")
@@ -297,28 +209,17 @@ class GroceryDetailsPageVC: UIViewController, GroceryItemCellDelegate, ItemSizes
     }
     @objc func profileTapAction(_ sender: UITapGestureRecognizer? = nil) {
         let vc = self.viewController(viewController: GroceryCartVC.self, storyName: StoryName.Grocery.rawValue) as! GroceryCartVC
-        GroceryCartData.shared.tempAllRestmenu = self.allMenuList
         self.navigationController?.pushViewController(vc, animated: true)
     }
 
 }
 extension GroceryDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-       // if selectedMenuType == .menu {
-            //if selectedFiler > 0 {
-               // return GrocerySection.Items.rawValue + filteredMenuSections.count
-           // } else {
         return GrocerySection.Items.rawValue + displaySectionsMenus.count
-       //     }
-      //  }
-      //      return GrocerySection.Items.rawValue + menuSections.count
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == GrocerySection.Menu.rawValue {
-            return self.showMenuOption() ? 1 : 0
-        }
-        if section == GrocerySection.Deals.rawValue {
-            return self.restDetailsData?.offer?.count ?? 0 > 0 ? 1 : 0
+            return 1
         }
         if section == GrocerySection.Featured.rawValue {
                 return 0
@@ -342,7 +243,7 @@ extension GroceryDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "DealsTVCell", for: indexPath) as! DealsTVCell
             cell.selectionStyle = .none
             //cell.backgroundColor = .red
-           cell.updateUI(offer: self.restDetailsData?.offer ?? [CustOfferlist]())
+         //  cell.updateUI(offer: self.restDetailsData?.offer ?? [CustOfferlist]())
             return cell
         case GrocerySection.Featured.rawValue:
             let cell = tableView.dequeueReusableCell(withIdentifier: "FeaturedTVCell", for: indexPath) as! FeaturedTVCell
@@ -354,7 +255,7 @@ extension GroceryDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
             cell.selectionStyle = .none
             cell.delegate = self
            
-                cell.updateUI(menulist: self.displaySectionsMenus, selectedFiler: self.selectedFiler)
+                cell.updateUI(menulist: self.allSectionsMenus, selectedFiler: self.selectedFiler)
                 cell.featuredCollection.reloadData()
             return cell
         default:
@@ -362,11 +263,13 @@ extension GroceryDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
                 let menu = displaySectionsMenus[indexPath.section - sectionOffset]
                     let cell = tableView.dequeueReusableCell(withIdentifier: "GroceryItemTVCell", for: indexPath) as! GroceryItemTVCell
                     cell.selectionStyle = .none
-                    //cell.delegate = self
+                    cell.delegate = self
                     cell.selectedIndex = indexPath
-                cell.updateUI(itemlist: menu.itemList![indexPath.row])
+                if let item = menu.itemList?[indexPath.row] {
+                    cell.updateUI(itemlist: item)
+                }
                     cell.dividerImage.isHidden = false
-              if indexPath.row + 1 == menu.itemList!.count {
+              if indexPath.row + 1 == menu.itemList?.count {
                         cell.dividerImage.isHidden = true
                 }
                     return cell
@@ -383,9 +286,6 @@ extension GroceryDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         
         if section >= GrocerySection.Items.rawValue {
-            if [.deals, .dineIn].contains(selectedMenuType) {
-                return 0
-            }
             return 50
     }
         return 0
@@ -395,12 +295,19 @@ extension GroceryDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
         if section >= GrocerySection.Items.rawValue {
             let sec = section - sectionOffset
             let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: "ItemHeaderView") as! ItemHeaderView
-                let sectionHeader = displaySectionsMenus[sec]
-                    headerView.headingLbl.text = sectionHeader.heading
+            let sectionHeader = displaySectionsMenus[sec]
+            
+            // Build header text with parent and sub heading hierarchy
+            if let subHeading = sectionHeader.subHeading {
+                headerView.headingLbl.text = "\(subHeading)"
+            } else {
+                headerView.headingLbl.text = sectionHeader.parentHeading
+            }
+            
             headerView.headingLbl.textColor = .black
             headerView.headerViewBckground.backgroundColor = UIColor.gGray100
             return headerView
-    }
+        }
         return nil
     
     }
@@ -457,18 +364,26 @@ extension GroceryDetailsPageVC: UICollectionViewDelegate,UICollectionViewDataSou
         return 1
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-            return displaySectionsMenus.count
+            return allSectionsMenus.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FoodMenuCVCell", for: indexPath as IndexPath) as! FoodMenuCVCell
         cell.backgroundColor = .white
-            cell.menu.text = displaySectionsMenus[indexPath.row].heading//self.allMenuList[indexPath.row].heading
-            cell.menu.textColor = selectedFiler == indexPath.row ? themeBackgrounColor : .black
+        let menuItem = allSectionsMenus[indexPath.row]
+        
+        // Show parent heading or parent > sub hierarchy
+        if let subHeading = menuItem.subHeading {
+            cell.menu.text = "\(subHeading)"
+        } else {
+            cell.menu.text = menuItem.parentHeading
+        }
+        
+        cell.menu.textColor = selectedFiler == indexPath.row ? themeBackgrounColor : .black
         cell.layer.cornerRadius = 8
         cell.layer.borderWidth = 1
         cell.layer.borderColor = UIColor.clear.cgColor
-        return cell;
+        return cell
 
     }
     
@@ -494,7 +409,6 @@ extension GroceryDetailsPageVC: GroceryMenuSelectedDelegate {
 extension GroceryDetailsPageVC: MenuTypeSelectedDelegate {
     func selectedMenuType(menuType: MenuType) {
         selectedFiler = -1
-        self.selectedMenuType = menuType
         self.getMenuList()
         restaurantTable.reloadData()
         menuHeadingCollection.reloadData()
@@ -503,7 +417,71 @@ extension GroceryDetailsPageVC: MenuTypeSelectedDelegate {
 extension GroceryDetailsPageVC: OpenCartViewDelegate {
     func openCartView() {
         let vc = self.viewController(viewController: GroceryCartVC.self, storyName: StoryName.Grocery.rawValue) as! GroceryCartVC
-        GroceryCartData.shared.tempAllRestmenu = self.allMenuList
         self.navigationController?.pushViewController(vc, animated: true)
     }
 }
+extension GroceryDetailsPageVC: GroceryItemCellDelegate {
+    func addItemSelection(index: IndexPath) {
+        
+        let cart = GroceryCartData.shared
+        
+        // Helper function to proceed
+        func proceed() {
+            cart.storeDetails = cart.tempStoreDetails
+            self.navigateToMenuDetails(index: index)
+        }
+        
+        // Case 1: No store yet
+        guard let currentStore = cart.storeDetails else {
+            proceed()
+            return
+        }
+        
+        // Case 2: Same store
+        if currentStore.rid == cart.tempStoreDetails?.rid {
+            proceed()
+            return
+        }
+        
+        // Case 3: Different store + cart has items
+        if cart.cartItems.count > 0 {
+            let alertController = UIAlertController(
+                title: "Replace cart item?",
+                message: "Your cart contains dishes from \(currentStore.name ?? ""). Do you want to discard the selection and add dishes from \(cart.tempStoreDetails?.name ?? "")?",
+                preferredStyle: .alert
+            )
+            
+            let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+                cart.clearCart()
+                proceed()
+            }
+            
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+            
+            alertController.addAction(okAction)
+            alertController.addAction(cancelAction)
+            
+            DispatchQueue.main.async {
+                self.present(alertController, animated: true)
+            }
+            
+        } else {
+            // Case 4: Different store but empty cart
+            proceed()
+        }
+    }
+}
+extension GroceryDetailsPageVC: ItemSizesPopupDelegate {
+    func openSelectSize(index: IndexPath) {
+        self.addItemSelection(index: index)
+    }
+    
+    func itemAddedInTheCart() {
+        GroceryCartData.shared.storeDetails = GroceryCartData.shared.tempStoreDetails
+        self.showToast(message: "Item added in the cart.", font: .boldSystemFont(ofSize: 14.0))
+        cartLbl.text = "\(GroceryCartData.shared.cartItems.count)"
+        cartView.isHidden = GroceryCartData.shared.cartItems.count > 0 ? false : true
+        cartView.updateUI()
+    }
+}
+    

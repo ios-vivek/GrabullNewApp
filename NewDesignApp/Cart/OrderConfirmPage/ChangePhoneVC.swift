@@ -7,7 +7,7 @@
 
 import UIKit
 protocol ChangePhoneNumberDelegate: AnyObject {
-    func changesNumber()
+    func changesNumber(updatedNumber: String)
 }
 class ChangePhoneVC: UIViewController {
     @IBOutlet weak var changePhoneField: UITextField!
@@ -38,8 +38,7 @@ class ChangePhoneVC: UIViewController {
             return
         }
         
-        Cart.shared.alternateNumber = changePhoneField.text!
-        self.delegate?.changesNumber()
+        self.delegate?.changesNumber(updatedNumber: changePhoneField.text!)
         self.dismissControllerPage()
     }
    

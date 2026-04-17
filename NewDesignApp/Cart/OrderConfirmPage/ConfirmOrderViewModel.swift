@@ -269,8 +269,8 @@ final class ConfirmOrderViewModel {
             "restaurant_id" : finalRequest.restaurantId,
             "order_id" : finalRequest.orderId,
             "oid" : finalRequest.oid,
-            "transaction" : finalRequest.transaction,
-            "items" : self.tempParam["items"] ?? []
+            "transaction" : finalRequest.transaction
+           // "items" : self.tempParam["items"] ?? []
         ]) { _, new in new }
         self.showLoader?()
         WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.stripeConfirmedOrder, forModelType: StripeConfirmResponse.self) { success in

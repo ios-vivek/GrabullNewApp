@@ -60,7 +60,18 @@ struct GroceryMenuCategory: Codable {
     let id: String?
     let heading: String?
     let status: String?
+    let hasSuperMenu: Bool?
     let itemList: [GroceryMenuItem]?
+    let itemListSub: [GroceryMenuCategory]?
+}
+
+extension GroceryMenuCategory {
+    var allItems: [GroceryMenuItem] {
+        if hasSuperMenu == true {
+            return itemListSub?.flatMap { $0.itemList ?? [] } ?? []
+        }
+        return itemList ?? []
+    }
 }
 
 struct GroceryMenuItem: Codable {
@@ -75,6 +86,7 @@ struct GroceryMenuItem: Codable {
 
 struct SizeOption: Codable {
     let name: String?
+    let size: String?
     let price: Double?
 }
 extension Array where Element == SizeOption {
@@ -84,3 +96,13 @@ extension Array where Element == SizeOption {
         }
     }
 }
+
+// MARK: - Expanded Category with Hierarchy
+struct ExpandedGroceryMenuCategory {
+    let parentId: String?
+    let parentHeading: String?
+    let subHeadingId: String?
+    let subHeading: String?
+    let itemList: [GroceryMenuItem]?
+}
+

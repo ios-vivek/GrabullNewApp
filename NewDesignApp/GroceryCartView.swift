@@ -32,7 +32,7 @@ class GroceryCartView: UIView {
           itemLbl = UILabel(frame: CGRect(x: 20, y: 5, width: 200, height: 30))
               //label.center = CGPoint(x: 20, y: 20)
           itemLbl.textAlignment = .left
-          itemLbl.text = "\(GroceryCartData.shared.cartData.count) Items added"
+          itemLbl.text = "\(GroceryCartData.shared.cartItems.count) Items added"
           itemLbl.font = UIFont.boldSystemFont(ofSize: 16)
           itemLbl.textColor = .white
           self.addSubview(itemLbl)
@@ -55,7 +55,7 @@ class GroceryCartView: UIView {
 
       }
     func updateUI(){
-        itemLbl.text = "\(GroceryCartData.shared.cartData.count) Items added"
+        itemLbl.text = "\(GroceryCartData.shared.cartItems.count) Items added"
     }
     @objc func handleTap(_ sender: UITapGestureRecognizer? = nil) {
         // handling code

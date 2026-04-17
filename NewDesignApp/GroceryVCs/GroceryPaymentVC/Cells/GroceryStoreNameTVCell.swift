@@ -18,7 +18,7 @@ class GroceryStoreNameTVCell: UITableViewCell {
         self.backgroundColor = .white
     }
     func updateUI () {
-        restNameLbl.text = GroceryCartData.shared.restDetails.name
+        restNameLbl.text = GroceryCartData.shared.storeDetails?.name
 //        if Cart.shared.restDetails.openstatus == "Open Now" {
 //            restStatusLbl.text = "Restaurant Open Now"//Cart.shared.restuarant.open_status_heading
 //            restStatusLbl.textColor = kGreenColor

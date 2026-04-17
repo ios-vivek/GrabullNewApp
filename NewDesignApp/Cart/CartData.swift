@@ -586,6 +586,11 @@ extension Float {
         return String(format: "%.2f", self)
     }
 }
+extension Double {
+    func toString()-> String{
+        return String(format: "%.2f", self)
+    }
+}
 extension Int {
     func toString()-> String{
         return String("\(self)")

@@ -22,6 +22,32 @@ class ItemSizeTVCell: UITableViewCell {
         selectedSizeImage.layer.borderColor = UIColor.black.cgColor
         selectedSizeImage.image = UIImage.init(named: "checkIcon")
     }
+    func groceryUpdateUIForSelectSize(indexPath: IndexPath, sizes: [SizeOption], selectedSize: Int) {
+        selectedSizeImage.isHidden = false
+        toppingNameLbl.isHidden = true
+        sizeNameLbl.isHidden = false
+        if indexPath.row == 0 && sizes.count == 1 {
+            roundView.layer.cornerRadius = 10
+            roundView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        } else{
+            if indexPath.row == 0 {
+                roundView.layer.cornerRadius = 10
+                roundView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+            }
+            if indexPath.row == sizes.count - 1 {
+                roundView.layer.cornerRadius = 10
+                roundView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+            }
+        }
+        selectedSizeImage.image = UIImage.init(named: "")
+        if selectedSize == indexPath.row {
+            selectedSizeImage.image = UIImage.init(named: "checkIcon")
+        }
+        if sizes.count == 1 {
+            selectedSizeImage.isHidden = true
+            sizeNameLbl.isHidden = true
+        }
+    }
     func updateUIForSelectSize(indexPath: IndexPath, sizes: [Sizes], selectedSize: Int) {
         selectedSizeImage.isHidden = false
         toppingNameLbl.isHidden = true
