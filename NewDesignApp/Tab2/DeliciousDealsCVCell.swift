@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Alamofire
 //import SkeletonView
 protocol RestSelectedFromHorizontallistDelegate: AnyObject {
     func selectedIndex(restdata: RestData)

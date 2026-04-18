@@ -42,6 +42,7 @@ class GroceryCartData {
     var dbname: String = ""
     var userAddress: UserAdd!
     var alternateNumber = ""
+    var tips: Double = 0.0
     
     private init() {}
     
@@ -129,7 +130,26 @@ class GroceryCartData {
         let convPercentage = storeDetails?.conv ?? 0.0
         return subtotal * (convPercentage / 100.0)
     }
-    
+    /// Get service charge amount 
+    var serviceAmount: Double {
+        
+        guard let store = storeDetails,
+              store.serviceFee == "Yes" else {
+            return 0
+        }
+        
+        let defaultCharge = store.scharged ?? 0.0
+        let threshold = store.schargev ?? 0.0
+        let overrideCharge = store.schargeo ?? 0.0
+        
+        // If subtotal crosses threshold → use override charge
+        if subtotal >= threshold {
+            return overrideCharge
+        }
+        
+        return defaultCharge
+    }
+   
     /// Get delivery charge based on type (fixed $ or percentage %)
     var deliveryAmount: Double {
         guard let deliveryCharge = storeDetails?.deliveryCharge,

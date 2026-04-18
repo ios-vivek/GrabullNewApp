@@ -26,6 +26,7 @@ class GroceryStoreNameTVCell: UITableViewCell {
 //            restStatusLbl.text = Cart.shared.restDetails.openstatus
 //            restStatusLbl.textColor = .red
 //        }
+        restStatusLbl.text = ""
     }
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)

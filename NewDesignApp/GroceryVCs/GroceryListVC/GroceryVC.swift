@@ -11,19 +11,29 @@ import SafariServices
 class GroceryVC: UIViewController {
     var viewModel = GroceryViewModel()
     @IBOutlet weak var titleLbl: UILabel!
+    @IBOutlet weak var cartLabel: UILabel!
+    @IBOutlet weak var cartView: UIView!
+
     @IBOutlet weak var homeCollection: UICollectionView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        cartLabel.textColor = kOrangeColor
         titleLbl.text = "Groceries"
         self.view.backgroundColor = .white
         homeCollection.backgroundColor = .white
         homeCollection.register(UINib(nibName: "HeaderCollectionView", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "HeaderCollectionView") //elementKindSectionFooter for footerview
+        let cartTap = UITapGestureRecognizer(target: self, action: #selector(cartTapAction))
+        cartView.addGestureRecognizer(cartTap)
         setupBindings()
     }
-    
+    @objc func cartTapAction() {
+        // handling code
+        let vc = self.viewController(viewController: GroceryCartVC.self, storyName: StoryName.Grocery.rawValue) as! GroceryCartVC
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
     @IBAction func backAction() {
         self.navigationController?.popViewController(animated: true)
     }
@@ -33,6 +43,8 @@ class GroceryVC: UIViewController {
             UtilsClass.showProgressHud(view: self.view)
             viewModel.getStorelistFromApi()
         }
+        cartLabel.text = "\(GroceryCartData.shared.cartItems.count)"
+
     }
     private func setupBindings() {
         viewModel.onUpdate = { [weak self] in

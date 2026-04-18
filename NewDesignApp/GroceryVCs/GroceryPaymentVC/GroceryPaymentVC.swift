@@ -31,9 +31,8 @@ class GroceryPaymentVC: UIViewController {
     var recipientPhone: String = ""
     override func viewDidLoad() {
         super.viewDidLoad()
-//        GroceryCartData.shared.isTips = false
 //        GroceryCartData.shared.isDonate = false
-//        GroceryCartData.shared.tipsAmount = 0.0
+        GroceryCartData.shared.tips = 0.0
 //        GroceryCartData.shared.donateAmount = 0.0
 //        GroceryCartData.shared.alternateNumber = ""
 //        GroceryCartData.shared.isReward =  false
@@ -183,10 +182,12 @@ extension GroceryPaymentVC: UITableViewDelegate, UITableViewDataSource{
                 return 1
             }
             return 2
+        case GroceryCellTypes.Deliveryto.rawValue:
+            return 0//GroceryCartData.shared.cartData.count
         case GroceryCellTypes.Itemdetails.rawValue:
             return 0//GroceryCartData.shared.cartData.count
         case GroceryCellTypes.Totalprice.rawValue:
-            return 1//GroceryCartData.shared.cartData.count > 0 ? 1 : 0
+            return GroceryCartData.shared.cartItems.count > 0 ? 1 : 0
         case GroceryCellTypes.Redeem.rawValue:
             if Float(viewModel.userRewardAmount) ?? 0.0 > 0.0 {
                 return self.viewModel.selectedPaymentType == 1 ? 0 : 1
@@ -214,15 +215,8 @@ extension GroceryPaymentVC: UITableViewDelegate, UITableViewDataSource{
         case GroceryCellTypes.Deliveryat.rawValue:
             let cell = tableView.dequeueReusableCell(withIdentifier: "DeliveryAtTVCell", for: indexPath) as! DeliveryAtTVCell
             cell.selectionStyle = .none
-            /*
+            
             var add = ""
-            if GroceryCartData.shared.orderType == .pickup {
-                cell.headingLbl.text = "Pickup From:"
-                add = "\(GroceryCartData.shared.restDetails.name)\n\(GroceryCartData.shared.restDetails.street) \(GroceryCartData.shared.restDetails.address), \(GroceryCartData.shared.restDetails.city), \(GroceryCartData.shared.restDetails.state), \(GroceryCartData.shared.restDetails.zip)"
-                cell.changeAddressBtn.isHidden = true
-                cell.changePhoneBtn.isHidden = true
-                cell.phoneLbl.text = "Phone: \(GroceryCartData.shared.restDetails.phone)"
-            }else {
                 cell.headingLbl.text = "Delivery At:"
                 let address = GroceryCartData.shared.userAddress
                     add = "\(address!.add1 ?? "") \(address!.add2 ?? ""), \(address!.city ?? ""), \(address!.state ?? ""), \(address!.zip ?? "")"
@@ -233,10 +227,8 @@ extension GroceryPaymentVC: UITableViewDelegate, UITableViewDataSource{
                         cell.phoneLbl.text = "Phone: \(GroceryCartData.shared.alternateNumber)"
                     }
                 
-            }
-            */
             cell.delegate = self
-          //  cell.deliveryAtLbl.text = add
+            cell.deliveryAtLbl.text = add
             
            
             return cell
@@ -278,6 +270,7 @@ extension GroceryPaymentVC: UITableViewDelegate, UITableViewDataSource{
         case GroceryCellTypes.Tips.rawValue:
             let cell = tableView.dequeueReusableCell(withIdentifier: "TipsTVCell", for: indexPath) as! TipsTVCell
             cell.delegate = self
+            cell.updateValue(itemPrice: GroceryCartData.shared.subtotal)
             cell.selectionStyle = .none
             return cell
         case GroceryCellTypes.Donate.rawValue:
@@ -356,7 +349,8 @@ extension GroceryPaymentVC: PaymentTypeDeledate {
 }
 
 extension GroceryPaymentVC: TipsDelegate {
-    func tipsAction() {
+    func tipsAction(isTips: Bool, tipsAmount: Double) {
+        GroceryCartData.shared.tips = tipsAmount
         cartTableView.reloadData()
     }
 }

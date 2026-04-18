@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Alamofire
 //import SkeletonView
 protocol InspiredFromPastDelegate: AnyObject {
     func pastSlectedIndex(restData: RestData)

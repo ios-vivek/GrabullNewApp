@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Alamofire
 private enum Layout {
     static let heroHeight: CGFloat = 150
     static let section0Height: CGFloat = 130

@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Alamofire
 //import SkeletonView
 protocol TopPicksRestSelectedDelegate: AnyObject {
     func topSelectedIndex(restData: RestData)

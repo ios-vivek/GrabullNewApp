@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Alamofire
 //import SkeletonView
 
 class TitleCVCell: UICollectionViewCell {

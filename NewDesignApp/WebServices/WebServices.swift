@@ -41,6 +41,18 @@ struct CommonAPIParams {
             "dbname" : Cart.shared.dbname,
         ]
     }
+    static func groceryBase() -> [String: Any] {
+        return [
+            "api_id": AppConfig.API_ID,
+            "api_key": AppConfig.OldAPI_KEY,
+            "devicetoken": APPDELEGATE.deviceToken,
+            "devicedetails": APPDELEGATE.getMobileInfo(),
+            "appversion": APPDELEGATE.getAppVersion(),
+            "devicetype": AppConfig.DeviceType,
+            "customer_id": APPDELEGATE.userResponse?.customer.customerId ?? "",
+            "dbname" : GroceryCartData.shared.dbname,
+        ]
+    }
 }
 
 class WebServices: NSObject {

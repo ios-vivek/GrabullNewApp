@@ -54,6 +54,21 @@ struct StoreDetails: Codable {
             return "\(deliveryTime) days delivery"
         }
     }
+    var fullAddress: String {
+        let parts = [
+            street,
+            address,
+            city,
+            state,
+            zip,
+            country
+        ]
+        
+        return parts
+            .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .filter { !$0.isEmpty }
+            .joined(separator: ", ")
+    }
 }
 
 struct GroceryMenuCategory: Codable {

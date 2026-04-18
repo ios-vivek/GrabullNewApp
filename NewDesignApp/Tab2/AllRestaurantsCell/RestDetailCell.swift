@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Alamofire
 protocol RestCellDelegate: AnyObject {
     func openOptionView(sender: UITapGestureRecognizer, index: Int)
     func clickedFavAction(index: Int)
@@ -63,25 +62,7 @@ class RestDetailCell: UITableViewCell {
         //distantLbl.text = "\(restaurant.distance ?? "")mi"
         foodType.text = "\(restaurant.cuisine)"
         let url = restaurant.restImage
-        AF.request( url,method: .get).response{ response in
-            switch response.result {
-            case .success(let responseData):
-                if responseData != nil {
-                    self.restaurantImage.image = UIImage(data: responseData!)
-                    self.restaurantImage.contentMode = .scaleAspectFill
-                    if self.restaurantImage.image == nil {
-                        self.restaurantImage.image = UIImage(named: "img_midium")
-                        self.restaurantImage.contentMode = .center
-                    }
-                }else {
-                    self.restaurantImage.image = UIImage(named: "img_midium")
-                    self.restaurantImage.contentMode = .center
-                }
-            case .failure(let error):
-                self.restaurantImage.image = UIImage(named: "img_midium")
-                self.restaurantImage.contentMode = .center
-            }
-        }
+        restaurantImage.setImage(urlString: url)
 
     }
 

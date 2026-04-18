@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Alamofire
 
 class CounsinesCVCell: UICollectionViewCell {
     
@@ -26,17 +25,8 @@ class CounsinesCVCell: UICollectionViewCell {
         foodTypeLbl.text = cousine.name
         
         let url = cousine.url//getMindList()[index]
+        foodImage.setImage(urlString: url)
       //  liveItUpImage.sd_setImage(with: URL(string: url), placeholderImage: UIImage(named: ""))
-        AF.request( url,method: .get).response{ response in
-
-          switch response.result {
-           case .success(let responseData):
-              self.foodImage.image = UIImage(data: responseData!, scale:1)
-
-           case .failure(let error):
-               print("error--->",error)
-           }
-       }
 
        
     }
@@ -45,29 +35,7 @@ class CounsinesCVCell: UICollectionViewCell {
         foodTypeLbl.text = cousine.heading
         let url = cousine.imgUrl//getMindList()[index]
         //print("cousine.cuisineImage--->",cousine.cuisineImage ?? "")
-
-        AF.request( url,method: .get).response{ response in
-            switch response.result {
-            case .success(let responseData):
-                if responseData != nil {
-                    self.foodImage.image = UIImage(data: responseData!)
-                    self.foodImage.contentMode = .scaleToFill
-                    if self.foodImage.image == nil {
-                        self.foodImage.image = UIImage(named: "img_small")
-                        self.foodImage.contentMode = .center
-                    }
-                }else {
-                    self.foodImage.image = UIImage(named: "img_small")
-                    self.foodImage.contentMode = .center
-                }
-            case .failure(let error):
-                self.foodImage.image = UIImage(named: "img_small")
-                self.foodImage.contentMode = .center
-            }
-        }
-
-
-       
+        foodImage.setImage(urlString: url, placeholder: UIImage(named: "img_small"))
     }
     func getMindList()-> [String]{
     let url1 = "https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_288,h_360/v1674029856/PC_Creative%20refresh/3D_bau/banners_new/Pizza.png"

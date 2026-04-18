@@ -8,13 +8,14 @@
 import UIKit
 
 protocol TipsDelegate: AnyObject {
-    func tipsAction()
+    func tipsAction(isTips: Bool, tipsAmount: Double)
 }
 
 class TipsTVCell: UITableViewCell, UITextFieldDelegate {
     @IBOutlet weak var tipsSegment: UISegmentedControl!
     @IBOutlet weak var customTipsTxtFld: UITextField!
     var delegate: TipsDelegate?
+    var totalPrice = 0.0
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -43,6 +44,9 @@ class TipsTVCell: UITableViewCell, UITextFieldDelegate {
         customTipsTxtFld.setPlaceHolderColor(.gGray200)
 
     }
+    func updateValue(itemPrice: Double) {
+        totalPrice = itemPrice
+    }
     @objc func textFieldDidChange(_ textField: UITextField) {
         if textField.text!.count > 0 {
             tipsSegment.selectedSegmentIndex = -1
@@ -52,43 +56,30 @@ class TipsTVCell: UITableViewCell, UITextFieldDelegate {
         if textField.text!.count > 0 {
             tipsSegment.selectedSegmentIndex = -1
             let tipsAmount = textField.text!
-            Cart.shared.isTips = true
-            Cart.shared.tipsAmount = Float(tipsAmount)!
+            self.delegate?.tipsAction(isTips: true, tipsAmount: Double(tipsAmount)!)
         } else {
-            Cart.shared.isTips = false
-            Cart.shared.tipsAmount = 0.0
+            self.delegate?.tipsAction(isTips: false, tipsAmount: 0.0)
         }
-        self.delegate?.tipsAction()
     }
     @objc func segmentedControlValueChanged(_ sender: UISegmentedControl) {
         self.endEditing(true)
         customTipsTxtFld.text = ""
         switch sender.selectedSegmentIndex {
         case 0:
-            Cart.shared.isTips = true
-            let tempTotal = Cart.shared.getAllPriceDeatils().subTotal
-            let tipsAmount = (tempTotal * 10) / 100
-            Cart.shared.tipsAmount = Cart.shared.roundValue2Digit(value: tipsAmount)
+            let tipsAmount = (totalPrice * 10) / 100
+            self.delegate?.tipsAction(isTips: true, tipsAmount: Double(tipsAmount))
         case 1:
-            Cart.shared.isTips = true
-            let tempTotal = Cart.shared.getAllPriceDeatils().subTotal
-            let tipsAmount = (tempTotal * 15) / 100
-            Cart.shared.tipsAmount = Cart.shared.roundValue2Digit(value: tipsAmount)
+            let tipsAmount = (totalPrice * 15) / 100
+            self.delegate?.tipsAction(isTips: true, tipsAmount: Double(tipsAmount))
         case 2:
-            Cart.shared.isTips = true
-            let tempTotal = Cart.shared.getAllPriceDeatils().subTotal
-            let tipsAmount = (tempTotal * 20) / 100
-            Cart.shared.tipsAmount = Cart.shared.roundValue2Digit(value: tipsAmount)
+            let tipsAmount = (totalPrice * 20) / 100
+            self.delegate?.tipsAction(isTips: true, tipsAmount: Double(tipsAmount))
         case 3:
-            Cart.shared.isTips = true
-            let tempTotal = Cart.shared.getAllPriceDeatils().subTotal
-            let tipsAmount = (tempTotal * 25) / 100
-            Cart.shared.tipsAmount = Cart.shared.roundValue2Digit(value: tipsAmount)
+            let tipsAmount = (totalPrice * 25) / 100
+            self.delegate?.tipsAction(isTips: true, tipsAmount: Double(tipsAmount))
         default:
-            Cart.shared.isTips = false
-            Cart.shared.tipsAmount = 0.0
+            self.delegate?.tipsAction(isTips: false, tipsAmount: 0.0)
         }
-        self.delegate?.tipsAction()
     }
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)

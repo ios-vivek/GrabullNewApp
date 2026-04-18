@@ -300,6 +300,7 @@ extension ConfirmOrderVC: UITableViewDelegate, UITableViewDataSource{
         case CellTypeSelected.Tips.rawValue:
             let cell = tableView.dequeueReusableCell(withIdentifier: "TipsTVCell", for: indexPath) as! TipsTVCell
             cell.delegate = self
+            cell.updateValue(itemPrice: Double(Cart.shared.getAllPriceDeatils().subTotal))
             cell.selectionStyle = .none
             return cell
         case CellTypeSelected.Donate.rawValue:
@@ -436,7 +437,9 @@ extension ConfirmOrderVC: PKPaymentAuthorizationViewControllerDelegate {
 }
 */
 extension ConfirmOrderVC: TipsDelegate {
-    func tipsAction() {
+    func tipsAction(isTips: Bool, tipsAmount: Double) {
+        Cart.shared.tipsAmount = Float(tipsAmount)
+        Cart.shared.isTips = isTips
         cartTableView.reloadData()
     }
 }

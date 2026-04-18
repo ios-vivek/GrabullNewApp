@@ -32,12 +32,12 @@ class GroceryCartVC: UIViewController {
             fullText = "\(GroceryCartData.shared.storeDetails?.name ?? "")"
             secondPart = "\(GroceryCartData.shared.storeDetails?.name ?? "")"
             
-            if GroceryCartData.shared.userAddress == nil && APPDELEGATE.userLoggedIn() {
-                for address in APPDELEGATE.userResponse!.customer.address {
-                    if APPDELEGATE.selectedLocationAddress.zipcode == address.zip {
-                        GroceryCartData.shared.userAddress = address
-                        break
-                    }
+            if GroceryCartData.shared.userAddress == nil,
+               APPDELEGATE.userLoggedIn(),
+               let addresses = APPDELEGATE.userResponse?.customer.address {
+                
+                GroceryCartData.shared.userAddress = addresses.first {
+                    $0.zip == APPDELEGATE.selectedLocationAddress.zipcode
                 }
             }
             
@@ -88,7 +88,7 @@ class GroceryCartVC: UIViewController {
     }
    
     func getAddressesFromApi() {
-        let parameters = CommonAPIParams.base()
+        let parameters = CommonAPIParams.groceryBase()
         UtilsClass.showProgressHud(view: self.view)
         WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.getAddress, forModelType: AddressListResponse.self) { success in
             UtilsClass.hideProgressHud(view: self.view)
@@ -118,10 +118,7 @@ class GroceryCartVC: UIViewController {
                 proceedView.isHidden = false
             }
         }
-//        if APPDELEGATE.userLoggedIn() && Cart.shared.orderType == .delivery {
-//            proceedView.isHidden = !addressView.isHidden
-//        }
-        let val = GroceryCartData.shared.totalPrice
+        let val = GroceryCartData.shared.total.toString()
         proceedBtn.setFontWithString(text: "Proceed: \(UtilsClass.getCurrencySymbol())\(val)", fontSize: 12)
         getAllItemsForNextVCDisplay()
         self.cartTableView.reloadData()
@@ -168,74 +165,68 @@ class GroceryCartVC: UIViewController {
         self.present(popupVC, animated: true)
     }
 
-    func getMenuTypesFromItems()-> String {
-        /*
-        var menuType = "Regular"
-        if GroceryCartData.shared.orderType == .delivery {
-            let types = Set(
-                GroceryCartData.shared.cartData.compactMap {
-                    $0.restItemSizes.first?.menuType
-                }
-            )
-
-            if types.contains("Menu") {
-                menuType = "Regular"
-            } else if types.contains("Catering") {
-                menuType = "Catering"
-            } else if types.contains("Deals") {
-                menuType = "Regular"
-            }
-        }
-        */
-        return "menuType"
-    }
     @IBAction func proceedAction() {
-/*
+
         let add = GroceryCartData.shared.userAddress?.fullAddress ?? ""
        // let add = "2 Barnsley Rd, Lynnfield, MA 01940, USA"//GroceryCartData.shared.userAddress.fullAddress
 
-        if GroceryCartData.shared.orderType == .delivery {
             if add == "" {
                 refreshView()
             } else {
-                checkDeliveryAvailability(restID: GroceryCartData.shared.restDetails.rid, menuType: getMenuTypesFromItems(), address: add)
+                checkDeliveryAvailability(restID: GroceryCartData.shared.storeDetails?.rid ?? "", menuType: "Regular", address: add)
             }
-        } else {
-            contionueAction()
-        }
-       */
+      //  contionueAction()
+    
     }
-   func contionueAction() {
-       /*
-        if GroceryCartData.shared.orderType == .delivery && GroceryCartData.shared.restDetails.minDelivery > GroceryCartData.shared.getAllPriceDeatils().subTotal {
-            let alertController = UIAlertController(title: "Add more items", message: "Min order \(UtilsClass.getCurrencySymbol())\(GroceryCartData.shared.restDetails.minDelivery) for delivery", preferredStyle: .alert)
-            let OKAction = UIAlertAction(title: "Add", style: .default) { action in
+    func contionueAction() {
+        
+        let cart = GroceryCartData.shared
+        let minDelivery = cart.storeDetails?.minDelivery ?? 0
+        let subtotal = cart.subtotal
+        
+        // If minimum order not reached
+        if Double(minDelivery) > subtotal {
+            
+            let formattedMin = String(format: "%.2f", Double(minDelivery))
+            
+            let alertController = UIAlertController(
+                title: "Add more items",
+                message: "Min order \(UtilsClass.getCurrencySymbol())\(formattedMin) for delivery",
+                preferredStyle: .alert
+            )
+            
+            let okAction = UIAlertAction(title: "Add", style: .default) { _ in
                 self.navigationController?.popViewController(animated: true)
-
             }
-            let cancel = UIAlertAction(title: "Cancel", style: .cancel) { alert in
-                
+            
+            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+            
+            alertController.addAction(okAction)
+            alertController.addAction(cancelAction)
+            
+            DispatchQueue.main.async {
+                self.present(alertController, animated: true)
             }
-            alertController.addAction(OKAction)
-            alertController.addAction(cancel)
-            OperationQueue.main.addOperation {
-                self.present(alertController, animated: true,
-                             completion:nil)
-            }
+            
         } else {
-            let vc = self.viewController(viewController: GroceryPaymentVC.self, storyName: StoryName.Grocery.rawValue) as! GroceryPaymentVC
+            // Proceed to payment
+            let vc = self.viewController(
+                viewController: GroceryPaymentVC.self,
+                storyName: StoryName.Grocery.rawValue
+            ) as! GroceryPaymentVC
+            
             self.navigationController?.pushViewController(vc, animated: true)
         }
-        */
-      
     }
     
     func checkDeliveryAvailability(restID: String, menuType: String, address: String) {
-        var parameters = CommonAPIParams.base()
+        var parameters = CommonAPIParams.groceryBase()
         parameters.merge([
             "rest_id" : restID,
             "address" : address,
-            "menutype" : menuType
+            "menutype" : menuType,
+            "deliveryMiles" : GroceryCartData.shared.storeDetails?.deliveryMiles ?? 0,
+            "addressRest" : GroceryCartData.shared.storeDetails?.fullAddress ?? ""
         ]) { _, new in new }
         
         UtilsClass.showProgressHud(view: self.view)

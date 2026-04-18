@@ -57,6 +57,7 @@ class GroceryDetailsPageVC: UIViewController {
         self.view.backgroundColor = themeBackgrounColor
         restaurantTable.backgroundColor = .white
         restaurantName.textColor = .white
+        restaurantName.text = storeDetails?.name ?? ""
         themeSet()
         self.setDefaultBack()
     }
@@ -222,6 +223,9 @@ extension GroceryDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
             return 1
         }
         if section == GrocerySection.Featured.rawValue {
+                return 0
+        }
+        if section == GrocerySection.Deals.rawValue {
                 return 0
         }
         if section >= GrocerySection.Items.rawValue {

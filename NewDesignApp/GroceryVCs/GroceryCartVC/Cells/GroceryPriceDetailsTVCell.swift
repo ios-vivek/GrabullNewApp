@@ -62,10 +62,11 @@ class GroceryPriceDetailsTVCell: UITableViewCell {
         if GroceryCartData.shared.cartItems.count > 0 {
             let subtotal = GroceryCartData.shared.subtotal
             let taxAmount = GroceryCartData.shared.taxAmount
+            let serviceAmount = GroceryCartData.shared.serviceAmount
             let convAmount = GroceryCartData.shared.convAmount
             let deliveryAmount = GroceryCartData.shared.deliveryAmount
             let total = GroceryCartData.shared.total
-            let taxWithCon = convAmount + taxAmount
+            let taxWithCon = convAmount + taxAmount + serviceAmount
             
             subtotalValueLbl.text = "\(UtilsClass.getCurrencySymbol())\(subtotal.toString())"
             discountValueLbl.text = "\(UtilsClass.getCurrencySymbol())\(0.00)"
@@ -80,11 +81,28 @@ class GroceryPriceDetailsTVCell: UITableViewCell {
             totalValueLbl.text = ""
         }
         checkoutButton.isHidden = !APPDELEGATE.userLoggedIn()
-        if Cart.shared.orderType == .delivery && Cart.shared.userAddress == nil {
-            checkoutButton.isHidden = true
-        }
         checkoutButton.isHidden = !isPlaceOrder
-      
+        tipsLbl.isHidden = true
+        donateLbl.isHidden = true
+       // let str = isPlaceOrder ? "Place Order" : "Checkout"
+        checkoutButton.setFontWithString(text: "Checkout: \(UtilsClass.getCurrencySymbol())\(GroceryCartData.shared.total.toString())", fontSize: 16)
+        setPopupData()
+        if isPlaceOrder {
+            var total = GroceryCartData.shared.total
+            tipsLbl.isHidden = GroceryCartData.shared.tips > 0.0 ? false : true
+            tipsLbl.text = "🌟 \(UtilsClass.getCurrencySymbol())\(GroceryCartData.shared.tips.toString()) added tips"
+            total = total + GroceryCartData.shared.tips
+            totalValueLbl.text = "\(UtilsClass.getCurrencySymbol())\(total.toString())"
+           // let str = isPlaceOrder ? "Place Order" : "Checkout"
+            checkoutButton.setFontWithString(text: "Place Order: \(UtilsClass.getCurrencySymbol())\(total.toString())", fontSize: 16)
+        }
+    }
+    func setPopupData() {
+        let tax = GroceryCartData.shared.taxAmount + GroceryCartData.shared.convAmount
+        taxLbl.text = "Taxes, Fee Apllied: \(UtilsClass.getCurrencySymbol())\(tax.toString())"
+        serviceLbl.text = "Service Fee \(UtilsClass.getCurrencySymbol())\(GroceryCartData.shared.serviceAmount.toString())"
+        helpLbl.text = "The Service fee help us"
+        technologyLbl.text = "technology & support charges"
     }
     @IBAction func infoIconClicked() {
         infoView.isHidden.toggle()

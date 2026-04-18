@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Alamofire
 //import SkeletonView
 protocol CousineDelegate: AnyObject {
     func selectedCuisine(selsectedindex: Int)

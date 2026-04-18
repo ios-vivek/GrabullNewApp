@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Alamofire
 
 class HistoryTVCell: UITableViewCell {
     @IBOutlet weak var reOrderBtn: UIButton!

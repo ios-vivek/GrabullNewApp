@@ -91,7 +91,7 @@
                                 <rect key="frame" x="0.0" y="94" width="393" height="722"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <view key="tableFooterView" contentMode="scaleToFill" id="pPa-pb-yWY">
-                                    <rect key="frame" x="0.0" y="1078" width="393" height="44"/>
+                                    <rect key="frame" x="0.0" y="937" width="393" height="44"/>
                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 </view>
@@ -1088,12 +1088,45 @@
                                             <constraint firstAttribute="height" constant="1" id="GhQ-Fj-bkm"/>
                                         </constraints>
                                     </imageView>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xU1-DS-89h">
+                                        <rect key="frame" x="323" y="0.0" width="70" height="40"/>
+                                        <subviews>
+                                            <imageView clipsSubviews="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="cartIcon" translatesAutoresizingMaskIntoConstraints="NO" id="hJM-ik-1ro">
+                                                <rect key="frame" x="0.0" y="0.0" width="40" height="40"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="40" id="RM4-aF-0j1"/>
+                                                    <constraint firstAttribute="width" constant="40" id="zVL-98-ouL"/>
+                                                </constraints>
+                                            </imageView>
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="5" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BBE-Ks-avT">
+                                                <rect key="frame" x="30" y="0.0" width="40" height="17"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="height" constant="17" id="0Wb-Yc-Vtq"/>
+                                                    <constraint firstAttribute="width" constant="40" id="Y2s-KG-CWq"/>
+                                                </constraints>
+                                                <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="12"/>
+                                                <nil key="textColor"/>
+                                                <nil key="highlightedColor"/>
+                                            </label>
+                                        </subviews>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstItem="hJM-ik-1ro" firstAttribute="leading" secondItem="xU1-DS-89h" secondAttribute="leading" id="1b8-ZN-Wdg"/>
+                                            <constraint firstAttribute="height" constant="40" id="2FO-E4-gWH"/>
+                                            <constraint firstAttribute="width" constant="70" id="2pT-3o-egP"/>
+                                            <constraint firstItem="hJM-ik-1ro" firstAttribute="centerY" secondItem="xU1-DS-89h" secondAttribute="centerY" id="HOi-tM-Z5A"/>
+                                            <constraint firstItem="BBE-Ks-avT" firstAttribute="top" secondItem="xU1-DS-89h" secondAttribute="top" id="f4b-Tn-yeD"/>
+                                            <constraint firstAttribute="trailing" secondItem="BBE-Ks-avT" secondAttribute="trailing" id="miH-a9-Zqs"/>
+                                        </constraints>
+                                    </view>
                                 </subviews>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstItem="8kh-sV-Ibe" firstAttribute="centerY" secondItem="C0V-dj-Tci" secondAttribute="centerY" id="1L1-8k-rOc"/>
                                     <constraint firstItem="8kh-sV-Ibe" firstAttribute="leading" secondItem="C0V-dj-Tci" secondAttribute="leading" id="4VX-PW-e2u"/>
+                                    <constraint firstAttribute="trailing" secondItem="xU1-DS-89h" secondAttribute="trailing" id="NKb-Kh-INS"/>
                                     <constraint firstItem="PIr-NN-lNx" firstAttribute="centerY" secondItem="C0V-dj-Tci" secondAttribute="centerY" id="PYF-b6-mCg"/>
+                                    <constraint firstItem="xU1-DS-89h" firstAttribute="centerY" secondItem="C0V-dj-Tci" secondAttribute="centerY" id="Ssk-LK-oem"/>
                                     <constraint firstItem="o8n-8C-j5H" firstAttribute="leading" secondItem="C0V-dj-Tci" secondAttribute="leading" id="TnS-lQ-wIy"/>
                                     <constraint firstItem="PIr-NN-lNx" firstAttribute="leading" secondItem="8kh-sV-Ibe" secondAttribute="trailing" constant="5" id="Tsn-x8-zpR"/>
                                     <constraint firstAttribute="bottom" secondItem="o8n-8C-j5H" secondAttribute="bottom" id="Zh1-IF-v1E"/>
@@ -1350,6 +1383,8 @@
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="cartLabel" destination="BBE-Ks-avT" id="W2R-P8-AuO"/>
+                        <outlet property="cartView" destination="xU1-DS-89h" id="O8k-61-Cfl"/>
                         <outlet property="homeCollection" destination="ehG-W7-TAl" id="u9T-Gz-bE7"/>
                         <outlet property="titleLbl" destination="PIr-NN-lNx" id="fER-iz-hkr"/>
                     </connections>
