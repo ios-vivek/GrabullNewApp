@@ -173,7 +173,7 @@ class GroceryCartVC: UIViewController {
             if add == "" {
                 refreshView()
             } else {
-                checkDeliveryAvailability(restID: GroceryCartData.shared.storeDetails?.rid ?? "", menuType: "Regular", address: add)
+                checkDeliveryAvailability(restID: GroceryCartData.shared.storeDetails?.rid ?? "", menuType: "Grocery", address: add)
             }
       //  contionueAction()
     

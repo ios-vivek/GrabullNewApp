@@ -133,6 +133,7 @@ class AddAddressVC: UIViewController {
 //                        return
 //                    }
                     Cart.shared.userAddress = add
+                    GroceryCartData.shared.userAddress = add
                     self.delegate?.addednewAddress()
                 }
                 self.navigationController?.popViewController(animated: true)

@@ -157,14 +157,16 @@ class ItemSizesPopupVC: UIViewController {
     }
 
     @IBAction func plusAction() {
-        itemQty += 1
-        setAmountValue()
+        //if Int(itemData.qty!) < itemQty {
+            itemQty = itemQty + 1
+       // }
+        self.setAmountValue()
     }
     @IBAction func minusAction() {
-        if itemQty > 1 {
-            itemQty -= 1
-            setAmountValue()
+        if itemQty > 2 {
+            itemQty = itemQty - 1
         }
+        self.setAmountValue()
     }
     @IBAction func addItemInCart() {
        // let option = SelectedOption(optionHeading: topping[indexPath.section - 1].option![indexPath.row].heading, price: "")
