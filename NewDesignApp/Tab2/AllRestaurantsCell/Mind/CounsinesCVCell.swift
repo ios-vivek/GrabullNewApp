@@ -36,6 +36,8 @@ class CounsinesCVCell: UICollectionViewCell {
         let url = cousine.imgUrl//getMindList()[index]
         //print("cousine.cuisineImage--->",cousine.cuisineImage ?? "")
         foodImage.setImage(urlString: url, placeholder: UIImage(named: "img_small"))
+        foodImage.backgroundColor = .clear
+        foodTypeLbl.backgroundColor = .clear
     }
     func getMindList()-> [String]{
     let url1 = "https://media-assets.swiggy.com/swiggy/image/upload/fl_lossy,f_auto,q_auto,w_288,h_360/v1674029856/PC_Creative%20refresh/3D_bau/banners_new/Pizza.png"

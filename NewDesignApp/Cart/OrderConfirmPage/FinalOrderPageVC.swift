@@ -18,6 +18,8 @@ class FinalOrderPageVC: UIViewController {
     @IBOutlet weak var orderSummeryLbl: UILabel!
     @IBOutlet weak var backToHomeBtn: UIButton!
     @IBOutlet weak var tbl: UITableView!
+    @IBOutlet weak var headerView: UIView!
+
 
     
     override func viewDidLoad() {
@@ -25,6 +27,7 @@ class FinalOrderPageVC: UIViewController {
 
         // Do any additional setup after loading the view.
         self.view.backgroundColor = .white
+        headerView.backgroundColor = themeBackgrounColor
         tbl.backgroundColor = .white
         UtilsClass.savePastOrderRest(pastOrderRest: PastOrderRest(restId: "\(Cart.shared.orderNumber)", count: 1))
         orderNumberLbl.text = "Order # \(Cart.shared.orderNumber)"
@@ -32,8 +35,8 @@ class FinalOrderPageVC: UIViewController {
         backToHomeBtn.setRounded(cornerRadius: 10)
         backToHomeBtn.setFontWithString(text: "BACK TO HOME", fontSize: 16)
         restaurantNameLbl.text = Cart.shared.restDetails.name
-        restaurantContactLbl.text = "Restaurant Contact : \(Cart.shared.restDetails.phone)"
-        supportContactLbl.text = "Restaurant Support : \(Cart.shared.supportNumber)"
+        restaurantContactLbl.text = "Restaurant Support : \(Cart.shared.restDetails.phone)"
+        supportContactLbl.text = "Grabull Support : \(Cart.shared.supportNumber)"
         if Cart.shared.orderType == .pickup {
             orderTypeLbl.text = "Pickup from:"
             orderSummeryLbl.text = "Pickup Order Summary"

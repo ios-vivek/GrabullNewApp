@@ -54,7 +54,7 @@ class StoreCVCell: UICollectionViewCell {
 
         // Better formatting
         ratingLbl.text = String(format: "%.1f", store.rating)
-        deliveryTimeLbl.text = "\(store.pickupTime) mins"
+        deliveryTimeLbl.text = "\(store.showDeliveryTime)"
         addressLbl.text = store.address
         distantLbl.text = String(format: "%.1f mi", store.distance)
         cuisineLbl.text = store.cuisine

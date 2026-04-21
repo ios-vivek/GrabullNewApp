@@ -52,6 +52,17 @@ struct Store: Codable {
     var fullImageURL: String {
         return imgUrl + img
     }
+    var showDeliveryTime: String {
+        guard deliveryTime > 0 else {
+            return ""
+        }
+
+        if deliveryTime == 1 {
+            return "Next day delivery"
+        } else {
+            return "\(deliveryTime) days delivery"
+        }
+    }
 }
 
 // MARK: - Offer (empty for now but future-proof)

@@ -53,15 +53,10 @@ extension RestCouponsCVCell: UICollectionViewDelegate,UICollectionViewDataSource
        
         cell.updateUIOld(cousine: cuisines[indexPath.row])
         cell.foodTypeLbl.textColor = .black
-       // cell.foodTypeLbl.transform = .identity
-      // cell.foodImage.transform = .identity
         if self.selectedCuisines == indexPath.row {
             cell.foodTypeLbl.textColor = kOrangeColor
-            UIView.animate(withDuration: 0.1) {
-                cell.foodTypeLbl.transform = CGAffineTransform(scaleX: 1.08, y: 1.08)
-            }
 //            UIView.animate(withDuration: 0.1) {
-//                cell.foodImage.transform = CGAffineTransform(scaleX: 1.09, y: 1.09)
+//                cell.foodTypeLbl.transform = CGAffineTransform(scaleX: 1.08, y: 1.08)
 //            }
         }
         cell.backgroundColor = .white
@@ -90,11 +85,11 @@ extension RestCouponsCVCell: UICollectionViewDelegateFlowLayout{
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
-        return 5
+        return 0
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 15
+        return 5
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {

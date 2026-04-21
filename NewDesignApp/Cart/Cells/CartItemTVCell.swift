@@ -73,6 +73,7 @@ var index = 0
         if item.instructionText.count > 0 {
             instructionLbl.attributedText = self.configureSplInstText(text1: "Spl Inst: ", text: "\(item.instructionText)")
         }
+        itemName.textColor = .black
     }
     @IBAction func plusAction() {
         var item = Cart.shared.cartData[index]
@@ -133,8 +134,8 @@ var index = 0
         
         let titleAttrText = NSMutableAttributedString(string: "")
         titleAttrText.append(NSAttributedString(string: "\(text1)", attributes: [
-            NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12, weight: .regular),
-            NSAttributedString.Key.foregroundColor: UIColor.gSkyBlue
+            NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12, weight: .bold),
+            NSAttributedString.Key.foregroundColor: UIColor.black
         ]))
         titleAttrText.append(NSAttributedString(string: "\(text)", attributes: [
             NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12, weight: .regular),
