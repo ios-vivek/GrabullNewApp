@@ -13,7 +13,6 @@ final class GroceryPaymentViewModel {
     var recipientFirstName = ""
     var recipientLastName = ""
     var recipientPhone = ""
-    var orderAsGift = "No"
     var tempParam = [String: AnyObject]()
     var tempRequest: StripeConfirmRequest?
     
@@ -50,142 +49,99 @@ final class GroceryPaymentViewModel {
         return false
         //GroceryCartData.shared.isReward && GroceryCartData.shared.getTotalPrice() == 0
     }
-    /*
+    
     // MARK: - Items Payload
-    func buildItemList() -> [CartItem] {
-        /*
-        GroceryCartData.shared.cartData.compactMap { item in
-            guard let size = item.restItemSizes.first else { return nil }
-
-            let toppings = item.restItemTopping.flatMap { $0.option }
-
-            let toppingText = toppings.map {
-                $0.price > 0 ? "\($0.optionHeading) \($0.price)" : $0.optionHeading
-            }.joined(separator: " | ")
-
-            let toppingAmount = GroceryCartData.shared.roundValue2Digit(
-                value: toppings.reduce(0) { $0 + Float($1.price) }
-            )
-
-            let optionList = toppings
-                .map { String($0.opID) }
-                .joined(separator: "|")
-
-            return CartItem(
-                toppingList: optionList,
-                free: "No",
-                freenote: "",
-                extamount: "\(toppingAmount)",
-                extracharge: "\(item.instructionExtraAmount)",
-                menu: size.manuName,
-                mid: size.manuId,
-                extra: toppingText,
-                tax: item.restItem.tax,
-                menutype: size.menuType,
-                addedInst: item.instructionText,
-                sizeh: size.sizeKey,
-                id: item.restItem.id,
-                size: size.name,
-                price: "\(size.price)",
-                heading: item.restItem.heading,
-                qty: "\(size.itemQty)"
+    func buildItemList() -> [CartItems] {
+        return GroceryCartData.shared.cartItems.map { cartItem in
+            CartItems(
+                id: cartItem.item.id ?? "",
+                mid: cartItem.parentId ?? "",
+                heading: cartItem.item.heading ?? "",
+                menu: cartItem.parentHeading ?? "",
+                size: cartItem.selectedSize?.size ?? "",
+                sizeh: cartItem.selectedSize?.name ?? "",
+                tax: 1,
+                qty: "\(cartItem.quantity)",
+                price: "\(cartItem.selectedSize?.price ?? 0.0)"
             )
         }
-        */
     }
-    */
-    func checkPaymentType(recipientFName: String,
-                          recipientLName: String,
-                          recipientPhone: String,
-                          transactionIdentifier: String) {
+    
+    func checkPaymentType(transactionIdentifier: String) {
         switch selectedPaymentType {
         case 1:
             payBy = .Gift
-//            if GroceryCartData.shared.giftNumber.isEmpty {
-//                showError?("Please enter gift number")
-//                return
-//            }
-            placeOrder(recipientFName: recipientFName, recipientLName: recipientLName, recipientPhone: recipientPhone, transactionIdentifier: transactionIdentifier)
+            if GroceryCartData.shared.giftNumber.isEmpty {
+                showError?("Please enter gift number")
+                return
+            }
+            placeOrder(transactionIdentifier: transactionIdentifier)
         default:
             payBy = .Stripe
-            placeOrder(recipientFName: recipientFName, recipientLName: recipientLName, recipientPhone: recipientPhone, transactionIdentifier: transactionIdentifier)
+            placeOrder(transactionIdentifier: transactionIdentifier)
         }
     }
 
     // MARK: - Place Order
     func placeOrder(
-        recipientFName: String,
-        recipientLName: String,
-        recipientPhone: String,
         transactionIdentifier: String
     ) {
-        /*
+        
             showLoader?()
-            
-            // MARK: - Hold Date / Time
-            var holddate = "\(GroceryCartData.shared.selectedTime.date)"
-            var holdTime = "\(String(GroceryCartData.shared.selectedTime.time.dropLast(3)))"
-            
-            if GroceryCartData.shared.orderDate == .ASAP {
-                holddate = ""
-                holdTime = ""
-            }
-            
-            if GroceryCartData.shared.orderType == .pickup {
-                GroceryCartData.shared.userAddress = UserAdd(
-                    id: "0", street: "", add1: "", add2: "",
-                    add3: "", type: "", city: "", state: "", zip: ""
-                )
-            }
+//                GroceryCartData.shared.userAddress = UserAdd(
+//                    id: "0", street: "", add1: "", add2: "",
+//                    add3: "", type: "", city: "", state: "", zip: ""
+//                )
             
             // MARK: - Parameters (UNCHANGED)
         let address = GroceryCartData.shared.userAddress
-        let price = GroceryCartData.shared.getAllPriceDeatils()
-        let donateAmount = GroceryCartData.shared.isDonate ? GroceryCartData.shared.donateAmount : 0.0
+      //  print("address details:\(address)")
+      //  print("address details zip:\(address?.zip)")
+        //let price = GroceryCartData.shared.getAllPriceDeatils()
+       // let donateAmount = GroceryCartData.shared.isDonate ? GroceryCartData.shared.donateAmount : 0.0
 
-        let cartRequest = CartRequest(
-            name: APPDELEGATE.userResponse?.customer.fullName ?? "",
-            recipientphone: recipientPhone,
-            cvv: selectedPaymentType == 0 ? GroceryCartData.shared.cardCvv : "",
-            email: APPDELEGATE.userResponse?.customer.email ?? "",
-            orderType: "\(GroceryCartData.shared.orderType)".capitalized,
-            customerId: APPDELEGATE.userResponse?.customer.customerId ?? "",
-            add2: address?.add2 ?? "",
-            devicetype: AppConfig.DeviceType,
-            newcard: "New",
-            holddate: GroceryCartData.shared.orderDate == .ASAP ? "" : "\(holddate) \(holdTime)",
-            dcharge: "\(price.deliveryCharge)",
-            holdtime: GroceryCartData.shared.orderDate == .ASAP ? "No" : "Yes",
-            items: buildItemList(),
-            apiKey: AppConfig.OldAPI_KEY,
+        let cartRequest = GroceryCartRequest(
             apiId: AppConfig.API_ID,
-            addcard: "No",
-            cardholder: selectedPaymentType == 0 ? GroceryCartData.shared.cardHolder : "",
-            offeramount: price.offeramount,
-            expiry: selectedPaymentType == 0 ? GroceryCartData.shared.cardExpiry : "",
-            state: address?.state ?? "",
-            recipientname: "\(recipientFName) \(recipientLName)",
-            cardno: selectedPaymentType == 0 ? GroceryCartData.shared.cardNumber : "",
-            total: "\(price.total)",
-            tips: GroceryCartData.shared.isTips ? "\(GroceryCartData.shared.tipsAmount)" : "0.0",
-            transactionIdentifier: transactionIdentifier,
+            apiKey: AppConfig.OldAPI_KEY,
+            restaurantId: GroceryCartData.shared.storeDetails?.rid ?? "",
             dbname: GroceryCartData.shared.dbname,
-            city: address?.city ?? "",
-            payBy: "\(payBy)",
-            orderasGift: orderAsGift,
-            scharge: "\(price.serviceCharge)",
-            restaurantId: GroceryCartData.shared.restDetails.rid,
-            donate: "\(donateAmount)",
-            orderat: address?.type ?? "",
-            billingzip: selectedPaymentType == 0 ? GroceryCartData.shared.cardZip : "",
-            did: GroceryCartData.shared.orderNumber,
-            rewards: GroceryCartData.shared.isReward ? "\(GroceryCartData.shared.rewardAmount)" : "0.0",
-            specialinstruction: GroceryCartData.shared.specialInstructionText,
+            customerId: APPDELEGATE.userResponse?.customer.customerId ?? "",
+            fname: APPDELEGATE.userResponse?.customer.firstName ?? "",
+            lname: APPDELEGATE.userResponse?.customer.lastName ?? "",
             phone: APPDELEGATE.userResponse?.customer.phone ?? "",
+            email: APPDELEGATE.userResponse?.customer.email ?? "",
             add1: address?.add1 ?? "",
-            offerdetails: price.offerdetails,
+            add2: address?.add2 ?? "",
+            city: address?.city ?? "",
+            state: address?.state ?? "",
             zip: address?.zip ?? "",
-            giftnumber: selectedPaymentType == 1 ? GroceryCartData.shared.giftNumber : ""
+            orderat: address?.type ?? "",
+            payBy: "\(payBy)",
+            stripeId: "",
+            giftnumber: selectedPaymentType == 1 ? GroceryCartData.shared.giftNumber : "",
+            newcard: "New",
+            addcard: "No",
+            cardno: "",
+            cvv: "",
+            expiry: "",
+            cardholder: "",
+            billingzip: "",
+            orderasGift: "No",
+            recipientname: "",
+            recipientphone: "",
+            transactionIdentifier: transactionIdentifier,
+            specialinstruction: GroceryCartData.shared.specialInstructionText,
+            holdtime: "No",
+            holddate: "",
+            orderType: "Delivery",
+            offerdetails: "",
+            offeramount: 0.0,
+            dcharge: "\(GroceryCartData.shared.deliveryAmount)",
+            scharge: "\(GroceryCartData.shared.serviceAmount)",
+            tips: "\(GroceryCartData.shared.tips)", donate: "",
+            rewards: "\(GroceryCartData.shared.rewardAmount)",
+            total: "\(GroceryCartData.shared.total)",
+            items: buildItemList()
         )
         setTempdata(temp: cartRequest)
             
@@ -198,7 +154,7 @@ final class GroceryPaymentViewModel {
         print(params.json)
             
             // MARK: - API Call
-        WebServices.placeOrderService(parameters: params) { response in
+        WebServices.placeOrderService(parameters: params, serviceType: "add-order-grocery/") { response in
             self.hideLoader?()
             let orderData = response.data
             GroceryCartData.shared.orderNumber = orderData.oid ?? ""
@@ -231,10 +187,10 @@ final class GroceryPaymentViewModel {
             self.hideLoader?()
             self.showError?(errorMessage)
         }
-*/
+
     }
     
-    func setTempdata(temp: CartRequest) {
+    func setTempdata(temp: GroceryCartRequest) {
         self.tempRequest = StripeConfirmRequest(restaurantId: temp.restaurantId, orderId: "", oid: "", transaction: "")
     }
 
@@ -259,7 +215,7 @@ final class GroceryPaymentViewModel {
             print("Payment canceled")
            // showError?("Payment was canceled")
 //            self.tempRequest?.transaction = "123"
-//            self.stripeConfirmedApi(request: self.tempRequest)
+            self.stripeConfirmedApi(request: self.tempRequest)
         case .failed(let error):
             print("Payment failed: \n\(error.localizedDescription)")
             showError?(error.localizedDescription)
@@ -268,7 +224,7 @@ final class GroceryPaymentViewModel {
     
     func stripeConfirmedApi(request: StripeConfirmRequest?) {
         guard let finalRequest = request else { return }
-        var parameters = CommonAPIParams.base()
+        var parameters = CommonAPIParams.groceryBase()
         parameters.merge([
             "restaurant_id" : finalRequest.restaurantId,
             "order_id" : finalRequest.orderId,

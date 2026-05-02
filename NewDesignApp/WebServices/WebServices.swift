@@ -58,13 +58,13 @@ struct CommonAPIParams {
 class WebServices: NSObject {
 
     public static func placeOrderService(
-        parameters: [String: AnyObject],
+        parameters: [String: AnyObject], serviceType: String,
         successHandler: @escaping (_ successResult: PlaceOrderResponse) -> Void,
         errorHandler: @escaping (_ errorResult: String) -> Void
     ) {
 
-        let requestUrl = OldServiceType.BASE + "add-order/"
-
+        let requestUrl = OldServiceType.BASE + serviceType
+        print("Request url: \(requestUrl) \n Request Data: \(parameters.json) \n===========================================================================")
         AF.request(
             requestUrl,
             method: .post,

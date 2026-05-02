@@ -43,7 +43,11 @@ class GroceryCartData {
     var userAddress: UserAdd!
     var alternateNumber = ""
     var tips: Double = 0.0
-    
+    var giftNumber = ""
+    var specialInstructionText = ""
+    var rewardAmount = "0.0"
+    var orderNumber = ""
+    var supportNumber = ""
     private init() {}
     
     // MARK: - Cart Management Methods
@@ -168,7 +172,7 @@ class GroceryCartData {
     
     /// Get total including tax, convenience charge, and delivery charge
     var total: Double {
-        return subtotal + taxAmount + convAmount + deliveryAmount
+        return subtotal + taxAmount + convAmount + deliveryAmount + serviceAmount
     }
     
     // MARK: - Utility Methods

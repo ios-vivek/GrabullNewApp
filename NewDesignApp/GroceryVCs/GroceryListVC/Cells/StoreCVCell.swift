@@ -55,9 +55,10 @@ class StoreCVCell: UICollectionViewCell {
         // Better formatting
         ratingLbl.text = String(format: "%.1f", store.rating)
         deliveryTimeLbl.text = "\(store.showDeliveryTime)"
+        deliveryTimeLbl.isHidden = true
         addressLbl.text = store.address
         distantLbl.text = String(format: "%.1f mi", store.distance)
-        cuisineLbl.text = store.cuisine
+        cuisineLbl.text = "\(store.showDeliveryTime)"//store.cuisine
         self.foodImage.setImage(urlString: store.fullImageURL)
 
     }

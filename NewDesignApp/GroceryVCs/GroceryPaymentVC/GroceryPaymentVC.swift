@@ -26,9 +26,6 @@ class GroceryPaymentVC: UIViewController {
     @IBOutlet weak var cartTableView: UITableView!
     private let viewModel = GroceryPaymentViewModel()
     var payBy = PayBy.Stripe
-    var recipientfName: String = ""
-    var recipientlName: String = ""
-    var recipientPhone: String = ""
     override func viewDidLoad() {
         super.viewDidLoad()
 //        GroceryCartData.shared.isDonate = false
@@ -115,10 +112,6 @@ class GroceryPaymentVC: UIViewController {
             
         }
         let cancel = UIAlertAction(title: "Ok", style: .cancel) { alert in
-            self.viewModel.orderAsGift = "No"
-            self.recipientPhone = ""
-            self.recipientfName = ""
-            self.recipientlName = ""
             self.cartTableView.reloadData()
 
         }
@@ -132,7 +125,7 @@ class GroceryPaymentVC: UIViewController {
     }
    
     func addOrder(transactionIdentifier: String) {
-        /*
+    /*
         if ((GroceryCartData.shared.restDetails.openStatus.status.contains("Closed") || GroceryCartData.shared.restDetails.openStatus.status.contains("closed")) && GroceryCartData.shared.orderDate == .ASAP){
             let alertController = UIAlertController(title: "Alert", message: "Restaurant is closed for now. Please change your delivery / pickup timing.", preferredStyle: .alert)
             let OKAction = UIAlertAction(title: "Ok", style: .default) { action in
@@ -150,13 +143,17 @@ class GroceryPaymentVC: UIViewController {
             }
             return
         }
-        viewModel.checkPaymentType(
-            recipientFName: recipientfName,
-            recipientLName: recipientlName,
-            recipientPhone: recipientPhone,
-            transactionIdentifier: transactionIdentifier
-        )
         */
+        let vc = self.viewController(
+            viewController: GroceryFinalOrderPageVC.self,
+            storyName: StoryName.Grocery.rawValue
+        ) as! GroceryFinalOrderPageVC
+        self.navigationController?.pushViewController(vc, animated: true)
+        return
+//        viewModel.checkPaymentType(
+//            transactionIdentifier: transactionIdentifier
+//        )
+        
     }
 
 }
@@ -427,11 +424,7 @@ extension GroceryPaymentVC: RedeemDelegate {
 
 extension GroceryPaymentVC: RecipientDetailsDelegate {
     func recipientDetailsSubmitted(fname: String, lname: String, phone: String) {
-        recipientfName = fname
-        recipientlName = lname
-        recipientPhone = phone
-        self.viewModel.orderAsGift = "Yes"
-        
+               
         cartTableView.reloadData()
     }
 }

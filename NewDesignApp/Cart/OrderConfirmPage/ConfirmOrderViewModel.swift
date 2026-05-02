@@ -194,7 +194,7 @@ final class ConfirmOrderViewModel {
         print(params.json)
             
             // MARK: - API Call
-        WebServices.placeOrderService(parameters: params) { response in
+        WebServices.placeOrderService(parameters: params, serviceType: "add-order/") { response in
             self.hideLoader?()
             let orderData = response.data
             Cart.shared.orderNumber = orderData.oid ?? ""

@@ -7,7 +7,7 @@
 
 import UIKit
 
-class FinalOrderPageVC: UIViewController {
+class GroceryFinalOrderPageVC: UIViewController {
     @IBOutlet weak var orderNumberLbl: UILabel!
     @IBOutlet weak var orderTypeLbl: UILabel!
     @IBOutlet weak var restaurantNameLbl: UILabel!
@@ -29,26 +29,26 @@ class FinalOrderPageVC: UIViewController {
         self.view.backgroundColor = .white
         headerView.backgroundColor = themeBackgrounColor
         tbl.backgroundColor = .white
-        UtilsClass.savePastOrderRest(pastOrderRest: PastOrderRest(restId: "\(Cart.shared.orderNumber)", count: 1))
-        orderNumberLbl.text = "Order # \(Cart.shared.orderNumber)"
+        UtilsClass.savePastOrderRest(pastOrderRest: PastOrderRest(restId: "\(GroceryCartData.shared.orderNumber)", count: 1))
+        orderNumberLbl.text = "Order # \(GroceryCartData.shared.orderNumber)"
         backToHomeBtn.backgroundColor = themeBackgrounColor
         backToHomeBtn.setRounded(cornerRadius: 10)
         backToHomeBtn.setFontWithString(text: "BACK TO HOME", fontSize: 16)
-        restaurantNameLbl.text = Cart.shared.restDetails.name
-        restaurantContactLbl.text = "Restaurant Support : \(Cart.shared.restDetails.phone)"
-        supportContactLbl.text = "Grabull Support : \(Cart.shared.supportNumber)"
-        if Cart.shared.orderType == .pickup {
-            orderTypeLbl.text = "Pickup from:"
-            orderSummeryLbl.text = "Pickup Order Summary"
-            
-            let add = Cart.shared.restDetails.address + " " +  Cart.shared.restDetails.city + " " +  Cart.shared.restDetails.state + " " +  Cart.shared.restDetails.zip
-            addressLbl.text = add
-            pickTime()
-        } else {
+        restaurantNameLbl.text = GroceryCartData.shared.storeDetails?.name
+        restaurantContactLbl.text = "Restaurant Support : \(GroceryCartData.shared.storeDetails?.phone ?? "")"
+        supportContactLbl.text = "Grabull Support : \(GroceryCartData.shared.supportNumber)"
+//        if GroceryCartData.shared.orderType == .pickup {
+//            orderTypeLbl.text = "Pickup from:"
+//            orderSummeryLbl.text = "Pickup Order Summary"
+//            
+//            let add = GroceryCartData.shared.storeDetails?.address + " " +  GroceryCartData.shared.storeDetails?.city + " " +  GroceryCartData.shared.storeDetails?.state + " " +  GroceryCartData.shared.storeDetails?.zip
+//            addressLbl.text = add
+//            pickTime()
+//        } else {
             orderTypeLbl.text = "Delivery To:"
             orderSummeryLbl.text = "Delivery Order Summary"
             deliveryTime()
-            let address = Cart.shared.userAddress
+            let address = GroceryCartData.shared.userAddress
 
             let parts = [
                 address?.add1 ?? "",
@@ -62,53 +62,49 @@ class FinalOrderPageVC: UIViewController {
                 .compactMap { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
                 .filter { !$0.isEmpty }
                 .joined(separator: ", ")
-        }
+   //     }
 
     }
     
     func pickTime() {
-        switch Cart.shared.orderDate {
-        case .ASAP:
-           // deliveryPickupTimeLbl.text = "Order Approx. Ready for pickup within " + "\(Cart.shared.restDetails.restPickupTime)" + " Min"
-            break
-        case .Today:
-           // print(Cart.shared.selectedTime.heading)
-//            let todayDate = UtilsClass.getCurrentDateInStringDDMMM()
-//            let tempTime = todayDate + " at " + AddToCartItmesData.shared.deliveryTime
-//            estimateTimeLabel.text = "Order Approx. Ready for pickup within " + tempTime
-            deliveryPickupTimeLbl.text = "Order Approx. Ready for pickup within " + Cart.shared.selectedTime.heading
-
-            break
-        default:
-//            let tempDate = UtilsClass.getStringDateFromStringInDDMM(stringDate: AddToCartItmesData.shared.deliveryDate, stringTime: AddToCartItmesData.shared.deliveryTime) + " at " + AddToCartItmesData.shared.deliveryTime
-//            print(AddToCartItmesData.shared.deliveryTime)
-//            print(tempDate)
-
-            deliveryPickupTimeLbl.text = "Order Approx. Ready for pickup within " + Cart.shared.selectedTime.heading
-            break
-        }
+        deliveryPickupTimeLbl.text = "Order Approx. Ready for pickup within "
+//        switch GroceryCartData.shared.orderDate {
+//        case .ASAP:
+//           // deliveryPickupTimeLbl.text = "Order Approx. Ready for pickup within " + "\(GroceryCartData.shared.restDetails.restPickupTime)" + " Min"
+//            break
+//        case .Today:
+//           // print(GroceryCartData.shared.selectedTime.heading)
+////            let todayDate = UtilsClass.getCurrentDateInStringDDMMM()
+////            let tempTime = todayDate + " at " + AddToCartItmesData.shared.deliveryTime
+////            estimateTimeLabel.text = "Order Approx. Ready for pickup within " + tempTime
+//            deliveryPickupTimeLbl.text = "Order Approx. Ready for pickup within " + GroceryCartData.shared.selectedTime.heading
+//
+//            break
+//        default:
+////            let tempDate = UtilsClass.getStringDateFromStringInDDMM(stringDate: AddToCartItmesData.shared.deliveryDate, stringTime: AddToCartItmesData.shared.deliveryTime) + " at " + AddToCartItmesData.shared.deliveryTime
+////            print(AddToCartItmesData.shared.deliveryTime)
+////            print(tempDate)
+//
+//            deliveryPickupTimeLbl.text = "Order Approx. Ready for pickup within " + GroceryCartData.shared.selectedTime.heading
+//            break
+//        }
     }
     func deliveryTime() {
-        switch Cart.shared.orderDate {
-        case .ASAP:
-           // deliveryPickupTimeLbl.text = "Order Approx. Out for Delivery within " + "\(Cart.shared.restDetails.deliverytime)" + " Min"
-                           break
-        case .Today:
-//             let todayDate = UtilsClass.getCurrentDateInStringDDMMM()
-//            let tempTime = todayDate + " at " + AddToCartItmesData.shared.deliveryTime
-            deliveryPickupTimeLbl.text = "Order Approx. Out for Delivery within " + Cart.shared.selectedTime.heading
-                           break
-        default:
-//            let tempDate = UtilsClass.getStringDateFromStringInDDMM(stringDate: AddToCartItmesData.shared.deliveryDate, stringTime: AddToCartItmesData.shared.deliveryTime) + " at " + AddToCartItmesData.shared.deliveryTime
-//            print(AddToCartItmesData.shared.deliveryTime)
-//            print(tempDate)
-            deliveryPickupTimeLbl.text = "Order Approx. Out for Delivery within " + Cart.shared.selectedTime.heading
-            break
-                       }
+        deliveryPickupTimeLbl.text = "Order Approx. Out for Delivery within "
+//        switch GroceryCartData.shared.orderDate {
+//        case .ASAP:
+//                           break
+//        case .Today
+//            deliveryPickupTimeLbl.text = "Order Approx. Out for Delivery within " + GroceryCartData.shared.selectedTime.heading
+//                           break
+//        default:
+//            deliveryPickupTimeLbl.text = "Order Approx. Out for Delivery within " + GroceryCartData.shared.selectedTime.heading
+//            break
+//                       }
     }
     
     @IBAction func backToHomeNavigation () {
-        Cart.shared.refreshCartData()
+        GroceryCartData.shared.refreshCartData()
         let tabbar = self.navigationController?.viewControllers[1] as! TabBarVC
         self.navigationController?.popToViewController(tabbar, animated: true)
     }
@@ -123,7 +119,7 @@ class FinalOrderPageVC: UIViewController {
     */
 
 }
-extension FinalOrderPageVC: UITableViewDelegate, UITableViewDataSource{
+extension GroceryFinalOrderPageVC: UITableViewDelegate, UITableViewDataSource{
     func numberOfSections(in tableView: UITableView) -> Int {
         return 2
 
@@ -132,32 +128,29 @@ extension FinalOrderPageVC: UITableViewDelegate, UITableViewDataSource{
         if section == 1 {
             return 1
         }
-            return Cart.shared.cartData.count
+            return 0//GroceryCartData.shared.cartItems.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "CartItemTVCell", for: indexPath) as! CartItemTVCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "GroceryCartItemTVCell", for: indexPath) as! GroceryCartItemTVCell
             cell.selectionStyle = .none
             cell.backgroundColor = .white
-            //cell.delegate = self
-            cell.deleteButton.tag = indexPath.row
-            cell.updateUI(index: indexPath.row)
+          //  cell.delegate = self
+            cell.deleteButton.tag = indexPath.row - 1
+            cell.updateUI(index: indexPath.row - 1)
             cell.selectionStyle = .none
             return cell
         } else {
-         let cell = tableView.dequeueReusableCell(withIdentifier: "CartPriceDetailsTVCell", for: indexPath) as! CartPriceDetailsTVCell
-         cell.selectionStyle = .none
-         cell.backgroundColor = .white
-         cell.emptyCartButton.isHidden = true
-         //cell.delegate = self
-         cell.updateUI(isPlaceOrder: true)
+            let cell = tableView.dequeueReusableCell(withIdentifier: "GroceryPriceDetailsTVCell", for: indexPath) as! GroceryPriceDetailsTVCell
+            cell.selectionStyle = .none
+            cell.backgroundColor = .white
+            cell.emptyCartButton.isHidden = true
+            cell.updateUI(isPlaceOrder: true)
             cell.checkoutButton.isHidden = true
-         cell.selectionStyle = .none
-         return cell
+            cell.selectionStyle = .none
+            return cell
         }
-        
-        
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
