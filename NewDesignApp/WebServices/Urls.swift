@@ -8,6 +8,8 @@
 import Foundation
 import UIKit
 
+let moduleType = "Grocery"
+
 let GoogleApiKey = "AIzaSyAcpD8juDqASzLRWCdNP-ns4UzdVph1koU"
 
 struct AppConfig {

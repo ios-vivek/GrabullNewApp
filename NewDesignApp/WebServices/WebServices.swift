@@ -51,6 +51,7 @@ struct CommonAPIParams {
             "devicetype": AppConfig.DeviceType,
             "customer_id": APPDELEGATE.userResponse?.customer.customerId ?? "",
             "dbname" : GroceryCartData.shared.dbname,
+            "type" : moduleType
         ]
     }
 }

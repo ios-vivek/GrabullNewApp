@@ -27,7 +27,6 @@ class GroceryHistoryHomeVC: UIViewController {
         addTapGesture(to: ongoingView, action: #selector(ongoingTapped))
         addTapGesture(to: pastView, action: #selector(pastTapped))
         addTapGesture(to: upcominghView, action: #selector(upcomingTapped))
-        addTapGesture(to: dineInView, action: #selector(dineInTapped))
         self.view.backgroundColor = pageBackgroundColor
         NotificationCenter.default.addObserver(self, selector: #selector(self.methodOfReceivedNotification(notification:)), name: Notification.Name("pushnotification"), object: nil)
 
@@ -36,22 +35,22 @@ class GroceryHistoryHomeVC: UIViewController {
         switch NotificationType(rawValue: APPDELEGATE.notificationType) {
         case .OnGoingOrder:
                 if let topVC = UIApplication.topViewController(),
-                   !(topVC is OngoingHistoryVC) {
+                   !(topVC is GroceryOngoingHistoryVC) {
                     self.navigateToHistory()
                 }
         case .UpcomingOrder:
                 if let topVC = UIApplication.topViewController(),
-                   !(topVC is UpcomingHistoryVC) {
+                   !(topVC is GroceryUpcomingHistoryVC) {
                     self.navigateToUpcomingHistory()
             }
         case .PastHistory:
                 if let topVC = UIApplication.topViewController(),
-                   !(topVC is UpcomingHistoryVC) {
+                   !(topVC is GroceryUpcomingHistoryVC) {
                     self.navigateToUpcomingHistory()
                 }
         case .DineIn:
                 if let topVC = UIApplication.topViewController(),
-                   !(topVC is UpcomingHistoryVC) {
+                   !(topVC is GroceryUpcomingHistoryVC) {
                     self.navigateToUpcomingHistory()
                 }
         default:
@@ -85,10 +84,6 @@ class GroceryHistoryHomeVC: UIViewController {
             navigateToUpcomingHistory()
         }
         
-        @objc func dineInTapped() {
-            navigateToDineHistory()
-        }
-        
         // MARK: - Navigation
         private func navigateToHistory() {
             let history = UIStoryboard(name: "History", bundle: nil)
@@ -104,10 +99,5 @@ class GroceryHistoryHomeVC: UIViewController {
             let history = UIStoryboard(name: "History", bundle: nil)
             let historyVC = history.instantiateViewController(withIdentifier: "GroceryUpcomingHistoryVC") as! GroceryUpcomingHistoryVC
             self.navigationController?.pushViewController(historyVC, animated: true)
-    }
-    private func navigateToDineHistory() {
-        let history = UIStoryboard(name: "History", bundle: nil)
-        let historyVC = history.instantiateViewController(withIdentifier: "DineinHistoryVC") as! DineinHistoryVC
-        self.navigationController?.pushViewController(historyVC, animated: true)
     }
 }

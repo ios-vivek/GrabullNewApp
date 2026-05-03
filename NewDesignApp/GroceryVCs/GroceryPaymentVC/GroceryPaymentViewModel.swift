@@ -99,7 +99,7 @@ final class GroceryPaymentViewModel {
       //  print("address details zip:\(address?.zip)")
         //let price = GroceryCartData.shared.getAllPriceDeatils()
        // let donateAmount = GroceryCartData.shared.isDonate ? GroceryCartData.shared.donateAmount : 0.0
-
+let total = GroceryCartData.shared.total + GroceryCartData.shared.tipAmount + GroceryCartData.shared.donateAmount
         let cartRequest = GroceryCartRequest(
             apiId: AppConfig.API_ID,
             apiKey: AppConfig.OldAPI_KEY,
@@ -138,9 +138,9 @@ final class GroceryPaymentViewModel {
             offeramount: 0.0,
             dcharge: "\(GroceryCartData.shared.deliveryAmount.toString())",
             scharge: "\(GroceryCartData.shared.serviceAmount.toString())",
-            tips: "\(GroceryCartData.shared.tips.toString())", donate: "",
+            tips: "\(GroceryCartData.shared.tipAmount.toString())", donate: "",
             rewards: "\(GroceryCartData.shared.rewardAmount)",
-            total: "\(GroceryCartData.shared.total.toString())",
+            total: "\(total.toString())",
             items: buildItemList()
         )
         setTempdata(temp: cartRequest)
@@ -215,7 +215,7 @@ final class GroceryPaymentViewModel {
             print("Payment canceled")
            // showError?("Payment was canceled")
 //            self.tempRequest?.transaction = "123"
-            self.stripeConfirmedApi(request: self.tempRequest)
+ //           self.stripeConfirmedApi(request: self.tempRequest)
         case .failed(let error):
             print("Payment failed: \n\(error.localizedDescription)")
             showError?(error.localizedDescription)

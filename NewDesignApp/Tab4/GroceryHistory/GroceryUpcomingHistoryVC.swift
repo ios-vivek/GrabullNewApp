@@ -67,7 +67,7 @@ class GroceryUpcomingHistoryVC: UIViewController {
     }
     func getOrderHistoryDataFromApi() {
         self.emptyView.isHidden = true
-        let parameters = CommonAPIParams.base()
+        let parameters = CommonAPIParams.groceryBase()
         
         UtilsClass.showProgressHud(view: self.view)
         WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.upcomingOrder, forModelType: HisoryResponse.self) { success in

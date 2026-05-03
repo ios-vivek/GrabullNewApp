@@ -125,11 +125,11 @@ class GroceryPastHistoryVC: UIViewController {
         let row = months.firstIndex(of: selectedMonth) ?? 0
 let montharr = ["01","02","03","04","05","06","07","08","09","10","11","12"]
 
-        var parameters = CommonAPIParams.base()
+        var parameters = CommonAPIParams.groceryBase()
         parameters.merge([
             "year" : "\(selectedYear)",
             "month" : "\(montharr[row])",
-            "dbname" : Cart.shared.dbname,
+            "dbname" : Cart.shared.dbname
         ]) { _, new in new }
         
         UtilsClass.showProgressHud(view: self.view)

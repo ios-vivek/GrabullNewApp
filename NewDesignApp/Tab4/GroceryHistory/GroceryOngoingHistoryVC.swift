@@ -111,7 +111,7 @@ class GroceryOngoingHistoryVC: UIViewController {
     func getRestDetailFromApi(restid: String, dbname: String) {
         Cart.shared.dbname = dbname
        
-        let parameters = CommonAPIParams.base()
+        let parameters = CommonAPIParams.groceryBase()
        
         UtilsClass.showProgressHud(view: self.view)
         WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.restaurantDetail, forModelType: RestDetailsApiResponse.self) { success in

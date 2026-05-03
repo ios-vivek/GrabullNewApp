@@ -89,9 +89,9 @@ class GroceryPriceDetailsTVCell: UITableViewCell {
         setPopupData()
         if isPlaceOrder {
             var total = GroceryCartData.shared.total
-            tipsLbl.isHidden = GroceryCartData.shared.tips > 0.0 ? false : true
-            tipsLbl.text = "🌟 \(UtilsClass.getCurrencySymbol())\(GroceryCartData.shared.tips.toString()) added tips"
-            total = total + GroceryCartData.shared.tips
+            tipsLbl.isHidden = GroceryCartData.shared.tipAmount > 0.0 ? false : true
+            tipsLbl.text = "🌟 \(UtilsClass.getCurrencySymbol())\(GroceryCartData.shared.tipAmount.toString()) added tips"
+            total = total + GroceryCartData.shared.tipAmount
             totalValueLbl.text = "\(UtilsClass.getCurrencySymbol())\(total.toString())"
            // let str = isPlaceOrder ? "Place Order" : "Checkout"
             checkoutButton.setFontWithString(text: "Place Order: \(UtilsClass.getCurrencySymbol())\(total.toString())", fontSize: 16)

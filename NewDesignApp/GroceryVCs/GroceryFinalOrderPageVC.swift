@@ -85,6 +85,7 @@ extension GroceryFinalOrderPageVC: UITableViewDelegate, UITableViewDataSource{
             cell.deleteButton.tag = indexPath.row
             cell.updateUI(index: indexPath.row)
             cell.selectionStyle = .none
+            cell.plusMinusView.isHidden = true
             return cell
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: "GroceryPriceDetailsTVCell", for: indexPath) as! GroceryPriceDetailsTVCell
