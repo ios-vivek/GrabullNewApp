@@ -72,9 +72,9 @@ class GroceryPaymentVC: UIViewController {
 
            viewModel.orderPlaced = { [weak self] in
                let vc = self?.viewController(
-                   viewController: FinalOrderPageVC.self,
-                   storyName: StoryName.CartFlow.rawValue
-               ) as! FinalOrderPageVC
+                           viewController: GroceryFinalOrderPageVC.self,
+                           storyName: StoryName.Grocery.rawValue
+                       ) as! GroceryFinalOrderPageVC
                self?.navigationController?.pushViewController(vc, animated: true)
            }
         // PaymentSheet presentation: view model will provide a configured PaymentSheet to present
@@ -144,15 +144,15 @@ class GroceryPaymentVC: UIViewController {
             return
         }
         */
-        let vc = self.viewController(
-            viewController: GroceryFinalOrderPageVC.self,
-            storyName: StoryName.Grocery.rawValue
-        ) as! GroceryFinalOrderPageVC
-        self.navigationController?.pushViewController(vc, animated: true)
-        return
-//        viewModel.checkPaymentType(
-//            transactionIdentifier: transactionIdentifier
-//        )
+//        let vc = self.viewController(
+//            viewController: GroceryFinalOrderPageVC.self,
+//            storyName: StoryName.Grocery.rawValue
+//        ) as! GroceryFinalOrderPageVC
+//        self.navigationController?.pushViewController(vc, animated: true)
+//        return
+        viewModel.checkPaymentType(
+            transactionIdentifier: transactionIdentifier
+        )
         
     }
 

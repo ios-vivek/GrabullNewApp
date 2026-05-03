@@ -92,17 +92,17 @@ class GroceryHistoryHomeVC: UIViewController {
         // MARK: - Navigation
         private func navigateToHistory() {
             let history = UIStoryboard(name: "History", bundle: nil)
-            let historyVC = history.instantiateViewController(withIdentifier: "OngoingHistoryVC") as! OngoingHistoryVC
+            let historyVC = history.instantiateViewController(withIdentifier: "GroceryOngoingHistoryVC") as! GroceryOngoingHistoryVC
             self.navigationController?.pushViewController(historyVC, animated: true)
         }
     private func navigateToPastHistory() {
         let history = UIStoryboard(name: "History", bundle: nil)
-        let historyVC = history.instantiateViewController(withIdentifier: "PastHistoryVC") as! PastHistoryVC
+        let historyVC = history.instantiateViewController(withIdentifier: "GroceryPastHistoryVC") as! GroceryPastHistoryVC
         self.navigationController?.pushViewController(historyVC, animated: true)
     }
     private func navigateToUpcomingHistory() {
             let history = UIStoryboard(name: "History", bundle: nil)
-            let historyVC = history.instantiateViewController(withIdentifier: "UpcomingHistoryVC") as! UpcomingHistoryVC
+            let historyVC = history.instantiateViewController(withIdentifier: "GroceryUpcomingHistoryVC") as! GroceryUpcomingHistoryVC
             self.navigationController?.pushViewController(historyVC, animated: true)
     }
     private func navigateToDineHistory() {

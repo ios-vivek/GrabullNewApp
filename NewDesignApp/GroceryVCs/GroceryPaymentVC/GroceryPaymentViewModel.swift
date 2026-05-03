@@ -136,11 +136,11 @@ final class GroceryPaymentViewModel {
             orderType: "Delivery",
             offerdetails: "",
             offeramount: 0.0,
-            dcharge: "\(GroceryCartData.shared.deliveryAmount)",
-            scharge: "\(GroceryCartData.shared.serviceAmount)",
-            tips: "\(GroceryCartData.shared.tips)", donate: "",
+            dcharge: "\(GroceryCartData.shared.deliveryAmount.toString())",
+            scharge: "\(GroceryCartData.shared.serviceAmount.toString())",
+            tips: "\(GroceryCartData.shared.tips.toString())", donate: "",
             rewards: "\(GroceryCartData.shared.rewardAmount)",
-            total: "\(GroceryCartData.shared.total)",
+            total: "\(GroceryCartData.shared.total.toString())",
             items: buildItemList()
         )
         setTempdata(temp: cartRequest)
@@ -235,8 +235,8 @@ final class GroceryPaymentViewModel {
         self.showLoader?()
         WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.stripeConfirmedOrder, forModelType: StripeConfirmResponse.self) { success in
             self.hideLoader?()
-          //  GroceryCartData.shared.orderNumber = success.data.data.orderId
-          //  GroceryCartData.shared.supportNumber = success.data.data.support
+            GroceryCartData.shared.orderNumber = success.data.data.orderId
+            GroceryCartData.shared.supportNumber = success.data.data.support
             self.orderPlaced?()
             
         } ErrorHandler: { error in

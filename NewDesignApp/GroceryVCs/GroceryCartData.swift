@@ -184,11 +184,11 @@ class GroceryCartData {
         tempItemData = nil
         itemData = nil
         itemSizes = []
+        cartItems = []
     }
     
     func refreshCartData() {
-        // Implement any refresh logic if needed
-        // For example, recalculate prices, check availability, etc.
+        resetTempData()
     }
     
     // MARK: - Size and Topping Helpers (existing methods)

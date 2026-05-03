@@ -37,20 +37,12 @@ class GroceryFinalOrderPageVC: UIViewController {
         restaurantNameLbl.text = GroceryCartData.shared.storeDetails?.name
         restaurantContactLbl.text = "Restaurant Support : \(GroceryCartData.shared.storeDetails?.phone ?? "")"
         supportContactLbl.text = "Grabull Support : \(GroceryCartData.shared.supportNumber)"
-//        if GroceryCartData.shared.orderType == .pickup {
-//            orderTypeLbl.text = "Pickup from:"
-//            orderSummeryLbl.text = "Pickup Order Summary"
-//            
-//            let add = GroceryCartData.shared.storeDetails?.address + " " +  GroceryCartData.shared.storeDetails?.city + " " +  GroceryCartData.shared.storeDetails?.state + " " +  GroceryCartData.shared.storeDetails?.zip
-//            addressLbl.text = add
-//            pickTime()
-//        } else {
             orderTypeLbl.text = "Delivery To:"
             orderSummeryLbl.text = "Delivery Order Summary"
-            deliveryTime()
             let address = GroceryCartData.shared.userAddress
 
             let parts = [
+                address?.street ?? "",
                 address?.add1 ?? "",
                 address?.add2 ?? "",
                 address?.city ?? "",
@@ -62,45 +54,7 @@ class GroceryFinalOrderPageVC: UIViewController {
                 .compactMap { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
                 .filter { !$0.isEmpty }
                 .joined(separator: ", ")
-   //     }
 
-    }
-    
-    func pickTime() {
-        deliveryPickupTimeLbl.text = "Order Approx. Ready for pickup within "
-//        switch GroceryCartData.shared.orderDate {
-//        case .ASAP:
-//           // deliveryPickupTimeLbl.text = "Order Approx. Ready for pickup within " + "\(GroceryCartData.shared.restDetails.restPickupTime)" + " Min"
-//            break
-//        case .Today:
-//           // print(GroceryCartData.shared.selectedTime.heading)
-////            let todayDate = UtilsClass.getCurrentDateInStringDDMMM()
-////            let tempTime = todayDate + " at " + AddToCartItmesData.shared.deliveryTime
-////            estimateTimeLabel.text = "Order Approx. Ready for pickup within " + tempTime
-//            deliveryPickupTimeLbl.text = "Order Approx. Ready for pickup within " + GroceryCartData.shared.selectedTime.heading
-//
-//            break
-//        default:
-////            let tempDate = UtilsClass.getStringDateFromStringInDDMM(stringDate: AddToCartItmesData.shared.deliveryDate, stringTime: AddToCartItmesData.shared.deliveryTime) + " at " + AddToCartItmesData.shared.deliveryTime
-////            print(AddToCartItmesData.shared.deliveryTime)
-////            print(tempDate)
-//
-//            deliveryPickupTimeLbl.text = "Order Approx. Ready for pickup within " + GroceryCartData.shared.selectedTime.heading
-//            break
-//        }
-    }
-    func deliveryTime() {
-        deliveryPickupTimeLbl.text = "Order Approx. Out for Delivery within "
-//        switch GroceryCartData.shared.orderDate {
-//        case .ASAP:
-//                           break
-//        case .Today
-//            deliveryPickupTimeLbl.text = "Order Approx. Out for Delivery within " + GroceryCartData.shared.selectedTime.heading
-//                           break
-//        default:
-//            deliveryPickupTimeLbl.text = "Order Approx. Out for Delivery within " + GroceryCartData.shared.selectedTime.heading
-//            break
-//                       }
     }
     
     @IBAction func backToHomeNavigation () {
@@ -108,15 +62,6 @@ class GroceryFinalOrderPageVC: UIViewController {
         let tabbar = self.navigationController?.viewControllers[1] as! TabBarVC
         self.navigationController?.popToViewController(tabbar, animated: true)
     }
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }
 extension GroceryFinalOrderPageVC: UITableViewDelegate, UITableViewDataSource{
@@ -128,7 +73,7 @@ extension GroceryFinalOrderPageVC: UITableViewDelegate, UITableViewDataSource{
         if section == 1 {
             return 1
         }
-            return 0//GroceryCartData.shared.cartItems.count
+            return GroceryCartData.shared.cartItems.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -137,8 +82,8 @@ extension GroceryFinalOrderPageVC: UITableViewDelegate, UITableViewDataSource{
             cell.selectionStyle = .none
             cell.backgroundColor = .white
           //  cell.delegate = self
-            cell.deleteButton.tag = indexPath.row - 1
-            cell.updateUI(index: indexPath.row - 1)
+            cell.deleteButton.tag = indexPath.row
+            cell.updateUI(index: indexPath.row)
             cell.selectionStyle = .none
             return cell
         } else {

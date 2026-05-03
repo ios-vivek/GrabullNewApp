@@ -196,7 +196,7 @@ extension ProfileVC: UITableViewDelegate, UITableViewDataSource {
 //                self.navigationController?.pushViewController(vc, animated: true)
             case .orders:
                 let history = UIStoryboard(name: "History", bundle: nil)
-                let historyVC = history.instantiateViewController(withIdentifier: "HistoryHomeVC") as! HistoryHomeVC
+                let historyVC = history.instantiateViewController(withIdentifier: "HistoryTypeVC") as! HistoryTypeVC
                 historyVC.backBtnEnable = false
                 self.navigationController?.pushViewController(historyVC, animated: true)
             case .myRewards:

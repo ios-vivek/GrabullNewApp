@@ -269,7 +269,7 @@ let montharr = ["01","02","03","04","05","06","07","08","09","10","11","12"]
     }
     
 }
-extension PastHistoryVC: UIPickerViewDataSource, UIPickerViewDelegate {
+extension GroceryPastHistoryVC: UIPickerViewDataSource, UIPickerViewDelegate {
     func numberOfComponents(in pickerView: UIPickerView) -> Int { 1 }
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         switch pickerMode {
@@ -284,7 +284,7 @@ extension PastHistoryVC: UIPickerViewDataSource, UIPickerViewDelegate {
         }
     }
 }
-extension PastHistoryVC: UITableViewDelegate, UITableViewDataSource {
+extension GroceryPastHistoryVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         noDataFoundRefersh()
             return historyList.count
@@ -308,7 +308,7 @@ extension PastHistoryVC: UITableViewDelegate, UITableViewDataSource {
             self.navigationController?.pushViewController(vc, animated: true)
     }
 }
-extension PastHistoryVC: LoginSuccessDelegate {
+extension GroceryPastHistoryVC: LoginSuccessDelegate {
     func signupAction() {
         let vc = self.viewController(viewController: SignupVC.self, storyName: StoryName.Profile.rawValue) as! SignupVC
         vc.delegate = self
@@ -320,7 +320,7 @@ extension PastHistoryVC: LoginSuccessDelegate {
         callService()
     }
 }
-extension PastHistoryVC: SignupSuccessfullyDelegate {
+extension GroceryPastHistoryVC: SignupSuccessfullyDelegate {
     func signupCompleted() {
         self.noDataFoundRefersh()
         callService()

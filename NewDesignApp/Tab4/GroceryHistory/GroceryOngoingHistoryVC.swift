@@ -7,7 +7,7 @@
 
 import UIKit
 import Lottie
-class GroceyOngoingHistoryVC: UIViewController {
+class GroceryOngoingHistoryVC: UIViewController {
     
     @IBOutlet weak var emptyImageView: LottieAnimationView!
     @IBOutlet weak var emptyView: UIView!
@@ -138,7 +138,7 @@ class GroceyOngoingHistoryVC: UIViewController {
     }
     
 }
-extension OngoingHistoryVC: UITableViewDelegate, UITableViewDataSource {
+extension GroceryOngoingHistoryVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         noDataFoundRefersh()
             return historyList.count
@@ -162,7 +162,7 @@ extension OngoingHistoryVC: UITableViewDelegate, UITableViewDataSource {
             self.navigationController?.pushViewController(vc, animated: true)
     }
 }
-extension OngoingHistoryVC: LoginSuccessDelegate {
+extension GroceryOngoingHistoryVC: LoginSuccessDelegate {
     func signupAction() {
         let vc = self.viewController(viewController: SignupVC.self, storyName: StoryName.Profile.rawValue) as! SignupVC
         vc.delegate = self
@@ -174,7 +174,7 @@ extension OngoingHistoryVC: LoginSuccessDelegate {
         callService()
     }
 }
-extension OngoingHistoryVC: SignupSuccessfullyDelegate {
+extension GroceryOngoingHistoryVC: SignupSuccessfullyDelegate {
     func signupCompleted() {
         self.noDataFoundRefersh()
         callService()

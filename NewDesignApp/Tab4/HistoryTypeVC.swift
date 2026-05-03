@@ -7,12 +7,10 @@
 
 import UIKit
 
-class HistoryHomeVC: UIViewController {
+class HistoryTypeVC: UIViewController {
     @IBOutlet weak var backBtn: UIButton!
     @IBOutlet weak var ongoingView: UIView!
-    @IBOutlet weak var pastView: UIView!
     @IBOutlet weak var upcominghView: UIView!
-    @IBOutlet weak var dineInView: UIView!
     
     var backBtnEnable = true
     
@@ -21,15 +19,11 @@ class HistoryHomeVC: UIViewController {
         backBtn.isHidden = backBtnEnable
         // Apply card style
             ongoingView.applyCardStyle()
-            pastView.applyCardStyle()
             upcominghView.applyCardStyle()
-            dineInView.applyCardStyle()
             
         // Enable taps on each view
         addTapGesture(to: ongoingView, action: #selector(ongoingTapped))
-        addTapGesture(to: pastView, action: #selector(pastTapped))
         addTapGesture(to: upcominghView, action: #selector(upcomingTapped))
-        addTapGesture(to: dineInView, action: #selector(dineInTapped))
         self.view.backgroundColor = pageBackgroundColor
         NotificationCenter.default.addObserver(self, selector: #selector(self.methodOfReceivedNotification(notification:)), name: Notification.Name("pushnotification"), object: nil)
 
@@ -79,53 +73,20 @@ class HistoryHomeVC: UIViewController {
             navigateToHistory()
         }
         
-        @objc func pastTapped() {
-            navigateToPastHistory()
-        }
-        
         @objc func upcomingTapped() {
             navigateToUpcomingHistory()
-        }
-        
-        @objc func dineInTapped() {
-            navigateToDineHistory()
         }
         
         // MARK: - Navigation
         private func navigateToHistory() {
             let history = UIStoryboard(name: "History", bundle: nil)
-            let historyVC = history.instantiateViewController(withIdentifier: "OngoingHistoryVC") as! OngoingHistoryVC
+            let historyVC = history.instantiateViewController(withIdentifier: "HistoryHomeVC") as! HistoryHomeVC
             self.navigationController?.pushViewController(historyVC, animated: true)
         }
-    private func navigateToPastHistory() {
-        let history = UIStoryboard(name: "History", bundle: nil)
-        let historyVC = history.instantiateViewController(withIdentifier: "PastHistoryVC") as! PastHistoryVC
-        self.navigationController?.pushViewController(historyVC, animated: true)
-    }
+
     private func navigateToUpcomingHistory() {
             let history = UIStoryboard(name: "History", bundle: nil)
-            let historyVC = history.instantiateViewController(withIdentifier: "UpcomingHistoryVC") as! UpcomingHistoryVC
+            let historyVC = history.instantiateViewController(withIdentifier: "GroceryHistoryHomeVC") as! GroceryHistoryHomeVC
             self.navigationController?.pushViewController(historyVC, animated: true)
-    }
-    private func navigateToDineHistory() {
-        let history = UIStoryboard(name: "History", bundle: nil)
-        let historyVC = history.instantiateViewController(withIdentifier: "DineinHistoryVC") as! DineinHistoryVC
-        self.navigationController?.pushViewController(historyVC, animated: true)
-    }
-}
-extension UIView {
-    func applyCardStyle(cornerRadius: CGFloat = 12,
-                        shadowColor: UIColor = .black,
-                        shadowOpacity: Float = 0.1,
-                        shadowRadius: CGFloat = 6,
-                        shadowOffset: CGSize = .zero,
-                        bgColor: UIColor = .white) {
-        self.backgroundColor = bgColor
-        self.layer.cornerRadius = cornerRadius
-        self.layer.masksToBounds = false
-        self.layer.shadowColor = shadowColor.cgColor
-        self.layer.shadowOpacity = shadowOpacity
-        self.layer.shadowRadius = shadowRadius
-        self.layer.shadowOffset = shadowOffset
     }
 }

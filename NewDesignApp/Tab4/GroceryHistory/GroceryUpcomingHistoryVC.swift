@@ -128,7 +128,7 @@ class GroceryUpcomingHistoryVC: UIViewController {
     }
     
 }
-extension UpcomingHistoryVC: UITableViewDelegate, UITableViewDataSource {
+extension GroceryUpcomingHistoryVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         noDataFoundRefersh()
             return historyList.count
@@ -153,7 +153,7 @@ extension UpcomingHistoryVC: UITableViewDelegate, UITableViewDataSource {
             self.navigationController?.pushViewController(vc, animated: true)
     }
 }
-extension UpcomingHistoryVC: LoginSuccessDelegate {
+extension GroceryUpcomingHistoryVC: LoginSuccessDelegate {
     func signupAction() {
         let vc = self.viewController(viewController: SignupVC.self, storyName: StoryName.Profile.rawValue) as! SignupVC
         vc.delegate = self
@@ -165,7 +165,7 @@ extension UpcomingHistoryVC: LoginSuccessDelegate {
         callService()
     }
 }
-extension UpcomingHistoryVC: SignupSuccessfullyDelegate {
+extension GroceryUpcomingHistoryVC: SignupSuccessfullyDelegate {
     func signupCompleted() {
         self.noDataFoundRefersh()
         callService()
