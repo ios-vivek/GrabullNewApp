@@ -42,7 +42,8 @@ class GroceryCartData {
     var dbname: String = ""
     var userAddress: UserAdd!
     var alternateNumber = ""
-    var tips: Double = 0.0
+    var tipAmount: Double = 0.0
+    var donateAmount: Double = 0.0
     var giftNumber = ""
     var specialInstructionText = ""
     var rewardAmount = "0.0"

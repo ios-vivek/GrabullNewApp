@@ -29,7 +29,7 @@ class GroceryPaymentVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 //        GroceryCartData.shared.isDonate = false
-        GroceryCartData.shared.tips = 0.0
+        GroceryCartData.shared.tipAmount = 0.0
 //        GroceryCartData.shared.donateAmount = 0.0
 //        GroceryCartData.shared.alternateNumber = ""
 //        GroceryCartData.shared.isReward =  false
@@ -347,7 +347,7 @@ extension GroceryPaymentVC: PaymentTypeDeledate {
 
 extension GroceryPaymentVC: TipsDelegate {
     func tipsAction(isTips: Bool, tipsAmount: Double) {
-        GroceryCartData.shared.tips = tipsAmount
+        GroceryCartData.shared.tipAmount = tipsAmount
         cartTableView.reloadData()
     }
 }
