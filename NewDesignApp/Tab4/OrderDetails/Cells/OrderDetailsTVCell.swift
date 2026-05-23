@@ -44,12 +44,28 @@ class OrderDetailsTVCell: UITableViewCell {
        // addressLbl.text = order.type == "Pickup" ? "📍 \(order.resturantAddress ?? "")" : "📍 \(order.deliveryAddress?.fullAddress ?? "")"
         addressLbl.text = "📍 \(order.resturantAddress ?? "")"
         priceLbl.text = "Price \(UtilsClass.getCurrencySymbol())\(order.total)"
-        let text = order.type == "Pickup" ? "Order picked on" : "Order delivered on"
-        if order.holddate == "Yes" {
-            dateLbl.attributedText = getAttributedString(fstring: "\(text) ", sstring: "\(order.holddate ?? "")")
+        dateLbl.text = "\(order.displayStatus ?? "")"
+        /*
+        var text = order.type == "Pickup" ? "Order picked on" : "Order delivered on"
+        if order.status == "Delivered" || order.status == "Picked Up" || order.status == "Refund" || order.status == "Cancel" {
+            text = "Order \(order.status)"
         } else {
-            dateLbl.attributedText = getAttributedString(fstring: "\(text) ", sstring: "\(order.date)")
+            if order.holddate == "Yes" {
+                if order.readyTime != nil || order.readyTime != "" {
+                    dateLbl.attributedText = getAttributedString(fstring: "\(order.readyTime ?? "")", sstring: "")
+                } else {
+                    dateLbl.attributedText = getAttributedString(fstring: "\(text) ", sstring: "\(order.holddate ?? "")")
+                }
+            } else {
+                //order.readyTime
+                if order.readyTime != nil || order.readyTime != "" {
+                    dateLbl.attributedText = getAttributedString(fstring: "\(order.readyTime ?? "")", sstring: "")
+                } else {
+                    dateLbl.attributedText = getAttributedString(fstring: "ASAP", sstring: "")
+                }
+            }
         }
+        */
     }
     func getAttributedString(fstring: String, sstring: String)-> NSMutableAttributedString {
        // let fmyAttribute = [NSAttributedString.Key.foregroundColor: kBlueColor]

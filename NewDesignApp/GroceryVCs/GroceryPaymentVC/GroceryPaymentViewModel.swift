@@ -88,17 +88,9 @@ final class GroceryPaymentViewModel {
     ) {
         
             showLoader?()
-//                GroceryCartData.shared.userAddress = UserAdd(
-//                    id: "0", street: "", add1: "", add2: "",
-//                    add3: "", type: "", city: "", state: "", zip: ""
-//                )
             
             // MARK: - Parameters (UNCHANGED)
         let address = GroceryCartData.shared.userAddress
-      //  print("address details:\(address)")
-      //  print("address details zip:\(address?.zip)")
-        //let price = GroceryCartData.shared.getAllPriceDeatils()
-       // let donateAmount = GroceryCartData.shared.isDonate ? GroceryCartData.shared.donateAmount : 0.0
 let total = GroceryCartData.shared.total + GroceryCartData.shared.tipAmount + GroceryCartData.shared.donateAmount
         let cartRequest = GroceryCartRequest(
             apiId: AppConfig.API_ID,
