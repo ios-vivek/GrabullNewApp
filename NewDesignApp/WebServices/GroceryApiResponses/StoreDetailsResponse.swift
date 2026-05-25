@@ -43,15 +43,28 @@ struct StoreDetails: Codable {
     var storeAvailable: String {
         return status == "Active" ? "" : "Store does not take online orders"
     }
+    
     var showDeliveryTime: String {
         guard let deliveryTime = deliveryTime, deliveryTime > 0 else {
             return ""
         }
-
         if deliveryTime == 1 {
             return "Next day delivery"
         } else {
             return "\(deliveryTime) days delivery"
+        }
+    }
+    
+    var showDeliveryTimeOnFinalPage: String {
+        guard let deliveryTime = deliveryTime else {
+            return ""
+        }
+        if deliveryTime == 0 {
+            return "ASAP"
+        } else if deliveryTime == 1 {
+            return "by next day"
+        } else {
+            return "in \(deliveryTime) days"
         }
     }
     var fullAddress: String {

@@ -32,6 +32,8 @@ class ItemSizesPopupVC: UIViewController {
     @IBOutlet weak var itemSelectionTbl: UITableView!
     @IBOutlet weak var itemNametLbl: UILabel!
     @IBOutlet weak var soldOutImage: UIImageView!
+    @IBOutlet weak var sizeTitleLbl: UILabel!
+
     
     var groceryMenuWithItem: GroceryMenuWithItem?
 
@@ -45,6 +47,7 @@ class ItemSizesPopupVC: UIViewController {
         soldOutImage.isHidden = true
         addItemView.isHidden = false
         addeditmesPriceBtn.isHidden = false
+        sizeTitleLbl.text = "Please Select Size"
         /*
         if itemData.status == "Sold out for today" {
             soldOutImage.isHidden = false
@@ -74,7 +77,7 @@ class ItemSizesPopupVC: UIViewController {
         cancelView.addGestureRecognizer(cancelTap)
         itemSelectionTbl.backgroundColor = .clear
         
-        itemNametLbl.text = groceryMenuWithItem?.item.heading
+        itemNametLbl.text = "\(groceryMenuWithItem?.item.heading ?? "") (\(groceryMenuWithItem?.parentHeading ?? ""))"
         itemNametLbl.textColor = kOrangeColor
         //itemQty = Int(restmenu.items[0].minQty)
 //        if GroceryCartData.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: GroceryCartData.shared.getMenuType(selectedMenuType: selectedMenuType)).count == 1 {
@@ -95,6 +98,7 @@ class ItemSizesPopupVC: UIViewController {
         */
         if groceryMenuWithItem?.item.sizeList?.count == 1 {
             selectedSize = 0
+            sizeTitleLbl.isHidden = true
         }
         self.setAmountValue()
       //  customQtySetup()

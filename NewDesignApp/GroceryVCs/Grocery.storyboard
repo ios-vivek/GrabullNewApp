@@ -1723,6 +1723,7 @@
                         <outlet property="minusButton" destination="d8T-ZF-Rff" id="K6h-DR-QKf"/>
                         <outlet property="plusButton" destination="vdG-7X-jYR" id="dZP-HG-vBW"/>
                         <outlet property="plusMinusView" destination="QIe-Qo-GE9" id="mxn-4h-Ucc"/>
+                        <outlet property="sizeTitleLbl" destination="efq-fm-PmS" id="l0Z-aJ-xZ3"/>
                         <outlet property="soldOutImage" destination="bVZ-wL-8Yj" id="nQ0-uw-Kjg"/>
                     </connections>
                 </viewController>
@@ -3427,7 +3428,7 @@
                                                     </constraints>
                                                 </view>
                                                 <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" image="gift" catalog="system" translatesAutoresizingMaskIntoConstraints="NO" id="Baw-pO-5De">
-                                                    <rect key="frame" x="20" y="12.33333333333333" width="20" height="19.333333333333336"/>
+                                                    <rect key="frame" x="20" y="12.333333333333332" width="20" height="19.333333333333339"/>
                                                     <color key="tintColor" red="1" green="0.57810515169999999" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <constraints>
                                                         <constraint firstAttribute="height" constant="20" id="EeK-k7-PFT"/>
