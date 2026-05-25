@@ -113,7 +113,7 @@ struct GroceryMenuItem: Codable {
 }
 
 struct SizeOption: Codable {
-    let name: String?
+    var name: String?
     let size: String?
     let price: Double?
 }

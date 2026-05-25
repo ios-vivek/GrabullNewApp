@@ -142,7 +142,7 @@ class Cart {
         let data = CartItemList(restItem: itemData, restItemSizes: itemSizes, restItemTopping: selectedTopping, extra: self.itemExtra, instructionText: self.instructionText, instructionExtraAmount: self.itemExtra)
         Cart.shared.cartData.append(data)
         
-        print(Cart.shared.cartData.count)
+      //  print(Cart.shared.cartData.count)
         
         let oneCartItem = CartRestItemList(restItem: itemData, restItemSizes: itemSizes, restItemTopping: selectedTopping)
         

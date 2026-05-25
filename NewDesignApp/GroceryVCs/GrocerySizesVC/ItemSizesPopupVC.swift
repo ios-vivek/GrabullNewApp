@@ -183,7 +183,11 @@ class ItemSizesPopupVC: UIViewController {
         
         // Add item to cart
         guard let menuItem = groceryMenuWithItem else { return }
-        let selectedSizeOption = menuItem.item.sizeList?[selectedSize]
+        var selectedSizeOption = menuItem.item.sizeList?[selectedSize]
+
+        if (menuItem.item.sizeList!.count == 1) {
+            selectedSizeOption?.name = ""
+        }
         
         GroceryCartData.shared.addItem(
             menuItem.item,
