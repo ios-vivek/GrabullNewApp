@@ -37,7 +37,7 @@ final class GroceryPaymentViewModel {
         ) { [weak self] success in
             guard let self else { return }
             self.userRewardAmount = success.data.data.rewards.toString()
-           // GroceryCartData.shared.rewardAmount = success.data.data.rewards
+            GroceryCartData.shared.rewardAmount = success.data.data.rewards.toString()
             self.hideLoader?()
             self.reloadTable?()
         } ErrorHandler: { [weak self] error in
@@ -131,7 +131,7 @@ let total = GroceryCartData.shared.total + GroceryCartData.shared.tipAmount + Gr
             dcharge: "\(GroceryCartData.shared.deliveryAmount.toString())",
             scharge: "\(GroceryCartData.shared.serviceAmount.toString())",
             tips: "\(GroceryCartData.shared.tipAmount.toString())", donate: "",
-            rewards: "\(GroceryCartData.shared.rewardAmount)",
+            rewards: GroceryCartData.shared.isRewardAppied ? "\(GroceryCartData.shared.rewardAmount)" : "",
             total: "\(total.toString())",
             items: buildItemList()
         )

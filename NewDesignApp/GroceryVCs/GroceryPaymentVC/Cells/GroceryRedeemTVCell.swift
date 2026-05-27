@@ -6,14 +6,14 @@
 //
 
 import UIKit
-protocol RedeemDelegate: AnyObject {
+protocol GroceryRedeemDelegate: AnyObject {
     func selectedRedeemAction()
 }
-class RedeemTVCell: UITableViewCell {
+class GroceryRedeemTVCell: UITableViewCell {
     @IBOutlet weak var redeemAmountLbl: UILabel!
     @IBOutlet weak var checkBoxImage: UIImageView!
     @IBOutlet weak var checkboxBtn: UIButton!
-    var delegate: RedeemDelegate?
+    var delegate: GroceryRedeemDelegate?
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -24,7 +24,7 @@ class RedeemTVCell: UITableViewCell {
         update(amount: "0.0")
     }
     func update(amount: String){
-        if Cart.shared.isReward {
+        if GroceryCartData.shared.isRewardAppied {
             checkBoxImage.image = UIImage.init(named: "checkIcon")
         } else {
             checkBoxImage.image = UIImage.init(named: "")
@@ -52,7 +52,7 @@ class RedeemTVCell: UITableViewCell {
         return myString
     }
     @IBAction func checkBoxAction() {
-        Cart.shared.isReward = !Cart.shared.isReward
+        GroceryCartData.shared.isRewardAppied = !GroceryCartData.shared.isRewardAppied
         self.delegate?.selectedRedeemAction()
     }
     override func setSelected(_ selected: Bool, animated: Bool) {

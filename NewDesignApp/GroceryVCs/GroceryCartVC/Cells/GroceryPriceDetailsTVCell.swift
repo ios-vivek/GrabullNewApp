@@ -65,8 +65,9 @@ class GroceryPriceDetailsTVCell: UITableViewCell {
             let serviceAmount = GroceryCartData.shared.serviceAmount
             let convAmount = GroceryCartData.shared.convAmount
             let deliveryAmount = GroceryCartData.shared.deliveryAmount
-            let total = GroceryCartData.shared.total
+            var total = GroceryCartData.shared.total
             let taxWithCon = convAmount + taxAmount + serviceAmount
+           
             
             subtotalValueLbl.text = "\(UtilsClass.getCurrencySymbol())\(subtotal.toString())"
             discountValueLbl.text = "\(UtilsClass.getCurrencySymbol())\(0.00)"
@@ -89,6 +90,10 @@ class GroceryPriceDetailsTVCell: UITableViewCell {
         setPopupData()
         if isPlaceOrder {
             var total = GroceryCartData.shared.total
+            if GroceryCartData.shared.isRewardAppied {
+                let rewardAmount = Double(GroceryCartData.shared.rewardAmount) ?? 0.0
+                total = max(total - rewardAmount, 0.0)
+            }
             tipsLbl.isHidden = GroceryCartData.shared.tipAmount > 0.0 ? false : true
             tipsLbl.text = "🌟 \(UtilsClass.getCurrencySymbol())\(GroceryCartData.shared.tipAmount.toString()) added tips"
             total = total + GroceryCartData.shared.tipAmount

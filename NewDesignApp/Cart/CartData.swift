@@ -533,7 +533,10 @@ class Cart {
         if item.xlp > 0 {
             arr.append(Sizes.init(menuType: menuType, manuName: heading, manuId: menu.parentID, name: "\(item.xl)", price: "\(item.xlp.to2Decimal())", itemQty: item.minQty, sizeKey: "xl", isCatering: isCatering, serveTray: "\(item.tray == "Yes" ? "(serves \(item.trayxl))" : "")"))
         }
-        
+        // Hide size name if only one size exists
+           if arr.count == 1 {
+               arr[0].name = ""
+           }
         return arr
     }
     func checkMinimumToppins(topping: RestToppingsResponse) -> String {

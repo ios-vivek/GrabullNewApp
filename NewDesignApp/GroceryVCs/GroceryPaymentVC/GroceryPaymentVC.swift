@@ -252,14 +252,14 @@ extension GroceryPaymentVC: UITableViewDelegate, UITableViewDataSource{
                     cell.updateCardUI()
                     return cell
                 } else {
-                    let cell = tableView.dequeueReusableCell(withIdentifier: "GiftNumberTVCell", for: indexPath) as! GiftNumberTVCell
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "GroceryGiftNumberTVCell", for: indexPath) as! GroceryGiftNumberTVCell
                     cell.selectionStyle = .none
                     return cell
                 }
             }
             
         case GroceryCellTypes.Redeem.rawValue:
-            let cell = tableView.dequeueReusableCell(withIdentifier: "RedeemTVCell", for: indexPath) as! RedeemTVCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "GroceryRedeemTVCell", for: indexPath) as! GroceryRedeemTVCell
             cell.update(amount: "\(viewModel.userRewardAmount)")
             cell.delegate = self
             cell.selectionStyle = .none
@@ -415,7 +415,7 @@ extension GroceryPaymentVC: GroceryCheckoutDelegate {
         
     }
 }
-extension GroceryPaymentVC: RedeemDelegate {
+extension GroceryPaymentVC: GroceryRedeemDelegate {
     func selectedRedeemAction() {
        // if re
         cartTableView.reloadData()
