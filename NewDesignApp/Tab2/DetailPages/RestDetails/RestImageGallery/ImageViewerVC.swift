@@ -1,5 +1,5 @@
 import UIKit
-
+import SDWebImage
 public class ImageViewerVC: UIViewController, UIScrollViewDelegate {
 
     // MARK: - Public Properties
@@ -13,6 +13,8 @@ public class ImageViewerVC: UIViewController, UIScrollViewDelegate {
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.showsVerticalScrollIndicator = false
         scrollView.bounces = false
+        scrollView.alwaysBounceVertical = false
+        scrollView.contentInsetAdjustmentBehavior = .never
         scrollView.backgroundColor = .black
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         return scrollView
@@ -67,6 +69,11 @@ public class ImageViewerVC: UIViewController, UIScrollViewDelegate {
     // MARK: - Private Properties
     private var zoomScrollViews: [UIScrollView] = []
     private var imageViews: [UIImageView] = []
+    
+    private var panGesture: UIPanGestureRecognizer!
+    private var doubleTapGestureRecognizers: [UITapGestureRecognizer] = []
+    private var didStartLoadingImages: Bool = false
+    private var hasInitialLayoutCompleted: Bool = false
 
     // MARK: - Lifecycle
 
@@ -75,15 +82,35 @@ public class ImageViewerVC: UIViewController, UIScrollViewDelegate {
         view.backgroundColor = .black
         setupUI()
         configureImages()
+        if !images.isEmpty {
+            let urls = images.compactMap { URL(string: $0) }
+            SDWebImagePrefetcher.shared.prefetchURLs(urls)
+        }
+        panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
+        panGesture.maximumNumberOfTouches = 1
+        view.addGestureRecognizer(panGesture)
+
         pageControl.currentPage = safeStartIndex()
-        scrollToPage(pageControl.currentPage, animated: false)
     }
 
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         layoutPagingScrollView()
         layoutZoomScrollViews()
-        scrollToPage(pageControl.currentPage, animated: false)
+        if !hasInitialLayoutCompleted {
+            hasInitialLayoutCompleted = true
+            DispatchQueue.main.async {
+                self.scrollToPage(self.pageControl.currentPage, animated: false)
+            }
+        }
+
+        if !didStartLoadingImages {
+            didStartLoadingImages = true
+            for (index, urlString) in images.enumerated() {
+                loadRemoteImage(from: urlString, into: imageViews[index])
+            }
+            preloadNeighbors(of: pageControl.currentPage)
+        }
     }
 
     public override var preferredStatusBarStyle: UIStatusBarStyle {
@@ -140,6 +167,7 @@ public class ImageViewerVC: UIViewController, UIScrollViewDelegate {
         }
         zoomScrollViews.removeAll()
         imageViews.removeAll()
+        doubleTapGestureRecognizers.removeAll()
 
         let count = images.count
         pageControl.numberOfPages = count
@@ -148,33 +176,37 @@ public class ImageViewerVC: UIViewController, UIScrollViewDelegate {
             return
         }
 
+        let placeholder = UIImage(named: "img_midium") ?? UIImage(systemName: "photo")
         for _ in 0..<count {
             let zoomScrollView = UIScrollView()
             zoomScrollView.minimumZoomScale = 1.0
             zoomScrollView.maximumZoomScale = 3.0
+            zoomScrollView.zoomScale = 1.0
             zoomScrollView.delegate = self
             zoomScrollView.showsHorizontalScrollIndicator = false
             zoomScrollView.showsVerticalScrollIndicator = false
             zoomScrollView.bouncesZoom = true
             zoomScrollView.backgroundColor = .black
-            zoomScrollView.translatesAutoresizingMaskIntoConstraints = false
+            zoomScrollView.translatesAutoresizingMaskIntoConstraints = true
 
             let imageView = UIImageView()
             imageView.contentMode = .scaleAspectFit
-            imageView.backgroundColor = .black
-            imageView.translatesAutoresizingMaskIntoConstraints = false
-            imageView.isUserInteractionEnabled = false
+            imageView.backgroundColor = .clear
+            imageView.image = placeholder
+            imageView.clipsToBounds = true
+            imageView.translatesAutoresizingMaskIntoConstraints = true
+            imageView.isUserInteractionEnabled = true
+
+            let doubleTap = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTap(_:)))
+            doubleTap.numberOfTapsRequired = 2
+            imageView.addGestureRecognizer(doubleTap)
+            doubleTapGestureRecognizers.append(doubleTap)
 
             zoomScrollView.addSubview(imageView)
             pagingScrollView.addSubview(zoomScrollView)
 
             zoomScrollViews.append(zoomScrollView)
             imageViews.append(imageView)
-        }
-
-        // Load images asynchronously
-        for (index, urlString) in images.enumerated() {
-            loadRemoteImage(from: urlString, into: imageViews[index])
         }
     }
 
@@ -194,6 +226,7 @@ public class ImageViewerVC: UIViewController, UIScrollViewDelegate {
                                           width: safeBounds.width,
                                           height: safeBounds.height)
             zoomScrollView.zoomScale = 1.0
+            zoomScrollView.contentSize = zoomScrollView.bounds.size
 
             let imageView = imageViews[index]
             imageView.frame = zoomScrollView.bounds
@@ -223,6 +256,25 @@ public class ImageViewerVC: UIViewController, UIScrollViewDelegate {
             zoomScrollView.setZoomScale(1.0, animated: false)
         }
     }
+    
+    private func resetZoomScaleForPages(except page: Int) {
+        for (index, zoomScrollView) in zoomScrollViews.enumerated() {
+            if index != page {
+                zoomScrollView.setZoomScale(1.0, animated: false)
+            }
+        }
+    }
+
+    private func preloadNeighbors(of page: Int) {
+        let indices = [page - 1, page + 1].filter { $0 >= 0 && $0 < images.count }
+        for i in indices {
+            if let url = URL(string: images[i]) {
+                SDWebImageManager.shared.loadImage(with: url, options: [.retryFailed, .continueInBackground, .highPriority], progress: nil) { _, _, _, _, _, _ in
+                    // cache warmed
+                }
+            }
+        }
+    }
 
     // MARK: - Actions
 
@@ -236,7 +288,7 @@ public class ImageViewerVC: UIViewController, UIScrollViewDelegate {
         if nextPage != pageControl.currentPage {
             pageControl.currentPage = nextPage
             scrollToPage(nextPage, animated: true)
-            resetZoomScaleForAllPages()
+            resetZoomScaleForPages(except: nextPage)
         }
     }
 
@@ -246,7 +298,7 @@ public class ImageViewerVC: UIViewController, UIScrollViewDelegate {
         if prevPage != pageControl.currentPage {
             pageControl.currentPage = prevPage
             scrollToPage(prevPage, animated: true)
-            resetZoomScaleForAllPages()
+            resetZoomScaleForPages(except: prevPage)
         }
     }
 
@@ -268,30 +320,100 @@ public class ImageViewerVC: UIViewController, UIScrollViewDelegate {
         let page = Int(round(fractionalPage))
         if pageControl.currentPage != page && page >= 0 && page < images.count {
             pageControl.currentPage = page
-            resetZoomScaleForAllPages()
+            resetZoomScaleForPages(except: page)
+            preloadNeighbors(of: page)
+        }
+    }
+
+    // MARK: - Gesture Handlers
+    
+    @objc private func handleDoubleTap(_ gesture: UITapGestureRecognizer) {
+        guard let imageView = gesture.view as? UIImageView else { return }
+        guard let zoomScroll = imageView.superview as? UIScrollView else { return }
+        let currentZoom = zoomScroll.zoomScale
+        let targetZoom: CGFloat = currentZoom > 1.0 ? 1.0 : 2.5
+        if targetZoom > currentZoom {
+            let pointInView = gesture.location(in: imageView)
+            let size = CGSize(width: zoomScroll.bounds.size.width / targetZoom,
+                              height: zoomScroll.bounds.size.height / targetZoom)
+            let origin = CGPoint(x: pointInView.x - size.width/2, y: pointInView.y - size.height/2)
+            let rect = CGRect(origin: origin, size: size)
+            zoomScroll.zoom(to: rect, animated: true)
+        } else {
+            zoomScroll.setZoomScale(targetZoom, animated: true)
+        }
+    }
+    
+    @objc private func handlePan(_ gesture: UIPanGestureRecognizer) {
+        // Allow vertical swipe to dismiss. Horizontal pans should be left to paging.
+        let translation = gesture.translation(in: view)
+        let velocity = gesture.velocity(in: view)
+        switch gesture.state {
+        case .changed:
+            // Only move vertically, damp the movement.
+            let y = max(0, translation.y)
+            let alpha = max(0.2, 1 - (y / view.bounds.height))
+            self.view.transform = CGAffineTransform(translationX: 0, y: y)
+            self.view.backgroundColor = UIColor.black.withAlphaComponent(alpha)
+        case .ended, .cancelled:
+            let shouldDismiss = translation.y > view.bounds.height * 0.25 || velocity.y > 1200
+            if shouldDismiss {
+                self.dismiss(animated: true)
+            } else {
+                UIView.animate(withDuration: 0.25, animations: {
+                    self.view.transform = .identity
+                    self.view.backgroundColor = .black
+                })
+            }
+        default:
+            break
         }
     }
 
     // MARK: - Image Loading
 
     private func loadRemoteImage(from urlString: String, into imageView: UIImageView) {
-        imageView.backgroundColor = .black
-        imageView.image = nil
-        guard let url = URL(string: urlString) else {
+        let placeholder = UIImage(named: "img_midium") ?? UIImage(systemName: "photo")
+        imageView.backgroundColor = .clear
+        imageView.contentMode = .scaleAspectFit
+        imageView.image = placeholder
+
+        guard !urlString.isEmpty else {
+            print("[ImageViewerVC] Invalid URL string: empty")
             return
         }
 
-        // Cancel any previous task associated with this imageView
-        // Not strictly required here as image views are reused only on new setup
+        guard let encoded = urlString.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
+              let url = URL(string: encoded) else {
+            print("[ImageViewerVC] Invalid URL string: \(urlString)")
+            return
+        }
 
-        URLSession.shared.dataTask(with: url) { [weak imageView] data, response, error in
-            guard let data = data, error == nil,
-                  let image = UIImage(data: data) else {
+        setImageWithSDWebImage(into: imageView, from: url, placeholder: placeholder)
+    }
+    
+    private func setImageWithSDWebImage(into imageView: UIImageView, from url: URL, placeholder: UIImage? = UIImage(named: "img_midium")) {
+        imageView.contentMode = .center
+        imageView.image = placeholder
+        imageView.sd_setImage(with: url, placeholderImage: placeholder, options: [.retryFailed, .continueInBackground, .highPriority]) { [weak imageView] image, error, _, _ in
+            print("Loaded: \(url)")
+
+               print("Image: \(String(describing: image))")
+
+               print("Error: \(String(describing: error))")
+            if let error = error {
+                print("SDWebImage load failed: \(error.localizedDescription) for URL: \(url)")
+                imageView?.image = placeholder
+                imageView?.contentMode = .center
                 return
             }
-            DispatchQueue.main.async {
-                imageView?.image = image
+            if image != nil {
+                imageView?.contentMode = .scaleAspectFit
+            } else {
+                imageView?.image = placeholder
+                imageView?.contentMode = .center
             }
-        }.resume()
+        }
     }
 }
+
