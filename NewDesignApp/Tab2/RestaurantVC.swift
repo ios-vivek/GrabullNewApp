@@ -232,12 +232,27 @@ class RestaurantVC: UIViewController {
 
 	}
     private func uniqueInspiredRestaurants() -> [Restaurant] {
-        let pastIds = Set(
-            UtilsClass.getPastOrdersRest().map { $0.restId } +
-            UtilsClass.getInspairedPast()
-        )
+        // Preserve order from saved histories and remove duplicates while keeping first occurrence.
+        let pastOrderIds = UtilsClass.getPastOrdersRest().map { $0.restId }
+        let inspiredIds = UtilsClass.getInspairedPast()
 
-        return restList.filter { pastIds.contains($0.rid) }
+        let combined = pastOrderIds + inspiredIds
+        var seen = Set<String>()
+        var orderedIds = [String]()
+        for id in combined {
+            if !seen.contains(id) {
+                seen.insert(id)
+                orderedIds.append(id)
+            }
+        }
+
+        var result = [Restaurant]()
+        for id in orderedIds {
+            if let found = restList.first(where: { $0.rid == id }) {
+                result.append(found)
+            }
+        }
+        return result
     }
     
     func getCuisinesFromApi() {

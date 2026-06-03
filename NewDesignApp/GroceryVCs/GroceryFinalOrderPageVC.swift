@@ -55,7 +55,8 @@ class GroceryFinalOrderPageVC: UIViewController {
                 .filter { !$0.isEmpty }
                 .joined(separator: ", ")
         
-        deliveryPickupTimeLbl.text = "Order will be delivered \(GroceryCartData.shared.storeDetails?.showDeliveryTimeOnFinalPage ?? "")"
+        //deliveryPickupTimeLbl.text = "Order will be delivered \(GroceryCartData.shared.storeDetails?.showDeliveryTimeOnFinalPage ?? "")"
+        deliveryPickupTimeLbl.text = GroceryCartData.shared.orderTime
 
     }
     

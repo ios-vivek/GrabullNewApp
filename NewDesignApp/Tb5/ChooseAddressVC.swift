@@ -22,6 +22,10 @@ class ChooseAddressVC: UIViewController {
         addressTbl.backgroundColor = .clear
 
     }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.getAddressesFromApi()
+    }
     @IBAction func backAction() {
         self.dismiss(animated: true) {
             
@@ -30,6 +34,20 @@ class ChooseAddressVC: UIViewController {
     @IBAction func addNewAddressAction() {
         self.dismiss(animated: true) {
             self.delegate?.addNewAddress()
+        }
+    }
+    func getAddressesFromApi() {
+        let parameters = CommonAPIParams.base()
+       
+        UtilsClass.showProgressHud(view: self.view)
+        WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.getAddress, forModelType: AddressListResponse.self) { success in
+            UtilsClass.hideProgressHud(view: self.view)
+            APPDELEGATE.userResponse?.customer.address = success.data.data
+            UtilsClass.saveUserDetails()
+            self.addressTbl.reloadData()
+            
+        } ErrorHandler: { error in
+            UtilsClass.hideProgressHud(view: self.view)
         }
     }
 

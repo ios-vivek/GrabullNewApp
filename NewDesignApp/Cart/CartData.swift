@@ -68,6 +68,7 @@ class Cart {
     var cardZip = ""
     var orderNumber = ""
     var supportNumber = ""
+    var orderTime = ""
     //var menuType = "Menu" //Catering / Menu
     var tempRestmenu: DisplaySection!
     var tempItemData: MenuItem!
@@ -111,6 +112,7 @@ class Cart {
         cardZip = ""
         orderNumber = ""
         supportNumber = ""
+        orderTime = ""
         
         
         cartData = [CartItemList]()

@@ -65,7 +65,7 @@ class GroceryPriceDetailsTVCell: UITableViewCell {
             let serviceAmount = GroceryCartData.shared.serviceAmount
             let convAmount = GroceryCartData.shared.convAmount
             let deliveryAmount = GroceryCartData.shared.deliveryAmount
-            var total = GroceryCartData.shared.total
+            let total = GroceryCartData.shared.total
             let taxWithCon = convAmount + taxAmount + serviceAmount
            
             

@@ -15,6 +15,7 @@ struct PlaceOrderResponse: Codable {
 
 struct OrderData: Codable {
     let oid: String?
+    let orderTime: String?
     let orderId: String
     let support: String
     let gateway: GatewayData?
@@ -50,4 +51,5 @@ struct FinalOrderData: Codable {
     let status: String
     let message: String
     let support: String
+    let orderTime: String?
 }

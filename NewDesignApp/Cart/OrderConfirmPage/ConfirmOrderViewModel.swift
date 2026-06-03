@@ -198,6 +198,7 @@ final class ConfirmOrderViewModel {
             self.hideLoader?()
             let orderData = response.data
             Cart.shared.orderNumber = orderData.oid ?? ""
+            Cart.shared.orderNumber = orderData.orderTime ?? ""
             self.tempRequest?.oid = orderData.oid ?? ""
             self.tempRequest?.orderId = orderData.orderId
             if self.payBy == .Stripe, let stripe = orderData.gateway {
@@ -277,10 +278,12 @@ final class ConfirmOrderViewModel {
             self.hideLoader?()
             Cart.shared.orderNumber = success.data.data.orderId
             Cart.shared.supportNumber = success.data.data.support
+            Cart.shared.orderTime = success.data.data.orderTime ?? ""
             self.orderPlaced?()
             
         } ErrorHandler: { error in
             self.hideLoader?()
+            self.showError?(error)
         }
     }
 }

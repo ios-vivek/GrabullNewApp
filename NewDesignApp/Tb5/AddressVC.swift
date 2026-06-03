@@ -24,6 +24,7 @@ class AddressVC: UIViewController {
     @IBAction func backAction() {
         self.navigationController?.popViewController(animated: true)
     }
+    
     func getAddressesFromApi() {
         let parameters = CommonAPIParams.base()
        
@@ -32,6 +33,7 @@ class AddressVC: UIViewController {
             UtilsClass.hideProgressHud(view: self.view)
             self.address = success.data.data
             APPDELEGATE.userResponse?.customer.address = self.address
+            UtilsClass.saveUserDetails()
             self.addressTbl.reloadData()
             
         } ErrorHandler: { error in

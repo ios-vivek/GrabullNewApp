@@ -49,6 +49,7 @@ class GroceryCartData {
     var rewardAmount = "0.0"
     var orderNumber = ""
     var supportNumber = ""
+    var orderTime = ""
     var isRewardAppied: Bool = false
     private init() {}
     

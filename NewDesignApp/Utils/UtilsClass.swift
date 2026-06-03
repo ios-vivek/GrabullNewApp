@@ -130,6 +130,7 @@ class UtilsClass: NSObject {
         if let savedAdd = defaults.object(forKey: "inspairedPast") as? [String] {
             restList = savedAdd
         }
+        print("restList \(restList)")
         return restList
     }
     public static func savePastOrderRest(pastOrderRest: PastOrderRest) {

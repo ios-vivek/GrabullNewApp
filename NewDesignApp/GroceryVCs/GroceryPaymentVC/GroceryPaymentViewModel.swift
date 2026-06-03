@@ -150,6 +150,7 @@ let total = GroceryCartData.shared.total + GroceryCartData.shared.tipAmount + Gr
             self.hideLoader?()
             let orderData = response.data
             GroceryCartData.shared.orderNumber = orderData.oid ?? ""
+            GroceryCartData.shared.orderTime = orderData.orderTime ?? ""
             self.tempRequest?.oid = orderData.oid ?? ""
             self.tempRequest?.orderId = orderData.orderId
             if self.payBy == .Stripe, let stripe = orderData.gateway {
@@ -162,6 +163,8 @@ let total = GroceryCartData.shared.total + GroceryCartData.shared.tipAmount + Gr
                 } else {
                     if response.status == "Success" {
                         GroceryCartData.shared.supportNumber = orderData.support
+                        GroceryCartData.shared.orderTime = orderData.orderTime ?? ""
+
                         self.orderPlaced?()
                     } else {
                         self.showError?("Something went wrong. Please try again later.")
@@ -170,6 +173,8 @@ let total = GroceryCartData.shared.total + GroceryCartData.shared.tipAmount + Gr
             } else {
                 if response.status == "Success" {
                     GroceryCartData.shared.supportNumber = orderData.support
+                    GroceryCartData.shared.orderTime = orderData.orderTime ?? ""
+
                     self.orderPlaced?()
                 } else {
                     self.showError?("Something went wrong. Please try again later.")
@@ -229,10 +234,13 @@ let total = GroceryCartData.shared.total + GroceryCartData.shared.tipAmount + Gr
             self.hideLoader?()
             GroceryCartData.shared.orderNumber = success.data.data.orderId
             GroceryCartData.shared.supportNumber = success.data.data.support
+            GroceryCartData.shared.orderTime = success.data.data.orderTime ?? ""
+
             self.orderPlaced?()
             
         } ErrorHandler: { error in
             self.hideLoader?()
+            self.showError?(error)
         }
     }
 }
