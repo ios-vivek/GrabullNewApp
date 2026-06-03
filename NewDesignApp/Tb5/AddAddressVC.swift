@@ -59,6 +59,11 @@ class AddAddressVC: UIViewController {
         cityTxtFld.setPlaceHolderColor(.gGray200)
         zipcodeTxtFld.setPlaceHolderColor(.gGray200)
         stateTxtFld.setPlaceHolderColor(.gGray200)
+        
+        // Add tap gesture to state text field
+        stateTxtFld.isUserInteractionEnabled = true
+        let stateTap = UITapGestureRecognizer(target: self, action: #selector(stateFieldTapped))
+        stateTxtFld.addGestureRecognizer(stateTap)
 
 
 
@@ -74,6 +79,14 @@ class AddAddressVC: UIViewController {
         if sender.selectedSegmentIndex == 2 {
             selectedAddressType = "Other"
         }
+    }
+    
+    @objc func stateFieldTapped() {
+        let popupVC = StateSelectionPopupVC()
+        popupVC.delegate = self
+        popupVC.modalPresentationStyle = .overCurrentContext
+        popupVC.modalTransitionStyle = .crossDissolve
+        self.present(popupVC, animated: true)
     }
     
     @IBAction func backAction() {
@@ -201,4 +214,10 @@ class AddAddressVC: UIViewController {
     }
     */
 
+}
+
+extension AddAddressVC: StateSelectionDelegate {
+    func didSelectState(_ state: String) {
+        stateTxtFld.text = state
+    }
 }

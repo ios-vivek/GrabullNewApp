@@ -182,6 +182,7 @@
 		E2BAD6802CEDFAFC0016810A /* NoDataAvailableTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BAD67F2CEDFAFC0016810A /* NoDataAvailableTVCell.swift */; };
 		E2BE7C4E2E617A54001703BA /* PromoRestCVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BE7C4D2E617A54001703BA /* PromoRestCVCell.swift */; };
 		E2BE7C502E617E32001703BA /* PromoCVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2BE7C4F2E617E32001703BA /* PromoCVCell.swift */; };
+		E2C2E6532FD0057C00FA3BDD /* StateSelectionPopupVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C2E6522FD0057C00FA3BDD /* StateSelectionPopupVC.swift */; };
 		E2C74E712F34A3B5001EE059 /* CartRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C74E702F34A3B5001EE059 /* CartRequest.swift */; };
 		E2C74E7C2F36289D001EE059 /* PlaceOrderResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C74E7B2F36289D001EE059 /* PlaceOrderResponse.swift */; };
 		E2C805242D0C913200DD957D /* FinalOrderPageVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2C805232D0C913200DD957D /* FinalOrderPageVC.swift */; };
@@ -417,6 +418,7 @@
 		E2BAD67F2CEDFAFC0016810A /* NoDataAvailableTVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoDataAvailableTVCell.swift; sourceTree = "<group>"; };
 		E2BE7C4D2E617A54001703BA /* PromoRestCVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoRestCVCell.swift; sourceTree = "<group>"; };
 		E2BE7C4F2E617E32001703BA /* PromoCVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromoCVCell.swift; sourceTree = "<group>"; };
+		E2C2E6522FD0057C00FA3BDD /* StateSelectionPopupVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StateSelectionPopupVC.swift; sourceTree = "<group>"; };
 		E2C74E702F34A3B5001EE059 /* CartRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartRequest.swift; sourceTree = "<group>"; };
 		E2C74E7B2F36289D001EE059 /* PlaceOrderResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaceOrderResponse.swift; sourceTree = "<group>"; };
 		E2C805232D0C913200DD957D /* FinalOrderPageVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FinalOrderPageVC.swift; sourceTree = "<group>"; };
@@ -1128,6 +1130,7 @@
 			isa = PBXGroup;
 			children = (
 				E2BAD6442CCF9F7B0016810A /* AddAddressVC.swift */,
+				E2C2E6522FD0057C00FA3BDD /* StateSelectionPopupVC.swift */,
 			);
 			name = AddAddressVC;
 			sourceTree = "<group>";
@@ -1461,6 +1464,7 @@
 				E27892582FA718C300CBC987 /* GroceryOngoingHistoryVC.swift in Sources */,
 				E26503FA2D117E9C0036A984 /* DineInHistoryResponse.swift in Sources */,
 				4AE7D4602C82F17100480957 /* ProfileItemTVCell.swift in Sources */,
+				E2C2E6532FD0057C00FA3BDD /* StateSelectionPopupVC.swift in Sources */,
 				E2CD9FB12E597BAF00740E7A /* ReferRestaurantCell.swift in Sources */,
 				E2B302F92CB6B4750087D416 /* ItemHeaderView.swift in Sources */,
 				E2165D342C66130D00F344FE /* FirstPageVC.swift in Sources */,
@@ -1771,7 +1775,7 @@
 				CODE_SIGN_ENTITLEMENTS = NewDesignApp/NewDesignApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.38;
+				CURRENT_PROJECT_VERSION = 1.39;
 				DEVELOPMENT_TEAM = 6J7UZY2EAL;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NewDesignApp/Info.plist;
@@ -1812,7 +1816,7 @@
 				CODE_SIGN_ENTITLEMENTS = NewDesignApp/NewDesignApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.38;
+				CURRENT_PROJECT_VERSION = 1.39;
 				DEVELOPMENT_TEAM = 6J7UZY2EAL;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NewDesignApp/Info.plist;
