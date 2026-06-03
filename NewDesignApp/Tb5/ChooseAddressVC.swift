@@ -70,11 +70,14 @@ extension ChooseAddressVC: UITableViewDelegate, UITableViewDataSource {
         
         let street = address.street?.isEmpty == false ? "\(address.street!) " : ""
         let baseFont = cell.addressLbl.font ?? UIFont.systemFont(ofSize: 14)
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.paragraphSpacingBefore = 5
         let regularAttributes: [NSAttributedString.Key: Any] = [
             .font: baseFont
         ]
         let semiboldAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont.systemFont(ofSize: baseFont.pointSize, weight: .semibold)
+            .font: UIFont.systemFont(ofSize: baseFont.pointSize, weight: .semibold),
+            .paragraphStyle: paragraphStyle
         ]
 
         let addressString = NSMutableAttributedString()
