@@ -397,26 +397,36 @@ extension GroceryCartVC: UITableViewDelegate, UITableViewDataSource{
             let cell = tableView.dequeueReusableCell(withIdentifier: "DeliveryAtTVCell", for: indexPath) as! DeliveryAtTVCell
             cell.selectionStyle = .none
             if GroceryCartData.shared.cartItems.count > 0 {
-                var add = ""
-               
-                    cell.headingLbl.text = "Delivery At:"
-                    let address = GroceryCartData.shared.userAddress
-                    let landmark = address!.add2?.isEmpty == false ? "\nLandmark: \(address!.add2 ?? "")" : ""
-                    let street = address!.street?.isEmpty == false ? "\(address!.street ?? "") " : ""
+                cell.headingLbl.text = "Delivery At:"
+                let address = GroceryCartData.shared.userAddress
+                let street = address!.street?.isEmpty == false ? "\(address!.street ?? "") " : ""
+                let baseFont = cell.deliveryAtLbl.font ?? UIFont.systemFont(ofSize: 14)
+                let regularAttributes: [NSAttributedString.Key: Any] = [
+                    .font: baseFont
+                ]
+                let semiboldAttributes: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.systemFont(ofSize: baseFont.pointSize, weight: .semibold)
+                ]
 
-                    
-                    add = "\(street)\(address!.add1 ?? "") \(landmark) \n\(address!.city ?? ""), \(address!.state ?? ""), \(address!.zip ?? "")"
-                    cell.changeAddressBtn.isHidden = false
-                    cell.changePhoneBtn.isHidden = false
-                    cell.phoneLbl.text = "Phone: \(APPDELEGATE.userResponse?.customer.phone ?? "")"
-                    if GroceryCartData.shared.alternateNumber.count == 10 {
-                        cell.phoneLbl.text = "Phone: \(GroceryCartData.shared.alternateNumber)"
-                    }
+                let addressString = NSMutableAttributedString()
+                addressString.append(NSAttributedString(
+                    string: "\(street)\(address!.add1 ?? "")\n\(address!.city ?? ""), \(address!.state ?? ""), \(address!.zip ?? "")",
+                    attributes: regularAttributes
+                ))
+                if let landmark = address!.add2, !landmark.isEmpty {
+                    addressString.append(NSAttributedString(string: "\nLandmark: ", attributes: semiboldAttributes))
+                    addressString.append(NSAttributedString(string: landmark, attributes: regularAttributes))
+                }
+                cell.changeAddressBtn.isHidden = false
+                cell.changePhoneBtn.isHidden = false
+                cell.phoneLbl.text = "Phone: \(APPDELEGATE.userResponse?.customer.phone ?? "")"
+                if GroceryCartData.shared.alternateNumber.count == 10 {
+                    cell.phoneLbl.text = "Phone: \(GroceryCartData.shared.alternateNumber)"
+                }
                 cell.delegate = self
-                cell.deliveryAtLbl.text = add
+                cell.deliveryAtLbl.attributedText = addressString
             }
             
-             
             return cell
         }
         

@@ -68,11 +68,25 @@ extension ChooseAddressVC: UITableViewDelegate, UITableViewDataSource {
         let address = APPDELEGATE.userResponse!.customer.address[indexPath.row]
         let selectedAddress = Cart.shared.userAddress
         
-        let landmark = address.add2?.isEmpty == false ? "\nLandmark: \(address.add2!)" : ""
         let street = address.street?.isEmpty == false ? "\(address.street!) " : ""
+        let baseFont = cell.addressLbl.font ?? UIFont.systemFont(ofSize: 14)
+        let regularAttributes: [NSAttributedString.Key: Any] = [
+            .font: baseFont
+        ]
+        let semiboldAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: baseFont.pointSize, weight: .semibold)
+        ]
 
-        
-        cell.addressLbl.text = "\(street)\(address.add1 ?? "") \(landmark) \n\(address.city ?? ""), \(address.state ?? ""), \(address.zip ?? "")"
+        let addressString = NSMutableAttributedString()
+        addressString.append(NSAttributedString(
+            string: "\(street)\(address.add1 ?? "")\n\(address.city ?? ""), \(address.state ?? ""), \(address.zip ?? "")",
+            attributes: regularAttributes
+        ))
+        if let landmark = address.add2, !landmark.isEmpty {
+            addressString.append(NSAttributedString(string: "\nLandmark: ", attributes: semiboldAttributes))
+            addressString.append(NSAttributedString(string: landmark, attributes: regularAttributes))
+        }
+        cell.addressLbl.attributedText = addressString
         
         cell.addressTypeLbl.text = address.type
         cell.updateUI(selected: selectedAddress?.id == address.id)
