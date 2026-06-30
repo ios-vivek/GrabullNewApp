@@ -496,7 +496,7 @@ extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
            // cell.cateringHide = self.restDetailsData?.ordertypes.contains("Catering") ?? false
             //cell.dineinHide = self.restDetailsData?.ordertypes.contains("Reservation") ?? false
             cell.updateUI(menuType: ["Menu", "Catering", "Deals", "DineIn"], selectedMenuType: selectedMenuType)
-            cell.configMenu(isActiveCatering: self.restDetailsData?.catering == "Yes" ? true : false, isActiveDineIn: self.restDetailsData?.dinein == "Yes" ? true : false)
+            cell.configMenu(isActiveCatering: self.restDetailsData?.catering == "Yes" ? true : false, isActiveDineIn: self.restDetailsData?.dinein == "Yes" ? true : false, isDealsActive: specialSections.count == 0 ? false: true)
             return cell
         case RestaurentDetailsSection.Menu.rawValue:
             let cell = tableView.dequeueReusableCell(withIdentifier: "FoodMenuTVCell", for: indexPath) as! FoodMenuTVCell
