@@ -116,7 +116,7 @@ extension FlowerGiftListVC: UICollectionViewDelegate,UICollectionViewDataSource{
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
             if viewModel.storeList.count > 0 {
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "StoreCVCell", for: indexPath as IndexPath) as! StoreCVCell
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "FlowerStoreCVCell", for: indexPath as IndexPath) as! FlowerStoreCVCell
                     cell.updateStoreUI(index: indexPath.row, store: viewModel.storeList[indexPath.row])
                 cell.backgroundColor = .white
                 return cell;
