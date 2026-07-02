@@ -10,6 +10,7 @@ import Stripe
 import StripePaymentSheet
 enum GroceryCellTypes: Int {
     case Restname
+    case SubstituteItem
     case Deliveryto
     case Deliveryat
     case Special
@@ -258,6 +259,13 @@ extension GroceryPaymentVC: UITableViewDelegate, UITableViewDataSource{
                 }
             }
             
+        case GroceryCellTypes.SubstituteItem.rawValue:
+            let cell = tableView.dequeueReusableCell(withIdentifier: "GrocerySubstituteItemTVCell", for: indexPath) as! GrocerySubstituteItemTVCell
+            cell.update(amount: "\(viewModel.userRewardAmount)")
+            cell.delegate = self
+            cell.selectionStyle = .none
+            return cell
+            
         case GroceryCellTypes.Redeem.rawValue:
             let cell = tableView.dequeueReusableCell(withIdentifier: "GroceryRedeemTVCell", for: indexPath) as! GroceryRedeemTVCell
             cell.update(amount: "\(viewModel.userRewardAmount)")
@@ -434,3 +442,10 @@ extension GroceryPaymentVC: SelectedCardDeledate {
         cartTableView.reloadData()
     }
 }
+
+extension GroceryPaymentVC: GrocerySubstituteItemDelegate {
+    func selectedSubstituteAction() {
+        cartTableView.reloadData()
+    }
+}
+

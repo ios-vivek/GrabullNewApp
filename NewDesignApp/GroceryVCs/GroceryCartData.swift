@@ -51,6 +51,7 @@ class GroceryCartData {
     var supportNumber = ""
     var orderTime = ""
     var isRewardAppied: Bool = false
+    var isSubstituteItemApplied: Bool = false
     private init() {}
     
     // MARK: - Cart Management Methods
@@ -109,6 +110,7 @@ class GroceryCartData {
         supportNumber = ""
         orderTime = ""
         isRewardAppied = false
+        isSubstituteItemApplied = false
         resetTempData()
     }
     

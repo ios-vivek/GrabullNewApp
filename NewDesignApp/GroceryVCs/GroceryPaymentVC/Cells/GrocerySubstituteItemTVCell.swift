@@ -6,14 +6,14 @@
 //
 
 import UIKit
-protocol GroceryRedeemDelegate: AnyObject {
-    func selectedRedeemAction()
+protocol GrocerySubstituteItemDelegate: AnyObject {
+    func selectedSubstituteAction()
 }
-class GroceryRedeemTVCell: UITableViewCell {
+class GrocerySubstituteItemTVCell: UITableViewCell {
     @IBOutlet weak var redeemAmountLbl: UILabel!
     @IBOutlet weak var checkBoxImage: UIImageView!
     @IBOutlet weak var checkboxBtn: UIButton!
-    var delegate: GroceryRedeemDelegate?
+    var delegate: GrocerySubstituteItemDelegate?
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -24,17 +24,17 @@ class GroceryRedeemTVCell: UITableViewCell {
         update(amount: "0.0")
     }
     func update(amount: String){
-        if GroceryCartData.shared.isRewardAppied {
+        if GroceryCartData.shared.isSubstituteItemApplied {
             checkBoxImage.image = UIImage.init(named: "checkIcon")
         } else {
             checkBoxImage.image = UIImage.init(named: "")
         }
       //  redeemAmountLbl.text = "Reddem GB Bucks Value $ \(amount)"
-        redeemAmountLbl.attributedText = self.getAttributedString(fstring: "Redeem GB Bucks Value ", sstring: "$ \(amount)")
+        redeemAmountLbl.attributedText = self.getAttributedString(fstring: "If any item not available do you allow the driver to replace with a substitute item of same kind with other brand or flavours", sstring: "")
     }
     func getAttributedString(fstring: String, sstring: String)-> NSMutableAttributedString {
        // let fmyAttribute = [NSAttributedString.Key.foregroundColor: kBlueColor]
-        let font2 = UIFont.boldSystemFont(ofSize: 16)
+        let font2 = UIFont.boldSystemFont(ofSize: 15)
 
         let attributes1: [NSAttributedString.Key: Any] = [
         .font: font2,
@@ -52,8 +52,8 @@ class GroceryRedeemTVCell: UITableViewCell {
         return myString
     }
     @IBAction func checkBoxAction() {
-        GroceryCartData.shared.isRewardAppied = !GroceryCartData.shared.isRewardAppied
-        self.delegate?.selectedRedeemAction()
+        GroceryCartData.shared.isSubstituteItemApplied = !GroceryCartData.shared.isSubstituteItemApplied
+        self.delegate?.selectedSubstituteAction()
     }
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
