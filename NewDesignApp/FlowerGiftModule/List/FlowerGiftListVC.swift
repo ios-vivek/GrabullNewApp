@@ -65,8 +65,8 @@ class FlowerGiftListVC: UIViewController {
             guard let self = self else { return }
             UtilsClass.hideProgressHud(view: self.view)
             guard let successData = response else { return }
-            let story = UIStoryboard.init(name: "Grocery", bundle: nil)
-            let vc = story.instantiateViewController(withIdentifier: "GroceryDetailsPageVC") as! GroceryDetailsPageVC
+            let story = UIStoryboard.init(name: "FlowerGift", bundle: nil)
+            let vc = story.instantiateViewController(withIdentifier: "FlowerDetailsPageVC") as! FlowerDetailsPageVC
             vc.storeDetails = successData.data
             vc.imageUrl = storeImage
             self.navigationController?.pushViewController(vc, animated: true)

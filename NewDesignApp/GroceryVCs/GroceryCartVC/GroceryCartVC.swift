@@ -122,6 +122,12 @@ class GroceryCartVC: UIViewController {
         proceedBtn.setFontWithString(text: "Proceed: \(UtilsClass.getCurrencySymbol())\(val)", fontSize: 12)
         getAllItemsForNextVCDisplay()
         self.cartTableView.reloadData()
+        proceedBtn.isHidden = GroceryCartData.shared.cartItems.isEmpty
+        if GroceryCartData.shared.cartItems.isEmpty {
+            loginView.isHidden = true
+            addressView.isHidden = true
+            proceedView.isHidden = true
+        }
     }
     func getAllItemsForNextVCDisplay() {
         /*

@@ -9,7 +9,7 @@
 import UIKit
 import Lottie
 
-class GroceryDetailsPageVC: UIViewController {
+class FlowerDetailsPageVC: UIViewController {
     
     @IBOutlet weak var restaurantTable: UITableView!
     @IBOutlet weak var navView: UIView!
@@ -214,7 +214,7 @@ class GroceryDetailsPageVC: UIViewController {
     }
 
 }
-extension GroceryDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
+extension FlowerDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         return GrocerySection.Items.rawValue + displaySectionsMenus.count
     }
@@ -347,7 +347,7 @@ extension GroceryDetailsPageVC: UITableViewDelegate, UITableViewDataSource {
     }
         
 }
-extension GroceryDetailsPageVC: GroceryGalleryDelegate {
+extension FlowerDetailsPageVC: GroceryGalleryDelegate {
     
     func selectedGalleryView() {
         let vc = self.viewController(viewController: RestImageGalleryVC.self, storyName: StoryName.Main.rawValue) as! RestImageGalleryVC
@@ -357,13 +357,13 @@ extension GroceryDetailsPageVC: GroceryGalleryDelegate {
     }
     
 }
-extension GroceryDetailsPageVC: UICollectionViewDelegateFlowLayout{
+extension FlowerDetailsPageVC: UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return CGSize(width: 0, height: collectionView.frame.height)
     }
 
 }
-extension GroceryDetailsPageVC: UICollectionViewDelegate,UICollectionViewDataSource{
+extension FlowerDetailsPageVC: UICollectionViewDelegate,UICollectionViewDataSource{
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
@@ -399,7 +399,7 @@ extension GroceryDetailsPageVC: UICollectionViewDelegate,UICollectionViewDataSou
     
     
 }
-extension GroceryDetailsPageVC: GroceryMenuSelectedDelegate {
+extension FlowerDetailsPageVC: GroceryMenuSelectedDelegate {
     func showAllData() {
         selectedFiler = -1
         self.getMenuList()
@@ -410,7 +410,7 @@ extension GroceryDetailsPageVC: GroceryMenuSelectedDelegate {
         self.getMenuList()
     }
 }
-extension GroceryDetailsPageVC: MenuTypeSelectedDelegate {
+extension FlowerDetailsPageVC: MenuTypeSelectedDelegate {
     func selectedMenuType(menuType: MenuType) {
         selectedFiler = -1
         self.getMenuList()
@@ -418,13 +418,13 @@ extension GroceryDetailsPageVC: MenuTypeSelectedDelegate {
         menuHeadingCollection.reloadData()
     }
 }
-extension GroceryDetailsPageVC: OpenCartViewDelegate {
+extension FlowerDetailsPageVC: OpenCartViewDelegate {
     func openCartView() {
         let vc = self.viewController(viewController: GroceryCartVC.self, storyName: StoryName.Grocery.rawValue) as! GroceryCartVC
         self.navigationController?.pushViewController(vc, animated: true)
     }
 }
-extension GroceryDetailsPageVC: GroceryItemCellDelegate {
+extension FlowerDetailsPageVC: GroceryItemCellDelegate {
     func addItemSelection(index: IndexPath) {
         
         let cart = GroceryCartData.shared
@@ -475,7 +475,7 @@ extension GroceryDetailsPageVC: GroceryItemCellDelegate {
         }
     }
 }
-extension GroceryDetailsPageVC: ItemSizesPopupDelegate {
+extension FlowerDetailsPageVC: ItemSizesPopupDelegate {
     func openSelectSize(index: IndexPath) {
         self.addItemSelection(index: index)
     }

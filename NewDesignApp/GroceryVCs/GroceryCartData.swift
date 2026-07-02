@@ -98,6 +98,17 @@ class GroceryCartData {
     /// Clear entire cart
     func clearCart() {
         cartItems.removeAll()
+        dbname = ""
+        alternateNumber = ""
+        tipAmount = 0.0
+        donateAmount = 0.0
+        giftNumber = ""
+        specialInstructionText = ""
+        rewardAmount = "0.0"
+        orderNumber = ""
+        supportNumber = ""
+        orderTime = ""
+        isRewardAppied = false
         resetTempData()
     }
     
