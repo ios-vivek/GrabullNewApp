@@ -195,6 +195,10 @@ let total = GroceryCartData.shared.total + GroceryCartData.shared.tipAmount + Gr
     func startPaymentFlow(custId: String, epk: String, piId: String, parameters: [String: AnyObject]) {
         self.tempParam = parameters
         var configuration = PaymentSheet.Configuration()
+        configuration.applePay = .init(
+            merchantId: "merchant.com.grabullShop",
+            merchantCountryCode: "US"   // or "IN", etc.
+        )
         configuration.merchantDisplayName = "Grabull"
         configuration.customer = .init(id: custId, ephemeralKeySecret: epk)
 
