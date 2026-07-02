@@ -479,6 +479,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		E20443F42FF64C7800D83A3C /* FlowerGiftModule */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = FlowerGiftModule; sourceTree = "<group>"; };
 		E257DE002F7E556100EB0614 /* GroceryVCs */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = GroceryVCs; sourceTree = "<group>"; };
 		E257DF202F892C5900EB0614 /* GroceryApiResponses */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = GroceryApiResponses; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -571,6 +572,7 @@
 				E2B46A622CBAADAF00D45C09 /* RestaurantCartDeatils.swift */,
 				E2BAD6332CCA838C0016810A /* Alert.swift */,
 				E257DFC92F89F70A00EB0614 /* ImageExtension.swift */,
+				E20443F42FF64C7800D83A3C /* FlowerGiftModule */,
 				E257DE002F7E556100EB0614 /* GroceryVCs */,
 				E2EC30612D78774E008F1603 /* DineInReservationVC */,
 				E2BAD5FA2CBE9EF70016810A /* Cart */,
@@ -1278,6 +1280,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
+				E20443F42FF64C7800D83A3C /* FlowerGiftModule */,
 				E257DE002F7E556100EB0614 /* GroceryVCs */,
 				E257DF202F892C5900EB0614 /* GroceryApiResponses */,
 			);

@@ -397,10 +397,14 @@ extension DashBoardVC: DashBoardSectionDelegate {
             self.tabBarController?.selectedIndex = 1
         }
         if index == 2 {
-            let story = UIStoryboard.init(name: "FoodSearch", bundle: nil)
-            let vc = story.instantiateViewController(withIdentifier: "SearchDetailVC") as! SearchDetailVC
-            //vc.listResponse = success.data.restaurant
-            vc.isDineFilter = true
+//            let story = UIStoryboard.init(name: "FoodSearch", bundle: nil)
+//            let vc = story.instantiateViewController(withIdentifier: "SearchDetailVC") as! SearchDetailVC
+//            //vc.listResponse = success.data.restaurant
+//            vc.isDineFilter = true
+//            self.navigationController?.pushViewController(vc, animated: true)
+            
+            let story = UIStoryboard.init(name: "FlowerGift", bundle: nil)
+            let vc = story.instantiateViewController(withIdentifier: "FlowerGiftListVC") as! FlowerGiftListVC
             self.navigationController?.pushViewController(vc, animated: true)
         }
         if index == 3 {

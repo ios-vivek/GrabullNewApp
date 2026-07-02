@@ -8,8 +8,8 @@
 import UIKit
 import SafariServices
 
-class GroceryVC: UIViewController {
-    var viewModel = GroceryViewModel()
+class FlowerGiftListVC: UIViewController {
+    var viewModel = FlowerGiftListViewModel()
     @IBOutlet weak var titleLbl: UILabel!
     @IBOutlet weak var cartLabel: UILabel!
     @IBOutlet weak var cartView: UIView!
@@ -21,7 +21,7 @@ class GroceryVC: UIViewController {
 
         // Do any additional setup after loading the view.
         cartLabel.textColor = kOrangeColor
-        titleLbl.text = "Groceries"
+        titleLbl.text = "Gifts"
         self.view.backgroundColor = .white
         homeCollection.backgroundColor = .white
         homeCollection.register(UINib(nibName: "HeaderCollectionView", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "HeaderCollectionView") //elementKindSectionFooter for footerview
@@ -75,7 +75,7 @@ class GroceryVC: UIViewController {
 
 }
 
-extension GroceryVC: RestCellDelegate {
+extension FlowerGiftListVC: RestCellDelegate {
     func clickedFavAction(index: Int) {
         
     }
@@ -91,18 +91,18 @@ extension GroceryVC: RestCellDelegate {
         self.present(popupVC, animated: true)
     }
 }
-extension GroceryVC: SelectOptionDelegate {
+extension FlowerGiftListVC: SelectOptionDelegate {
     func selectedOption(restIndex: Int, index: Int) {
         
     }
 }
 
-extension GroceryVC: UICollectionViewDelegateFlowLayout{
+extension FlowerGiftListVC: UICollectionViewDelegateFlowLayout{
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         return CGSize(width: 0, height: 0)
     }
 }
-extension GroceryVC: UICollectionViewDelegate,UICollectionViewDataSource{
+extension FlowerGiftListVC: UICollectionViewDelegate,UICollectionViewDataSource{
     func numberOfSections(in collectionView: UICollectionView) -> Int {
         1
     }
