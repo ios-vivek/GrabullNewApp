@@ -67,7 +67,8 @@ class CartPriceDetailsTVCell: UITableViewCell {
             let subt = Cart.shared.roundValue2Digit(value: details.subTotal)
             let dist = Cart.shared.roundValue2Digit(value: details.discount)
             let taxt = Cart.shared.roundValue2Digit(value: details.tax)
-
+                discountValueLbl.isHidden = dist <= 0 ? true : false
+                discountLbl.isHidden = dist <= 0 ? true : false
             subtotalValueLbl.text = "\(UtilsClass.getCurrencySymbol())\(subt.toString())"
             discountValueLbl.text = "-\(UtilsClass.getCurrencySymbol())\(dist.toString())"
             taxesValueLbl.text = "\(UtilsClass.getCurrencySymbol())\(taxt.toString())"

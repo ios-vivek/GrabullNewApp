@@ -587,10 +587,10 @@
                                                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 </stackView>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tpK-er-jvj">
-                                                    <rect key="frame" x="0.0" y="202" width="140" height="35"/>
+                                                    <rect key="frame" x="0.0" y="235" width="140" height="35"/>
                                                     <constraints>
-                                                        <constraint firstAttribute="width" constant="140" id="9KB-2G-GG8"/>
-                                                        <constraint firstAttribute="height" constant="35" id="J4X-Yt-KOu"/>
+                                                        <constraint firstAttribute="height" constant="35" id="3Rd-Ah-YWV"/>
+                                                        <constraint firstAttribute="width" constant="140" id="WFZ-Wx-vyY"/>
                                                     </constraints>
                                                     <state key="normal" title="Button"/>
                                                     <buttonConfiguration key="configuration" style="plain" title="Empty cart">
@@ -686,8 +686,6 @@
                                             </subviews>
                                             <constraints>
                                                 <constraint firstAttribute="trailing" secondItem="GYQ-Is-448" secondAttribute="trailing" constant="20" id="3z8-o6-ny4"/>
-                                                <constraint firstItem="tpK-er-jvj" firstAttribute="leading" secondItem="zDM-2d-9cG" secondAttribute="leading" id="7vh-l3-6QA"/>
-                                                <constraint firstItem="tpK-er-jvj" firstAttribute="top" secondItem="nrq-BF-NUK" secondAttribute="bottom" constant="20" id="8jZ-KI-j9B"/>
                                                 <constraint firstItem="GYQ-Is-448" firstAttribute="leading" secondItem="zDM-2d-9cG" secondAttribute="leading" constant="20" id="AlN-vU-DV7"/>
                                                 <constraint firstAttribute="trailing" secondItem="Qua-ys-RYv" secondAttribute="trailing" constant="20" id="B2T-0I-gDv"/>
                                                 <constraint firstItem="Qua-ys-RYv" firstAttribute="top" secondItem="DYF-0s-ZFT" secondAttribute="bottom" constant="6" id="Cyd-gz-y9N"/>
@@ -697,7 +695,9 @@
                                                 <constraint firstItem="nrq-BF-NUK" firstAttribute="leading" secondItem="zDM-2d-9cG" secondAttribute="leading" constant="20" id="Mmn-cp-XEA"/>
                                                 <constraint firstAttribute="bottom" secondItem="GYQ-Is-448" secondAttribute="bottom" constant="60" id="R1u-Oj-HMz"/>
                                                 <constraint firstItem="GYQ-Is-448" firstAttribute="top" secondItem="DYF-0s-ZFT" secondAttribute="bottom" constant="50" id="fZR-vS-mb1"/>
+                                                <constraint firstAttribute="bottom" secondItem="tpK-er-jvj" secondAttribute="bottom" constant="20" id="hMX-9m-d3w"/>
                                                 <constraint firstItem="nrq-BF-NUK" firstAttribute="top" secondItem="DYF-0s-ZFT" secondAttribute="bottom" constant="45" id="hq0-t9-Ivj"/>
+                                                <constraint firstItem="tpK-er-jvj" firstAttribute="leading" secondItem="zDM-2d-9cG" secondAttribute="leading" id="q6m-zV-tLe"/>
                                                 <constraint firstAttribute="trailing" secondItem="DYF-0s-ZFT" secondAttribute="trailing" id="sr1-d2-czS"/>
                                             </constraints>
                                         </tableViewCellContentView>

@@ -68,6 +68,8 @@ class GroceryPriceDetailsTVCell: UITableViewCell {
             let total = GroceryCartData.shared.total
             let taxWithCon = convAmount + taxAmount + serviceAmount
            
+            discountValueLbl.isHidden =  true
+            discountLbl.isHidden = true
             
             subtotalValueLbl.text = "\(UtilsClass.getCurrencySymbol())\(subtotal.toString())"
             discountValueLbl.text = "\(UtilsClass.getCurrencySymbol())\(0.00)"
