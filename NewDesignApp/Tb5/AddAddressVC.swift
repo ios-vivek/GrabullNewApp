@@ -115,9 +115,81 @@ class AddAddressVC: UIViewController {
         }
         else {
             if isUpdateAddress {
-                self.updateAddressService()
+                let fullAddress = """
+
+                   \(address1TxtFld.text ?? ""),
+
+                   \(address2TxtFld.text ?? ""),
+
+                   \(cityTxtFld.text ?? ""),
+
+                   \(stateTxtFld.text ?? ""),
+
+                   \(zipcodeTxtFld.text ?? "")
+
+                   """
+
+                   validateGoogleAddress(text: fullAddress) { isValid in
+
+                       DispatchQueue.main.async {
+
+                           if isValid {
+
+                               self.updateAddressService()
+
+                           } else {
+
+                               self.showAlert(
+
+                                   title: "Invalid Address",
+
+                                   msg: "Please enter a valid address recognized by Google."
+
+                               )
+
+                           }
+
+                       }
+
+                   }
             }else {
-                self.addAddressService()
+                let fullAddress = """
+
+                   \(address1TxtFld.text ?? ""),
+
+                   \(address2TxtFld.text ?? ""),
+
+                   \(cityTxtFld.text ?? ""),
+
+                   \(stateTxtFld.text ?? ""),
+
+                   \(zipcodeTxtFld.text ?? "")
+
+                   """
+
+                   validateGoogleAddress(text: fullAddress) { isValid in
+
+                       DispatchQueue.main.async {
+
+                           if isValid {
+
+                               self.addAddressService()
+
+                           } else {
+
+                               self.showAlert(
+
+                                   title: "Invalid Address",
+
+                                   msg: "Please enter a valid address recognized by Google."
+
+                               )
+
+                           }
+
+                       }
+
+                   }
             }
            // self.navigationController?.popViewController(animated: true)
         }
@@ -202,6 +274,51 @@ class AddAddressVC: UIViewController {
             }
 
             UtilsClass.hideProgressHud(view: self.view)
+        }
+    }
+    func validateGoogleAddress(text: String, completion: @escaping (Bool) -> Void) {
+
+        UtilsClass.showProgressHud(view: self.view)
+
+        GoogleAPisService.googleAddressLatLong(
+            searchtext: text,
+            forModelType: GoogleAddressLatLongResponse.self
+        ) { success in
+
+            UtilsClass.hideProgressHud(view: self.view)
+
+            guard let result = success.data.results?.first else {
+                completion(false)
+                return
+            }
+
+            guard let components = result.address_components else {
+                completion(false)
+                return
+            }
+
+            let types = components.flatMap { $0.types ?? [] }
+
+          //  let hasStreetNumber = types.contains("street_number")
+            let hasRoute = types.contains("route")
+            let hasCity = types.contains("locality") ||
+                          types.contains("administrative_area_level_2")
+            let hasState = types.contains("administrative_area_level_1")
+            let hasZip = types.contains("postal_code")
+            let hasCountry = types.contains("country")
+
+            let isValid = hasRoute &&
+                          hasCity &&
+                          hasState &&
+                          hasZip &&
+                          hasCountry
+
+            completion(isValid)
+
+        } ErrorHandler: { error in
+
+            UtilsClass.hideProgressHud(view: self.view)
+            completion(false)
         }
     }
     /*

@@ -440,8 +440,10 @@ public static func getAttributedString(str1: String, str2: String) -> NSMutableA
         let address = LocationAddress()
         address.latLong = coordinate
         address.subLocality = ""
-
-        for component in result.address_components {
+        guard let components = result.address_components else {
+            return
+        }
+        for component in components {
 
             let types = component.types
 

@@ -53,6 +53,10 @@ class ConfirmOrderVC: UIViewController {
         Cart.shared.cardHolder = ""
         Cart.shared.cardZip = ""
         // Do any additional setup after loading the view.
+        let details = Cart.shared.getAllPriceDeatils()
+        let tipsAmount = (details.subTotal * 10) / 100
+        Cart.shared.tipsAmount = Float(tipsAmount)
+        Cart.shared.isTips = true
         bindViewModel()
         viewModel.fetchRewards()
         self.setDefaultBack()
@@ -265,6 +269,7 @@ extension ConfirmOrderVC: UITableViewDelegate, UITableViewDataSource{
         case CellTypeSelected.Special.rawValue:
             let cell = tableView.dequeueReusableCell(withIdentifier: "SpecialRequestTVCell", for: indexPath) as! SpecialRequestTVCell
             cell.selectionStyle = .none
+            cell.delegate = self
             return cell
         case CellTypeSelected.Payment.rawValue:
             if indexPath.row == 0 {
@@ -528,5 +533,11 @@ extension ConfirmOrderVC: RecipientDetailsDelegate {
 extension ConfirmOrderVC: SelectedCardDeledate {
     func selectedCardDetails() {
         cartTableView.reloadData()
+    }
+}
+
+extension ConfirmOrderVC: SpecialInstructionDelegate {
+    func typedInstruction(msgTyped: String) {
+        Cart.shared.specialInstructionText = msgTyped
     }
 }

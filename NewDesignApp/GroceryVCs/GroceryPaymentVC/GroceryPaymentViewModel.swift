@@ -133,7 +133,9 @@ let total = GroceryCartData.shared.total + GroceryCartData.shared.tipAmount + Gr
             tips: "\(GroceryCartData.shared.tipAmount.toString())", donate: "",
             rewards: GroceryCartData.shared.isRewardAppied ? "\(GroceryCartData.shared.rewardAmount)" : "",
             total: "\(total.toString())",
-            items: buildItemList()
+            items: buildItemList(),
+            isSubstituteItemApplied: GroceryCartData.shared.isSubstituteItemApplied
+
         )
         setTempdata(temp: cartRequest)
             

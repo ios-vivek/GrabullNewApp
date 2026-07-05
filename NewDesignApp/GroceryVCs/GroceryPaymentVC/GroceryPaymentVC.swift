@@ -41,17 +41,36 @@ class GroceryPaymentVC: UIViewController {
 //        GroceryCartData.shared.cardHolder = ""
 //        GroceryCartData.shared.cardZip = ""
         // Do any additional setup after loading the view.
+        
+        let tipsAmount = (GroceryCartData.shared.totalPrice * 10) / 100
+        GroceryCartData.shared.tipAmount = Double(tipsAmount)
+        
         bindViewModel()
         viewModel.fetchRewards()
         self.setDefaultBack()
         self.view.backgroundColor = .white
         cartTableView.backgroundColor = .white
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                self.openSubstituteItemsPopup()
+            }
 
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     }
-    
+    func openSubstituteItemsPopup() {
+        let storyboard = UIStoryboard(name: "Grocery", bundle: nil)
+        guard let viewc = storyboard.instantiateViewController(withIdentifier: "ItemsSubstituteVC") as? ItemsSubstituteVC else {
+            return
+        }
+        if let sheet = viewc.sheetPresentationController {
+            sheet.detents = [.medium()]
+            sheet.prefersGrabberVisible = true
+        }
+
+        present(viewc, animated: true)
+    }
     private func bindViewModel() {
            viewModel.reloadTable = { [weak self] in
                self?.cartTableView.reloadData()
@@ -165,6 +184,8 @@ extension GroceryPaymentVC: UITableViewDelegate, UITableViewDataSource{
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
+        case GroceryCellTypes.SubstituteItem.rawValue:
+            return 0
         case GroceryCellTypes.Donate.rawValue:
             if self.viewModel.selectedPaymentType == 1 {
                // GroceryCartData.shared.isDonate = false
@@ -233,6 +254,7 @@ extension GroceryPaymentVC: UITableViewDelegate, UITableViewDataSource{
         case GroceryCellTypes.Special.rawValue:
             let cell = tableView.dequeueReusableCell(withIdentifier: "SpecialRequestTVCell", for: indexPath) as! SpecialRequestTVCell
             cell.selectionStyle = .none
+            cell.delegate = self
             return cell
         case GroceryCellTypes.Payment.rawValue:
             if indexPath.row == 0 {
@@ -449,3 +471,8 @@ extension GroceryPaymentVC: GrocerySubstituteItemDelegate {
     }
 }
 
+extension GroceryPaymentVC: SpecialInstructionDelegate {
+    func typedInstruction(msgTyped: String) {
+        GroceryCartData.shared.specialInstructionText = msgTyped
+    }
+}

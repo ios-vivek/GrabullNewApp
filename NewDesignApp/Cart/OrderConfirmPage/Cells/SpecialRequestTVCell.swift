@@ -6,9 +6,13 @@
 //
 
 import UIKit
-
+protocol SpecialInstructionDelegate: AnyObject {
+    func typedInstruction(msgTyped: String)
+}
 class SpecialRequestTVCell: UITableViewCell, UITextViewDelegate {
     @IBOutlet weak var specialTxtView: UITextView!
+    var delegate: SpecialInstructionDelegate?
+
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -29,8 +33,7 @@ class SpecialRequestTVCell: UITableViewCell, UITextViewDelegate {
     }
 
     func textViewDidChange(_ textView: UITextView) {
-        Cart.shared.specialInstructionText = textView.text ?? ""
-        print(Cart.shared.specialInstructionText)
+        self.delegate?.typedInstruction(msgTyped: textView.text ?? "")
     }
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)

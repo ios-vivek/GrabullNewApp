@@ -78,16 +78,22 @@ var addressWithLatLong = [ResultLatLong]()
             guard let address = success.data.results else {
                 return
             }
-           // self.addressWithLatLong = address
             print("Address list- \(address.count)")
-            for add in address[0].address_components {
-                if add.types.contains("premise") {
-                    self.mainAddressLbl.text = add.long_name
-                    break
-                }
-
+            guard let firstResult = address.first else {
+                self.locationView.isHidden = true
+                return
             }
-            self.subAddressLbl.text = address[0].formatted_address
+
+            if let components = firstResult.address_components {
+                for add in components {
+                    if add.types.contains("premise") == true {
+                        self.mainAddressLbl.text = add.long_name
+                        break
+                    }
+                }
+            }
+
+            self.subAddressLbl.text = firstResult.formatted_address
             self.locationView.isHidden = false
             self.addressWithLatLong = address
         } ErrorHandler: { error in
@@ -159,3 +165,4 @@ var addressWithLatLong = [ResultLatLong]()
 
 
 }
+

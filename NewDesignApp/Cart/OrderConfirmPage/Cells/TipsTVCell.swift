@@ -42,7 +42,7 @@ class TipsTVCell: UITableViewCell, UITextFieldDelegate {
         customTipsTxtFld.layer.borderWidth = 1
         customTipsTxtFld.layer.borderColor = UIColor.gGray100.cgColor
         customTipsTxtFld.setPlaceHolderColor(.gGray200)
-
+        tipsSegment.selectedSegmentIndex = 0
     }
     func updateValue(itemPrice: Double) {
         totalPrice = itemPrice

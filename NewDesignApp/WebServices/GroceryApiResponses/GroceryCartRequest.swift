@@ -50,6 +50,8 @@ struct GroceryCartRequest: Codable {
     let rewards: String
     let total: String
     let items: [CartItems]
+    let isSubstituteItemApplied: Bool
+
 
     enum CodingKeys: String, CodingKey {
         case apiId = "api_id"
@@ -67,6 +69,7 @@ struct GroceryCartRequest: Codable {
         case specialinstruction, holdtime, holddate
         case orderType = "order_type"
         case offerdetails, offeramount, dcharge, scharge, tips, donate, rewards, total, items
+        case isSubstituteItemApplied = "is_substitute_item_applied"
     }
 }
 

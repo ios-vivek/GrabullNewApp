@@ -22,7 +22,7 @@ struct GoogleAddressLatLongResponse: Codable {
 struct ResultLatLong: Codable {
     let formatted_address: String
     let geometry: GeometryData
-    let address_components: [AddressComponents]
+    let address_components: [AddressComponents]?
 }
 
 struct AddressComponents: Codable {

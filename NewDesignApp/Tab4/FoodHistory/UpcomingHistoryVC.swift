@@ -69,9 +69,9 @@ class UpcomingHistoryVC: UIViewController {
         self.emptyView.isHidden = true
         let parameters = CommonAPIParams.base()
         
-        UtilsClass.showProgressHud(view: self.view)
+        LocalProgressHUD.show(on: self.view)
         WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.upcomingOrder, forModelType: HisoryResponse.self) { success in
-            UtilsClass.hideProgressHud(view: self.view)
+            LocalProgressHUD.hide(from: self.view)
             self.historyList = success.data.data
             self.historyTblView.reloadData()
             self.noDataFoundRefersh()
@@ -81,7 +81,7 @@ class UpcomingHistoryVC: UIViewController {
             }
             
         } ErrorHandler: { error in
-            UtilsClass.hideProgressHud(view: self.view)
+            LocalProgressHUD.hide(from: self.view)
             self.noDataFoundRefersh()
             self.historyTblView.reloadData()
             self.emptyView.isHidden = false
@@ -102,16 +102,16 @@ class UpcomingHistoryVC: UIViewController {
             "rest_id" : restid
         ]) { _, new in new }
         
-            UtilsClass.showProgressHud(view: self.view)
+            LocalProgressHUD.show(on: self.view)
             WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.restaurantDetail, forModelType: RestDetailsApiResponse.self) { success in
-                UtilsClass.hideProgressHud(view: self.view)
+                LocalProgressHUD.hide(from: self.view)
                 let story = UIStoryboard.init(name: "OrderFlow", bundle: nil)
                 let vc = story.instantiateViewController(withIdentifier: "RestDetailsVC") as! RestDetailsVC
                 vc.restDetailsData = success.data.data.toCustomModel()
                 self.navigationController?.pushViewController(vc, animated: true)
                 
             } ErrorHandler: { error in
-                UtilsClass.hideProgressHud(view: self.view)
+                LocalProgressHUD.hide(from: self.view)
             }
         }
     
@@ -170,5 +170,30 @@ extension UpcomingHistoryVC: SignupSuccessfullyDelegate {
         self.noDataFoundRefersh()
         callService()
 
+    }
+}
+
+private enum LocalProgressHUD {
+    static let tag = 765432
+
+    static func show(on view: UIView) {
+        if view.viewWithTag(tag) != nil { return }
+        let spinner = UIActivityIndicatorView(style: .large)
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        spinner.color = .gray
+        spinner.tag = tag
+        view.addSubview(spinner)
+        NSLayoutConstraint.activate([
+            spinner.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            spinner.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+        spinner.startAnimating()
+    }
+
+    static func hide(from view: UIView) {
+        if let spinner = view.viewWithTag(tag) as? UIActivityIndicatorView {
+            spinner.stopAnimating()
+            spinner.removeFromSuperview()
+        }
     }
 }
