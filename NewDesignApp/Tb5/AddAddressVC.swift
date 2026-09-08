@@ -22,6 +22,7 @@ class AddAddressVC: UIViewController {
     weak var delegate: ReloadNewAddressDelegate?
 
     var selectedAddressType = "Home"
+    var locationAddress: LocationAddress?
     var isUpdateAddress: Bool = false
     var fromCheckoutPage: Bool = false
     var updateUserAdd: UserAdd?
@@ -49,6 +50,8 @@ class AddAddressVC: UIViewController {
             if updateUserAdd?.type == "Other" {
                 addressType.selectedSegmentIndex = 2
             }
+        } else {
+            updateData()
         }
         headerLbl.text = isUpdateAddress ? "Update Address" : "New Address"
         saveBtn.setFontWithString(text: isUpdateAddress ? "UPDATE" : "SAVE", fontSize: 14)
@@ -66,7 +69,14 @@ class AddAddressVC: UIViewController {
         stateTxtFld.addGestureRecognizer(stateTap)
 
 
-
+    }
+    func updateData() {
+        address1TxtFld.text = locationAddress?.streetNumber
+        address2TxtFld.text = locationAddress?.route
+        landmarkTxtFld.text = ""
+        cityTxtFld.text = locationAddress?.city
+        zipcodeTxtFld.text = locationAddress?.zipcode
+        stateTxtFld.text = locationAddress?.state
     }
     @objc func segmentedControlValueChanged(_ sender: UISegmentedControl) {
         //self.delegate?.selectedPaymentType(index: sender.selectedSegmentIndex)

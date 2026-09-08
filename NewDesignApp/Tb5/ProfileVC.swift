@@ -189,7 +189,9 @@ extension ProfileVC: UITableViewDelegate, UITableViewDataSource {
             let sectionItem = items[indexPath.row]
             switch sectionItem{
             case .myaddress:
-                let vc = self.viewController(viewController: AddressVC.self, storyName: StoryName.Profile.rawValue) as! AddressVC
+                let vc = self.viewController(viewController: LocationVC.self, storyName: StoryName.Location.rawValue) as! LocationVC
+                vc.fromProfile = true
+               // let vc = self.viewController(viewController: AddressVC.self, storyName: StoryName.Profile.rawValue) as! AddressVC
                 self.navigationController?.pushViewController(vc, animated: true)
 //            case .payments:
 //                let vc = self.viewController(viewController: PaymentVC.self, storyName: StoryName.Profile.rawValue) as! PaymentVC

@@ -17,15 +17,18 @@ class LocationVC: UIViewController {
     @IBOutlet weak var addressTbl: UITableView!
     @IBOutlet weak var userLocationView: UIView!
     @IBOutlet weak var seperatorimg: UIImageView!
+    @IBOutlet weak var navigationTitle: UILabel!
 
 
+    var fromProfile = false
     var fromSearch = false
     var activeSearch = false
     var recentAddress = [SavedAddressInDB]()
 //let url = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=amoeba&components=country:us&types=establishment&location=37.76999%2C-122.44696&radius=500&key=AIzaSyAcpD8juDqASzLRWCdNP-ns4UzdVph1koU"
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        navigationTitle.text = fromProfile ? "Address" : "Address"
         // Do any additional setup after loading the view.
         let searchicon = UIImage(systemName: "magnifyingglass")
 
@@ -56,16 +59,24 @@ class LocationVC: UIViewController {
         self.navigationController?.pushViewController(popupVC, animated: true)
     }
     @objc func textFieldDidChange(_ textField: UITextField) {
-        if textField.text!.count >= 3 {
-            getAddressFromApi(text: textField.text ?? "")
-        }
-        if textField.text!.isEmpty {
+        let searchText = textField.text ?? ""
+        
+        if searchText.isEmpty {
             activeSearch = false
+            googleAddressResponse = nil // Clear previous search results
             addressTbl.reloadData()
         } else {
             activeSearch = true
-            addressTbl.reloadData()
+            
+            // Only search if we have at least 3 characters
+            if searchText.count >= 3 {
+                getAddressFromApi(text: searchText)
+            } else {
+                // Show empty search results for 1-2 characters
+                addressTbl.reloadData()
+            }
         }
+        
         seperatorimg.isHidden = !activeSearch
     }
     @IBAction func backAction() {
@@ -76,36 +87,58 @@ class LocationVC: UIViewController {
         GoogleAPisService.googleAddressSearch(searchtext: text, forModelType: GoogleAddressResponse.self) { success in
             LocalUtils.hideProgressHud(view: self.view)
             self.googleAddressResponse = success.data
-          //  print(\(res.status))
             self.addressTbl.reloadData()
             
-        } ErrorHandler: { error in
-            if error.contains("The Internet connection appears to be offline")
-            {
-                self.showAlert(title: "Internet", msg: "The Internet connection appears to be offline.")
+            // Show message if no results found
+            if self.activeSearch && (self.googleAddressResponse?.predictions?.isEmpty ?? true) {
+                self.showToast(message: "No addresses found. Try a different search.", font: .systemFont(ofSize: 14.0))
             }
+            
+        } ErrorHandler: { error in
             LocalUtils.hideProgressHud(view: self.view)
+            if error.contains("The Internet connection appears to be offline") {
+                self.showAlert(title: "Internet", msg: "The Internet connection appears to be offline.")
+            } else {
+                self.showAlert(title: "Error", msg: "Unable to search addresses. Please try again.")
+            }
         }
     }
     func getAddressLatlongFromApi(text: String) {
         self.fromGoogle(text: text)
-        /*
-        UtilsClass.getAddressDetails(from: text) { address in
-            guard let address = address else {
-                self.fromGoogle(text: text)
+    }
+    func validateGoogleAddress(text: String, completion: @escaping (Bool) -> Void) {
+        UtilsClass.showProgressHud(view: self.view)
+        GoogleAPisService.googleAddressLatLong(
+            searchtext: text,
+            forModelType: GoogleAddressLatLongResponse.self
+        ) { success in
+            UtilsClass.hideProgressHud(view: self.view)
+            guard let result = success.data.results?.first else {
+                completion(false)
                 return
             }
-            self.addressTbl.reloadData()
-            if self.fromSearch {
-                self.navigationController?.popViewController(animated: true)
-            } else {
-                let tabbar = self.navigationController?.viewControllers[1] as! TabBarVC
-                self.navigationController?.popToViewController(tabbar, animated: true)
+            guard let components = result.address_components else {
+                completion(false)
+                return
             }
-            UtilsClass.saveAddress(address: SavedAddressInDB(address: text, date: Date()))
+            let types = components.flatMap { $0.types ?? [] }
+          //  let hasStreetNumber = types.contains("street_number")
+            let hasRoute = types.contains("route")
+            let hasCity = types.contains("locality") ||
+                          types.contains("administrative_area_level_2")
+            let hasState = types.contains("administrative_area_level_1")
+            let hasZip = types.contains("postal_code")
+            let hasCountry = types.contains("country")
+            let isValid = hasRoute &&
+                          hasCity &&
+                          hasState &&
+                          hasZip &&
+                          hasCountry
+            completion(isValid)
+        } ErrorHandler: { error in
+            UtilsClass.hideProgressHud(view: self.view)
+            completion(false)
         }
-        */
-        
     }
     func fromGoogle(text: String) {
         
@@ -121,14 +154,27 @@ class LocationVC: UIViewController {
                     if self.addressWithLatLong.isEmpty {
                         self.showAlert(title: "Location", msg: "Unable to resolve this address. Please try a different search.")
                     }
+                    self.showToast(message: "Please refine your search", font: .boldSystemFont(ofSize: 14.0))
                     return
                 }
 
                 // Navigate after successful resolution
-                if self.fromSearch {
+                if self.fromProfile {
+                    let vc = self.viewController(viewController: AddAddressVC.self, storyName: StoryName.Profile.rawValue) as! AddAddressVC
+                    vc.isUpdateAddress = false
+                    vc.locationAddress = locationAddress
+                    self.navigationController?.pushViewController(vc, animated: true)
+                }
+                else if self.fromSearch {
                     self.navigationController?.popViewController(animated: true)
                 } else {
-                    let tabbar = self.navigationController?.viewControllers[1] as! TabBarVC
+                    // Safely navigate to TabBarVC
+                    guard let navController = self.navigationController,
+                          navController.viewControllers.count > 1,
+                          let tabbar = navController.viewControllers[1] as? TabBarVC else {
+                        self.navigationController?.popViewController(animated: true)
+                        return
+                    }
                     self.navigationController?.popToViewController(tabbar, animated: true)
                 }
 
@@ -172,10 +218,14 @@ extension LocationVC: UITableViewDelegate, UITableViewDataSource {
             */
         }
         else {
+            // Section 2: Google search results
+            if activeSearch {
                 guard let addressList = googleAddressResponse?.predictions else {
                     return 0
                 }
                 return addressList.count
+            }
+            return 0
         }
     }
     
@@ -189,26 +239,40 @@ extension LocationVC: UITableViewDelegate, UITableViewDataSource {
                         cell.recentTitle(address: "Saved Addresses")
                         return cell
             } else {
-//                let cell = tableView.dequeueReusableCell(withIdentifier: "AddressListTVCell", for: indexPath) as! AddressListTVCell
-//               
-//                let address = APPDELEGATE.userResponse!.customer.address[indexPath.row - 1]
-//                let user = APPDELEGATE.userResponse!.customer
-//                cell.phoneLbl.text = "Phone Number: \(user.phone)"
-//
-//                cell.configureUI(address: address)
-//                cell.delegate = self
-//                cell.editButton.tag = indexPath.row
-//                cell.deleteButton.tag = indexPath.row
-//                cell.deleteButton.isHidden = true
-//          
-//                return cell
-                let cell = tableView.dequeueReusableCell(withIdentifier: "AddressTVCell", for: indexPath) as! AddressTVCell
-                cell.selectionStyle = .none
-                cell.backgroundColor = .white
-                let address = APPDELEGATE.userResponse!.customer.address[indexPath.row - 1]
-                cell.recentAddressUpdateUI(address: address.fullAddress)
-
+                if fromProfile {
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "AddressListTVCell", for: indexPath) as! AddressListTVCell
+                    
+                    guard let userResponse = APPDELEGATE.userResponse,
+                          indexPath.row - 1 < userResponse.customer.address.count else {
                         return cell
+                    }
+                    
+                    let address = userResponse.customer.address[indexPath.row - 1]
+                    let user = userResponse.customer
+                    cell.phoneLbl.text = "Phone Number: \(user.phone)"
+                    
+                    cell.configureUI(address: address)
+                    cell.delegate = self
+                    cell.editButton.tag = indexPath.row
+                    cell.deleteButton.tag = indexPath.row
+                    cell.deleteButton.isHidden = true
+                    
+                    return cell
+                } else {
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "AddressTVCell", for: indexPath) as! AddressTVCell
+                    cell.selectionStyle = .none
+                    cell.backgroundColor = .white
+                    
+                    guard let userResponse = APPDELEGATE.userResponse,
+                          indexPath.row - 1 < userResponse.customer.address.count else {
+                        return cell
+                    }
+                    
+                    let address = userResponse.customer.address[indexPath.row - 1]
+                    cell.recentAddressUpdateUI(address: address.fullAddress)
+                    
+                    return cell
+                }
             }
         }
         else if indexPath.section == 1 {
@@ -237,24 +301,98 @@ extension LocationVC: UITableViewDelegate, UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 0 {
+            // Selecting from saved addresses
             let index = indexPath.row - 1
             if index >= 0 {
-                let address = APPDELEGATE.userResponse!.customer.address[indexPath.row - 1]
-
+                guard let userResponse = APPDELEGATE.userResponse,
+                      index < userResponse.customer.address.count else {
+                    showAlert(title: "Error", msg: "Unable to load address. Please try again.")
+                    return
+                }
+                
+                let address = userResponse.customer.address[index]
                 Cart.shared.userAddress = address
-                getAddressLatlongFromApi(text: address.fullAddress)
+                
+                if fromProfile {
+                    // In profile mode, allow editing saved address
+                    let vc = self.viewController(viewController: AddAddressVC.self, storyName: StoryName.Profile.rawValue) as! AddAddressVC
+                    vc.isUpdateAddress = true
+                    vc.updateUserAdd = address
+                    self.navigationController?.pushViewController(vc, animated: true)
+                } else {
+                    // In search mode, just use the address
+                    getAddressLatlongFromApi(text: address.fullAddress)
+                }
             }
         }
         else if indexPath.section == 1 {
+            // Selecting from recent addresses
             let index = indexPath.row - 1
             if index >= 0 {
-                getAddressLatlongFromApi(text: recentAddress[index].address)
+                let selectedAddress = recentAddress[index].address
+                
+                if fromProfile {
+                    // Validate before proceeding to add address screen
+                    validateAndProceed(addressText: selectedAddress)
+                } else {
+                    getAddressLatlongFromApi(text: selectedAddress)
+                }
             }
         } else {
-                guard let addressList = googleAddressResponse?.predictions else {
-                    return
-                }
-                getAddressLatlongFromApi(text: addressList[indexPath.row].description ?? "")
+            // Selecting from Google search results
+            guard let addressList = googleAddressResponse?.predictions,
+                  let selectedAddressText = addressList[indexPath.row].description else {
+                return
+            }
+            
+            if fromProfile {
+                // Validate the address before allowing it to be added
+                validateAndProceed(addressText: selectedAddressText)
+            } else {
+                // For non-profile flow, proceed with geocoding
+                getAddressLatlongFromApi(text: selectedAddressText)
+            }
+        }
+    }
+    
+    /// Validates an address and proceeds to AddAddressVC if valid
+    private func validateAndProceed(addressText: String) {
+        validateGoogleAddress(text: addressText) { isValid in
+            if isValid {
+                // Address is valid, geocode it and proceed
+                self.geocodeAndNavigateToAddAddress(addressText: addressText)
+            } else {
+                // Address is incomplete or invalid
+                self.showAlert(
+                    title: "Incomplete Address",
+                    msg: "The selected address is missing required information (street, city, state, zip, or country). Please enter a complete address."
+                )
+            }
+        }
+    }
+    
+    /// Geocodes the address and navigates to AddAddressVC
+    private func geocodeAndNavigateToAddAddress(addressText: String) {
+        LocalUtils.showProgressHud(view: self.view)
+        LocalUtils.getAddressDetails(from: addressText) { locationAddress in
+            LocalUtils.hideProgressHud(view: self.view)
+            
+            guard let locationAddress = locationAddress else {
+                self.showAlert(
+                    title: "Location Error",
+                    msg: "Unable to resolve this address. Please try a different search."
+                )
+                return
+            }
+            
+            // Navigate to add address screen
+            let vc = self.viewController(viewController: AddAddressVC.self, storyName: StoryName.Profile.rawValue) as! AddAddressVC
+            vc.isUpdateAddress = false
+            vc.locationAddress = locationAddress
+            self.navigationController?.pushViewController(vc, animated: true)
+            
+            // Save to recent addresses
+            LocalUtils.saveAddress(address: SavedAddressInDB(address: addressText, date: Date()))
         }
     }
     /*
