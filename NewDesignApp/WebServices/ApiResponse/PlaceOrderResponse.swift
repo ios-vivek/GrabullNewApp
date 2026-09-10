@@ -6,6 +6,7 @@
 //
 
 import Foundation
+
 struct PlaceOrderResponse: Codable {
     let code: Int
     let status: String
@@ -18,7 +19,16 @@ struct OrderData: Codable {
     let orderTime: String?
     let orderId: String
     let support: String
+    let payment: String?
+    let orderStatus: String?
+    let payType: String?
     let gateway: GatewayData?
+    let gatewayStripe: GatewayData?
+    let gatewayAuthorize: AuthorizeGatewayData?
+
+    enum CodingKeys: String, CodingKey {
+        case oid, orderTime, orderId, support, payment, orderStatus, payType, gateway, gatewayStripe, gatewayAuthorize
+    }
 }
 
 struct GatewayData: Codable {
@@ -29,6 +39,14 @@ struct GatewayData: Codable {
     let code: String
     let message: String
     let chargeAmount: Float
+}
+
+struct AuthorizeGatewayData: Codable {
+    let chargeAmount: Float
+    let paymentUrl: String
+    let token: String
+    let code: String
+    let message: String
 }
 
 struct StripeConfirmRequest: Codable {
@@ -44,6 +62,7 @@ struct StripeConfirmResponse: Codable {
     let code: Int
     let data: FinalOrderData
 }
+
 struct FinalOrderData: Codable {
     let oid: String
     let orderId: String

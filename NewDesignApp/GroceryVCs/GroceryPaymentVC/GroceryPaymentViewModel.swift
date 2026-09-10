@@ -6,7 +6,7 @@ final class GroceryPaymentViewModel {
     
     // MARK: - State
     var selectedPaymentType: Int = 0
-    var payBy: PayBy = .Stripe
+    var payBy: PayBy = .card
     var isSpecialSelected = false
     
     var userRewardAmount: String = "0.0"
@@ -70,14 +70,14 @@ final class GroceryPaymentViewModel {
     func checkPaymentType(transactionIdentifier: String) {
         switch selectedPaymentType {
         case 1:
-            payBy = .Gift
+            payBy = .gift
             if GroceryCartData.shared.giftNumber.isEmpty {
                 showError?("Please enter gift number")
                 return
             }
             placeOrder(transactionIdentifier: transactionIdentifier)
         default:
-            payBy = .Stripe
+            payBy = .card
             placeOrder(transactionIdentifier: transactionIdentifier)
         }
     }
@@ -155,7 +155,7 @@ let total = GroceryCartData.shared.total + GroceryCartData.shared.tipAmount + Gr
             GroceryCartData.shared.orderTime = orderData.orderTime ?? ""
             self.tempRequest?.oid = orderData.oid ?? ""
             self.tempRequest?.orderId = orderData.orderId
-            if self.payBy == .Stripe, let stripe = orderData.gateway {
+            if self.payBy == .card, let stripe = orderData.gateway {
                 if response.status != "Success"{
                     self.showError?("Something went wrong. Please try again later.")
                 }

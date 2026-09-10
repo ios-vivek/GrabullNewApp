@@ -6,7 +6,8 @@ final class ConfirmOrderViewModel {
     
     // MARK: - State
     var selectedPaymentType: Int = 0
-    var payBy: PayBy = .Stripe
+    var selectedGateway: PaymentGateway = .stripe
+    var payBy: PayBy = .card
     var isSpecialSelected = false
     
     var userRewardAmount: String = "0.0"
@@ -25,6 +26,7 @@ final class ConfirmOrderViewModel {
     var orderPlaced: (() -> Void)?
     // Payment presentation binding: view controller will present PaymentSheet when provided
     var presentPaymentSheet: ((PaymentSheet) -> Void)?
+    var presentAuthorizeURL: ((URL) -> Void)?
     
     // MARK: - API
     func fetchRewards() {
@@ -97,14 +99,14 @@ final class ConfirmOrderViewModel {
                           transactionIdentifier: String) {
         switch selectedPaymentType {
         case 1:
-            payBy = .Gift
+            payBy = .gift
             if Cart.shared.giftNumber.isEmpty {
                 showError?("Please enter gift number")
                 return
             }
             placeOrder(recipientFName: recipientFName, recipientLName: recipientLName, recipientPhone: recipientPhone, transactionIdentifier: transactionIdentifier)
         default:
-            payBy = .Stripe
+            payBy = .card
             placeOrder(recipientFName: recipientFName, recipientLName: recipientLName, recipientPhone: recipientPhone, transactionIdentifier: transactionIdentifier)
         }
     }
@@ -167,7 +169,7 @@ final class ConfirmOrderViewModel {
             transactionIdentifier: transactionIdentifier,
             dbname: Cart.shared.dbname,
             city: address?.city ?? "",
-            payBy: "\(payBy)",
+            payBy: payBy.rawValue,
             orderasGift: orderAsGift,
             scharge: "\(price.serviceCharge)",
             restaurantId: Cart.shared.restDetails.rid,
@@ -198,14 +200,24 @@ final class ConfirmOrderViewModel {
             self.hideLoader?()
             let orderData = response.data
             Cart.shared.orderNumber = orderData.oid ?? ""
-            Cart.shared.orderNumber = orderData.orderTime ?? ""
+            Cart.shared.orderTime = orderData.orderTime ?? ""
             self.tempRequest?.oid = orderData.oid ?? ""
             self.tempRequest?.orderId = orderData.orderId
-            if self.payBy == .Stripe, let stripe = orderData.gateway {
-                if response.status != "Success"{
+
+            let payType = (orderData.payType ?? "").lowercased()
+            let authorizeURL = orderData.gatewayAuthorize?.paymentUrl.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            let isAuthorizePayment = payType == "authorize" || !authorizeURL.isEmpty
+
+            if isAuthorizePayment && !authorizeURL.isEmpty {
+                self.startAuthorizePaymentFlow(urlString: authorizeURL)
+                return
+            }
+
+            if let stripe = orderData.gatewayStripe ?? orderData.gateway {
+                if response.status != "Success" {
                     self.showError?("Something went wrong. Please try again later.")
                 }
-                else if stripe.chargeAmount > 0.0 && response.status == "Success"{
+                else if stripe.chargeAmount > 0.0 && response.status == "Success" {
                     self.tempRequest?.transaction = stripe.paymentIntent
                     self.startPaymentFlow(custId: stripe.customer, epk: stripe.ephemeralKey, piId: stripe.paymentIntent, parameters: params)
                 } else {
@@ -233,6 +245,14 @@ final class ConfirmOrderViewModel {
     
     func setTempdata(temp: CartRequest) {
         self.tempRequest = StripeConfirmRequest(restaurantId: temp.restaurantId, orderId: "", oid: "", transaction: "")
+    }
+
+    func startAuthorizePaymentFlow(urlString: String) {
+        guard let url = URL(string: urlString) else {
+            showError?("Invalid payment link")
+            return
+        }
+        presentAuthorizeURL?(url)
     }
 
     // MARK: - Stripe Payment Helpers

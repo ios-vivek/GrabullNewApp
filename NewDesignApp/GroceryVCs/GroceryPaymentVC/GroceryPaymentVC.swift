@@ -26,7 +26,7 @@ class GroceryPaymentVC: UIViewController {
     private var paymentSheet: PaymentSheet?
     @IBOutlet weak var cartTableView: UITableView!
     private let viewModel = GroceryPaymentViewModel()
-    var payBy = PayBy.Stripe
+    var payBy = PayBy.card
     override func viewDidLoad() {
         super.viewDidLoad()
 //        GroceryCartData.shared.isDonate = false

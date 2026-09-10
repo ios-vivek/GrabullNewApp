@@ -8,12 +8,17 @@
 import UIKit
 import Stripe
 import StripePaymentSheet
+import SafariServices
 
 //import PassKit
-enum PayBy {
-    case Cash
-    case Gift
-    case Stripe
+enum PayBy: String {
+    case cash = "Cash"
+    case gift = "Gift"
+    case card = "card"
+}
+enum PaymentGateway: String {
+    case stripe = "Stripe"
+    case authorizeNet = "AuthorizeNet"
 }
 enum CellTypeSelected: Int {
     case Restname
@@ -29,15 +34,21 @@ enum CellTypeSelected: Int {
     case Totalprice
     case TotalRowsCount
 }
-class ConfirmOrderVC: UIViewController {
+class ConfirmOrderVC: UIViewController, SFSafariViewControllerDelegate {
     private var paymentSheet: PaymentSheet?
     @IBOutlet weak var cartTableView: UITableView!
-//let sectionArr = ["restname","deliveryto", "deliveryat", "SendAsGift", "Special","payment", "Redeem", "tips", "donate", "itemdetails", "totalprice"]
+//let sectionArr = ["restname","deliveryto", "deliveryat", "SendAsGift, "Special","payment, "Redeem", "tips", "donate", "itemdetails", "totalprice"]
     private let viewModel = ConfirmOrderViewModel()
-    var payBy = PayBy.Stripe
+    var payBy = PayBy.card
     var recipientfName: String = ""
     var recipientlName: String = ""
     var recipientPhone: String = ""
+    
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        controller.dismiss(animated: true)
+        // stripeConfirmedApi will handle showing/hiding the loader
+        self.viewModel.stripeConfirmedApi(request: self.viewModel.tempRequest)
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         Cart.shared.isTips = false
@@ -101,7 +112,46 @@ class ConfirmOrderVC: UIViewController {
                 self.viewModel.paymentResultReceived(paymentResult)
             }
         }
+
+        viewModel.presentAuthorizeURL = { [weak self] url in
+            guard let self else { return }
+            let safariVC = SFSafariViewController(url: url)
+            safariVC.delegate = self
+            safariVC.modalPresentationStyle = .fullScreen
+            self.present(safariVC, animated: true)
+        }
        }
+
+    private func showGatewaySelectionAlert() {
+        let alert = UIAlertController(title: "Choose Payment Gateway", message: "Select the gateway for card payment.", preferredStyle: .actionSheet)
+
+        let stripeAction = UIAlertAction(title: "Stripe", style: .default) { [weak self] _ in
+            guard let self else { return }
+            self.viewModel.selectedGateway = .stripe
+            self.viewModel.payBy = .card
+            self.cartTableView.reloadData()
+        }
+
+        let authorizeNetAction = UIAlertAction(title: "Authorize.Net", style: .default) { [weak self] _ in
+            guard let self else { return }
+            self.viewModel.selectedGateway = .authorizeNet
+            self.viewModel.payBy = .card
+            self.cartTableView.reloadData()
+        }
+
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+
+        alert.addAction(stripeAction)
+        alert.addAction(authorizeNetAction)
+        alert.addAction(cancelAction)
+
+        if let popover = alert.popoverPresentationController {
+            popover.sourceView = self.view
+            popover.sourceRect = self.view.bounds
+        }
+
+        self.present(alert, animated: true)
+    }
    
     @IBAction func backAction() {
         self.navigationController?.popViewController(animated: true)
@@ -378,6 +428,14 @@ extension ConfirmOrderVC: PaymentTypeDeledate {
     
     func selectedPaymentType(index: Int) {
         self.viewModel.selectedPaymentType = index
+
+        if index == 0 {
+            showGatewaySelectionAlert()
+            return
+        }
+
+        self.viewModel.selectedGateway = .stripe
+        self.viewModel.payBy = .card
         cartTableView.reloadData()
         /*
         if index == 2 {
@@ -486,7 +544,6 @@ extension ConfirmOrderVC: ReloadNewAddressDelegate {
     func addednewAddress() {
         cartTableView.reloadData()
     }
-    
 }
 extension ConfirmOrderVC: ChangePhoneNumberDelegate {
     func changesNumber(updatedNumber: String) {
