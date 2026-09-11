@@ -25,6 +25,7 @@ final class GroceryPaymentViewModel {
     var presentAuthorizeURL: ((URL) -> Void)?
     // Payment presentation binding: view controller will present PaymentSheet when provided
     var presentPaymentSheet: ((PaymentSheet) -> Void)?
+    var goToHomeAfterPayment: (() -> Void)?
     
     // MARK: - API
     func fetchRewards() {
@@ -112,13 +113,6 @@ let total = GroceryCartData.shared.total + GroceryCartData.shared.tipAmount + Gr
             payBy: "\(payBy)",
             stripeId: "",
             giftnumber: selectedPaymentType == 1 ? GroceryCartData.shared.giftNumber : "",
-            newcard: "New",
-            addcard: "No",
-            cardno: "",
-            cvv: "",
-            expiry: "",
-            cardholder: "",
-            billingzip: "",
             orderasGift: "No",
             recipientname: "",
             recipientphone: "",
@@ -135,7 +129,8 @@ let total = GroceryCartData.shared.total + GroceryCartData.shared.tipAmount + Gr
             rewards: GroceryCartData.shared.isRewardAppied ? "\(GroceryCartData.shared.rewardAmount)" : "",
             total: "\(total.toString())",
             items: buildItemList(),
-            isSubstituteItemApplied: GroceryCartData.shared.isSubstituteItemApplied
+            isSubstituteItemApplied: GroceryCartData.shared.isSubstituteItemApplied,
+            orderSource: GroceryCartData.shared.orderSource
 
         )
         setTempdata(temp: cartRequest)
@@ -168,7 +163,7 @@ let total = GroceryCartData.shared.total + GroceryCartData.shared.tipAmount + Gr
                     self.showError?("Something went wrong. Please try again later.")
                 }
                 else if stripe.chargeAmount > 0.0 && response.status == "Success"{
-                    self.tempRequest?.transaction = stripe.paymentIntent
+                   // self.tempRequest?.transaction = stripe.paymentIntent
                     self.startPaymentFlow(custId: stripe.customer, epk: stripe.ephemeralKey, piId: stripe.paymentIntent, parameters: params)
                 } else {
                     if response.status == "Success" {
@@ -198,7 +193,7 @@ let total = GroceryCartData.shared.total + GroceryCartData.shared.tipAmount + Gr
     }
     
     func setTempdata(temp: GroceryCartRequest) {
-        self.tempRequest = StripeConfirmRequest(restaurantId: temp.restaurantId, orderId: "", oid: "", transaction: "")
+        self.tempRequest = StripeConfirmRequest(restaurantId: temp.restaurantId, orderId: "", oid: "")
     }
 
     func startAuthorizePaymentFlow(urlString: String) {
@@ -248,18 +243,24 @@ let total = GroceryCartData.shared.total + GroceryCartData.shared.tipAmount + Gr
             "restaurant_id" : finalRequest.restaurantId,
             "order_id" : finalRequest.orderId,
             "oid" : finalRequest.oid,
-            "transaction" : finalRequest.transaction,
-            "items" : self.tempParam["items"] ?? []
+           // "transaction" : finalRequest.transaction,
+           // "items" : self.tempParam["items"] ?? []
         ]) { _, new in new }
         self.showLoader?()
         WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.stripeConfirmedOrder, forModelType: StripeConfirmResponse.self) { success in
             self.hideLoader?()
+
+            if success.data.status == "Success" && success.data.code == 200 {
+                GroceryCartData.shared.refreshCartData()
+                self.goToHomeAfterPayment?()
+                return
+            }
+
             GroceryCartData.shared.orderNumber = success.data.data.orderId ?? ""
             GroceryCartData.shared.supportNumber = success.data.data.support ?? ""
             GroceryCartData.shared.orderTime = success.data.data.orderTime ?? ""
-
             self.orderPlaced?()
-            
+
         } ErrorHandler: { error in
             self.hideLoader?()
             self.showError?(error)

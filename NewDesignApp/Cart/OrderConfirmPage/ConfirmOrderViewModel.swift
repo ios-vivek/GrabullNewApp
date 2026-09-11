@@ -145,26 +145,20 @@ final class ConfirmOrderViewModel {
         let cartRequest = CartRequest(
             name: APPDELEGATE.userResponse?.customer.fullName ?? "",
             recipientphone: recipientPhone,
-            cvv: selectedPaymentType == 0 ? Cart.shared.cardCvv : "",
             email: APPDELEGATE.userResponse?.customer.email ?? "",
             orderType: "\(Cart.shared.orderType)".capitalized,
             customerId: APPDELEGATE.userResponse?.customer.customerId ?? "",
             add2: address?.add2 ?? "",
             devicetype: AppConfig.DeviceType,
-            newcard: "New",
             holddate: Cart.shared.orderDate == .ASAP ? "" : "\(holddate) \(holdTime)",
             dcharge: "\(price.deliveryCharge)",
             holdtime: Cart.shared.orderDate == .ASAP ? "No" : "Yes",
             items: buildItemList(),
             apiKey: AppConfig.OldAPI_KEY,
             apiId: AppConfig.API_ID,
-            addcard: "No",
-            cardholder: selectedPaymentType == 0 ? Cart.shared.cardHolder : "",
             offeramount: price.offeramount,
-            expiry: selectedPaymentType == 0 ? Cart.shared.cardExpiry : "",
             state: address?.state ?? "",
             recipientname: "\(recipientFName) \(recipientLName)",
-            cardno: selectedPaymentType == 0 ? Cart.shared.cardNumber : "",
             total: "\(price.total)",
             tips: Cart.shared.isTips ? "\(Cart.shared.tipsAmount)" : "0.0",
             transactionIdentifier: transactionIdentifier,
@@ -176,7 +170,6 @@ final class ConfirmOrderViewModel {
             restaurantId: Cart.shared.restDetails.rid,
             donate: "\(donateAmount)",
             orderat: address?.type ?? "",
-            billingzip: selectedPaymentType == 0 ? Cart.shared.cardZip : "",
             did: Cart.shared.orderNumber,
             rewards: Cart.shared.isReward ? "\(Cart.shared.rewardAmount)" : "0.0",
             specialinstruction: Cart.shared.specialInstructionText,
@@ -218,7 +211,7 @@ final class ConfirmOrderViewModel {
                     self.showError?("Something went wrong. Please try again later.")
                 }
                 else if stripe.chargeAmount > 0.0 && response.status == "Success" {
-                    self.tempRequest?.transaction = stripe.paymentIntent
+                    //self.tempRequest?.transaction = stripe.paymentIntent
                     self.startPaymentFlow(custId: stripe.customer, epk: stripe.ephemeralKey, piId: stripe.paymentIntent, parameters: params)
                 } else {
                     if response.status == "Success" {
@@ -244,7 +237,7 @@ final class ConfirmOrderViewModel {
     }
     
     func setTempdata(temp: CartRequest) {
-        self.tempRequest = StripeConfirmRequest(restaurantId: temp.restaurantId, orderId: "", oid: "", transaction: "")
+        self.tempRequest = StripeConfirmRequest(restaurantId: temp.restaurantId, orderId: "", oid: "")
     }
 
     func startAuthorizePaymentFlow(urlString: String) {
@@ -290,7 +283,7 @@ final class ConfirmOrderViewModel {
             "restaurant_id" : finalRequest.restaurantId,
             "order_id" : finalRequest.orderId,
             "oid" : finalRequest.oid,
-            "transaction" : finalRequest.transaction
+           // "transaction" : finalRequest.transaction
            // "items" : self.tempParam["items"] ?? []
         ]) { _, new in new }
         self.showLoader?()

@@ -61,11 +61,6 @@ class Cart {
     var userAddress: UserAdd!
     var alternateNumber = ""
     var giftNumber = ""
-    var cardNumber = ""
-    var cardCvv = ""
-    var cardExpiry = ""
-    var cardHolder = ""
-    var cardZip = ""
     var orderNumber = ""
     var supportNumber = ""
     var orderTime = ""
@@ -105,11 +100,6 @@ class Cart {
         userAddress = nil
         alternateNumber = ""
         giftNumber = ""
-        cardNumber = ""
-        cardCvv = ""
-        cardExpiry = ""
-        cardHolder = ""
-        cardZip = ""
         orderNumber = ""
         supportNumber = ""
         orderTime = ""

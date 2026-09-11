@@ -56,7 +56,7 @@ struct StripeConfirmRequest: Codable {
     let restaurantId: String
     var orderId: String
     var oid: String
-    var transaction: String
+   // var transaction: String
 }
 
 struct StripeConfirmResponse: Codable {

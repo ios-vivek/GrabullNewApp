@@ -98,7 +98,7 @@ class GroceryPriceDetailsTVCell: UITableViewCell {
             }
             tipsLbl.isHidden = GroceryCartData.shared.tipAmount > 0.0 ? false : true
             tipsLbl.text = "🌟 \(UtilsClass.getCurrencySymbol())\(GroceryCartData.shared.tipAmount.toString()) added tips"
-            total = total + GroceryCartData.shared.tipAmount
+            total = total + GroceryCartData.shared.tipAmount.rounded()
             totalValueLbl.text = "\(UtilsClass.getCurrencySymbol())\(total.toString())"
            // let str = isPlaceOrder ? "Place Order" : "Checkout"
             checkoutButton.setFontWithString(text: "Place Order: \(UtilsClass.getCurrencySymbol())\(total.toString())", fontSize: 16)

@@ -23,7 +23,7 @@ enum GroceryCellTypes: Int {
     case Totalprice
     case TotalRowsCount
 }
-class GroceryPaymentVC: UIViewController, SFSafariViewControllerDelegate {
+class GroceryPaymentVC: UIViewController {
     private var paymentSheet: PaymentSheet?
     @IBOutlet weak var cartTableView: UITableView!
     private let viewModel = GroceryPaymentViewModel()
@@ -97,6 +97,17 @@ class GroceryPaymentVC: UIViewController, SFSafariViewControllerDelegate {
                            storyName: StoryName.Grocery.rawValue
                        ) as! GroceryFinalOrderPageVC
                self?.navigationController?.pushViewController(vc, animated: true)
+           }
+
+           viewModel.goToHomeAfterPayment = { [weak self] in
+               guard let self else { return }
+               GroceryCartData.shared.refreshCartData()
+               let tabbar = self.navigationController?.viewControllers[1] as? TabBarVC
+               if let tabbar {
+                   self.navigationController?.popToViewController(tabbar, animated: true)
+               } else {
+                   self.navigationController?.popToRootViewController(animated: true)
+               }
            }
         // PaymentSheet presentation: view model will provide a configured PaymentSheet to present
         viewModel.presentPaymentSheet = { [weak self] paymentSheet in
@@ -281,7 +292,6 @@ extension GroceryPaymentVC: UITableViewDelegate, UITableViewDataSource{
                 else if self.viewModel.selectedPaymentType == 0 {
                     let cell = tableView.dequeueReusableCell(withIdentifier: "CardNumberTVCell", for: indexPath) as! CardNumberTVCell
                     cell.selectionStyle = .none
-                    cell.updateCardUI()
                     return cell
                 } else {
                     let cell = tableView.dequeueReusableCell(withIdentifier: "GroceryGiftNumberTVCell", for: indexPath) as! GroceryGiftNumberTVCell
@@ -483,5 +493,14 @@ extension GroceryPaymentVC: GrocerySubstituteItemDelegate {
 extension GroceryPaymentVC: SpecialInstructionDelegate {
     func typedInstruction(msgTyped: String) {
         GroceryCartData.shared.specialInstructionText = msgTyped
+    }
+}
+
+extension GroceryPaymentVC: SFSafariViewControllerDelegate {
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        controller.dismiss(animated: true)
+        // stripeConfirmedApi will handle showing/hiding the loader
+      //  self.viewModel.tempRequest?.transaction = "Authorize"
+        self.viewModel.stripeConfirmedApi(request: self.viewModel.tempRequest)
     }
 }

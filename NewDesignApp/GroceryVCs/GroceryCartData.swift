@@ -52,6 +52,7 @@ class GroceryCartData {
     var orderTime = ""
     var isRewardAppied: Bool = false
     var isSubstituteItemApplied: Bool = false
+    var orderSource = "Grocery"
     private init() {}
     
     // MARK: - Cart Management Methods

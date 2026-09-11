@@ -405,9 +405,11 @@ extension DashBoardVC: DashBoardSectionDelegate {
             
             let story = UIStoryboard.init(name: "FlowerGift", bundle: nil)
             let vc = story.instantiateViewController(withIdentifier: "FlowerGiftListVC") as! FlowerGiftListVC
+            GroceryCartData.shared.orderSource = "Flowers"
             self.navigationController?.pushViewController(vc, animated: true)
         }
         if index == 3 {
+            GroceryCartData.shared.orderSource = "Grocery"
             let story = UIStoryboard.init(name: "Grocery", bundle: nil)
             let vc = story.instantiateViewController(withIdentifier: "GroceryVC") as! GroceryVC
             self.navigationController?.pushViewController(vc, animated: true)

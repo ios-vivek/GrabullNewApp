@@ -47,7 +47,7 @@ class ConfirmOrderVC: UIViewController, SFSafariViewControllerDelegate {
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         controller.dismiss(animated: true)
         // stripeConfirmedApi will handle showing/hiding the loader
-        self.viewModel.tempRequest?.transaction = "Authorize"
+       // self.viewModel.tempRequest?.transaction = "Authorize"
         self.viewModel.stripeConfirmedApi(request: self.viewModel.tempRequest)
     }
     override func viewDidLoad() {
@@ -59,11 +59,6 @@ class ConfirmOrderVC: UIViewController, SFSafariViewControllerDelegate {
         Cart.shared.alternateNumber = ""
         Cart.shared.isReward =  false
         Cart.shared.rewardAmount =  0.0
-        Cart.shared.cardNumber = ""
-        Cart.shared.cardCvv = ""
-        Cart.shared.cardExpiry = ""
-        Cart.shared.cardHolder = ""
-        Cart.shared.cardZip = ""
         // Do any additional setup after loading the view.
         let details = Cart.shared.getAllPriceDeatils()
         let tipsAmount = (details.subTotal * 10) / 100
@@ -318,7 +313,6 @@ extension ConfirmOrderVC: UITableViewDelegate, UITableViewDataSource{
                 else if self.viewModel.selectedPaymentType == 0 {
                     let cell = tableView.dequeueReusableCell(withIdentifier: "CardNumberTVCell", for: indexPath) as! CardNumberTVCell
                     cell.selectionStyle = .none
-                    cell.updateCardUI()
                     return cell
                 } else {
                     let cell = tableView.dequeueReusableCell(withIdentifier: "GiftNumberTVCell", for: indexPath) as! GiftNumberTVCell

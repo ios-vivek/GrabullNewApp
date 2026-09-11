@@ -26,13 +26,6 @@ struct GroceryCartRequest: Codable {
     let payBy: String
     let stripeId: String
     let giftnumber: String
-    let newcard: String
-    let addcard: String
-    let cardno: String
-    let cvv: String
-    let expiry: String
-    let cardholder: String
-    let billingzip: String
     let orderasGift: String
     let recipientname: String
     let recipientphone: String
@@ -51,6 +44,7 @@ struct GroceryCartRequest: Codable {
     let total: String
     let items: [CartItems]
     let isSubstituteItemApplied: Bool
+    let orderSource: String
 
 
     enum CodingKeys: String, CodingKey {
@@ -62,7 +56,7 @@ struct GroceryCartRequest: Codable {
         case fname, lname, phone, email, add1, add2, city, state, zip, orderat
         case payBy = "pay_by"
         case stripeId = "stripeId"
-        case giftnumber, newcard, addcard, cardno, cvv, expiry, cardholder, billingzip
+        case giftnumber
         case orderasGift = "orderas_gift"
         case recipientname, recipientphone
         case transactionIdentifier = "transaction_identifier"
@@ -70,6 +64,7 @@ struct GroceryCartRequest: Codable {
         case orderType = "order_type"
         case offerdetails, offeramount, dcharge, scharge, tips, donate, rewards, total, items
         case isSubstituteItemApplied = "is_substitute_item_applied"
+        case orderSource = "orderSource"
     }
 }
 
