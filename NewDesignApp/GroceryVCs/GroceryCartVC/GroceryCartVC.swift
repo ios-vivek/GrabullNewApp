@@ -226,6 +226,8 @@ class GroceryCartVC: UIViewController {
     }
     
     func checkDeliveryAvailability(restID: String, menuType: String, address: String) {
+       // contionueAction()
+       // return
         var parameters = CommonAPIParams.groceryBase()
         parameters.merge([
             "rest_id" : restID,

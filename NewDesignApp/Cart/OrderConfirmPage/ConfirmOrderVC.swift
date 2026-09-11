@@ -47,6 +47,7 @@ class ConfirmOrderVC: UIViewController, SFSafariViewControllerDelegate {
     func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
         controller.dismiss(animated: true)
         // stripeConfirmedApi will handle showing/hiding the loader
+        self.viewModel.tempRequest?.transaction = "Authorize"
         self.viewModel.stripeConfirmedApi(request: self.viewModel.tempRequest)
     }
     override func viewDidLoad() {
@@ -105,6 +106,17 @@ class ConfirmOrderVC: UIViewController, SFSafariViewControllerDelegate {
                ) as! FinalOrderPageVC
                self?.navigationController?.pushViewController(vc, animated: true)
            }
+
+           viewModel.goToHomeAfterPayment = { [weak self] in
+               guard let self else { return }
+               Cart.shared.refreshCartData()
+               let tabbar = self.navigationController?.viewControllers[1] as? TabBarVC
+               if let tabbar {
+                   self.navigationController?.popToViewController(tabbar, animated: true)
+               } else {
+                   self.navigationController?.popToRootViewController(animated: true)
+               }
+           }
         // PaymentSheet presentation: view model will provide a configured PaymentSheet to present
         viewModel.presentPaymentSheet = { [weak self] paymentSheet in
             guard let self = self else { return }
@@ -122,37 +134,6 @@ class ConfirmOrderVC: UIViewController, SFSafariViewControllerDelegate {
         }
        }
 
-    private func showGatewaySelectionAlert() {
-        let alert = UIAlertController(title: "Choose Payment Gateway", message: "Select the gateway for card payment.", preferredStyle: .actionSheet)
-
-        let stripeAction = UIAlertAction(title: "Stripe", style: .default) { [weak self] _ in
-            guard let self else { return }
-            self.viewModel.selectedGateway = .stripe
-            self.viewModel.payBy = .card
-            self.cartTableView.reloadData()
-        }
-
-        let authorizeNetAction = UIAlertAction(title: "Authorize.Net", style: .default) { [weak self] _ in
-            guard let self else { return }
-            self.viewModel.selectedGateway = .authorizeNet
-            self.viewModel.payBy = .card
-            self.cartTableView.reloadData()
-        }
-
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
-
-        alert.addAction(stripeAction)
-        alert.addAction(authorizeNetAction)
-        alert.addAction(cancelAction)
-
-        if let popover = alert.popoverPresentationController {
-            popover.sourceView = self.view
-            popover.sourceRect = self.view.bounds
-        }
-
-        self.present(alert, animated: true)
-    }
-   
     @IBAction func backAction() {
         self.navigationController?.popViewController(animated: true)
     }
@@ -430,7 +411,8 @@ extension ConfirmOrderVC: PaymentTypeDeledate {
         self.viewModel.selectedPaymentType = index
 
         if index == 0 {
-            showGatewaySelectionAlert()
+            self.viewModel.payBy = .card
+            self.cartTableView.reloadData()
             return
         }
 

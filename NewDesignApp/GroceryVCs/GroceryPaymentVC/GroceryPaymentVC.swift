@@ -8,6 +8,7 @@
 import UIKit
 import Stripe
 import StripePaymentSheet
+import SafariServices
 enum GroceryCellTypes: Int {
     case Restname
     case SubstituteItem
@@ -22,7 +23,7 @@ enum GroceryCellTypes: Int {
     case Totalprice
     case TotalRowsCount
 }
-class GroceryPaymentVC: UIViewController {
+class GroceryPaymentVC: UIViewController, SFSafariViewControllerDelegate {
     private var paymentSheet: PaymentSheet?
     @IBOutlet weak var cartTableView: UITableView!
     private let viewModel = GroceryPaymentViewModel()
@@ -103,6 +104,14 @@ class GroceryPaymentVC: UIViewController {
             paymentSheet.present(from: self) { paymentResult in
                 self.viewModel.paymentResultReceived(paymentResult)
             }
+        }
+
+        viewModel.presentAuthorizeURL = { [weak self] url in
+            guard let self else { return }
+            let safariVC = SFSafariViewController(url: url)
+            safariVC.delegate = self
+            safariVC.modalPresentationStyle = .fullScreen
+            self.present(safariVC, animated: true)
         }
        }
    

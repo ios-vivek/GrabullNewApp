@@ -22,6 +22,7 @@ final class GroceryPaymentViewModel {
     var hideLoader: (() -> Void)?
     var showError: ((String) -> Void)?
     var orderPlaced: (() -> Void)?
+    var presentAuthorizeURL: ((URL) -> Void)?
     // Payment presentation binding: view controller will present PaymentSheet when provided
     var presentPaymentSheet: ((PaymentSheet) -> Void)?
     
@@ -155,6 +156,13 @@ let total = GroceryCartData.shared.total + GroceryCartData.shared.tipAmount + Gr
             GroceryCartData.shared.orderTime = orderData.orderTime ?? ""
             self.tempRequest?.oid = orderData.oid ?? ""
             self.tempRequest?.orderId = orderData.orderId
+
+            let orderURL = (orderData.orderUrl ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            if !orderURL.isEmpty {
+                self.startAuthorizePaymentFlow(urlString: orderURL)
+                return
+            }
+
             if self.payBy == .card, let stripe = orderData.gateway {
                 if response.status != "Success"{
                     self.showError?("Something went wrong. Please try again later.")
@@ -191,6 +199,14 @@ let total = GroceryCartData.shared.total + GroceryCartData.shared.tipAmount + Gr
     
     func setTempdata(temp: GroceryCartRequest) {
         self.tempRequest = StripeConfirmRequest(restaurantId: temp.restaurantId, orderId: "", oid: "", transaction: "")
+    }
+
+    func startAuthorizePaymentFlow(urlString: String) {
+        guard let url = URL(string: urlString) else {
+            showError?("Invalid payment link")
+            return
+        }
+        presentAuthorizeURL?(url)
     }
 
     // MARK: - Stripe Payment Helpers
@@ -238,8 +254,8 @@ let total = GroceryCartData.shared.total + GroceryCartData.shared.tipAmount + Gr
         self.showLoader?()
         WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.stripeConfirmedOrder, forModelType: StripeConfirmResponse.self) { success in
             self.hideLoader?()
-            GroceryCartData.shared.orderNumber = success.data.data.orderId
-            GroceryCartData.shared.supportNumber = success.data.data.support
+            GroceryCartData.shared.orderNumber = success.data.data.orderId ?? ""
+            GroceryCartData.shared.supportNumber = success.data.data.support ?? ""
             GroceryCartData.shared.orderTime = success.data.data.orderTime ?? ""
 
             self.orderPlaced?()

@@ -24,6 +24,7 @@ final class ConfirmOrderViewModel {
     var hideLoader: (() -> Void)?
     var showError: ((String) -> Void)?
     var orderPlaced: (() -> Void)?
+    var goToHomeAfterPayment: (() -> Void)?
     // Payment presentation binding: view controller will present PaymentSheet when provided
     var presentPaymentSheet: ((PaymentSheet) -> Void)?
     var presentAuthorizeURL: ((URL) -> Void)?
@@ -204,15 +205,14 @@ final class ConfirmOrderViewModel {
             self.tempRequest?.oid = orderData.oid ?? ""
             self.tempRequest?.orderId = orderData.orderId
 
-            let payType = (orderData.payType ?? "").lowercased()
-            let authorizeURL = orderData.gatewayAuthorize?.paymentUrl.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
-            let isAuthorizePayment = payType == "authorize" || !authorizeURL.isEmpty
-
-            if isAuthorizePayment && !authorizeURL.isEmpty {
-                self.startAuthorizePaymentFlow(urlString: authorizeURL)
+            // New API contract: always open the returned orderUrl in browser if present.
+            let orderURL = (orderData.orderUrl ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            if !orderURL.isEmpty {
+                self.startAuthorizePaymentFlow(urlString: orderURL)
                 return
             }
 
+            // Legacy gateway logic kept only as fallback if orderUrl is not returned.
             if let stripe = orderData.gatewayStripe ?? orderData.gateway {
                 if response.status != "Success" {
                     self.showError?("Something went wrong. Please try again later.")
@@ -296,8 +296,15 @@ final class ConfirmOrderViewModel {
         self.showLoader?()
         WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.stripeConfirmedOrder, forModelType: StripeConfirmResponse.self) { success in
             self.hideLoader?()
-            Cart.shared.orderNumber = success.data.data.orderId
-            Cart.shared.supportNumber = success.data.data.support
+
+            if success.data.status == "Success" && success.data.code == 200 {
+                Cart.shared.refreshCartData()
+                self.goToHomeAfterPayment?()
+                return
+            }
+
+            Cart.shared.orderNumber = success.data.data.orderId ?? ""
+            Cart.shared.supportNumber = success.data.data.support ?? ""
             Cart.shared.orderTime = success.data.data.orderTime ?? ""
             self.orderPlaced?()
             
