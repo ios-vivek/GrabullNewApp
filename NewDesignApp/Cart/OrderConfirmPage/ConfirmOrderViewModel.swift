@@ -192,11 +192,23 @@ final class ConfirmOrderViewModel {
             // MARK: - API Call
         WebServices.placeOrderService(parameters: params, serviceType: "add-order/") { response in
             self.hideLoader?()
-            let orderData = response.data
+            
+            // Check for error response first
+            if response.status != "Success" {
+                let errorMsg = response.error ?? "Something went wrong. Please try again later."
+                self.showError?(errorMsg)
+                return
+            }
+            
+            guard let orderData = response.data else {
+                self.showError?("Invalid server response")
+                return
+            }
+            
             Cart.shared.orderNumber = orderData.oid ?? ""
             Cart.shared.orderTime = orderData.orderTime ?? ""
             self.tempRequest?.oid = orderData.oid ?? ""
-            self.tempRequest?.orderId = orderData.orderId
+            self.tempRequest?.orderId = orderData.orderId ?? ""
 
             // New API contract: always open the returned orderUrl in browser if present.
             let orderURL = (orderData.orderUrl ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
@@ -207,27 +219,16 @@ final class ConfirmOrderViewModel {
 
             // Legacy gateway logic kept only as fallback if orderUrl is not returned.
             if let stripe = orderData.gatewayStripe ?? orderData.gateway {
-                if response.status != "Success" {
-                    self.showError?("Something went wrong. Please try again later.")
-                }
-                else if stripe.chargeAmount > 0.0 && response.status == "Success" {
+                if stripe.chargeAmount > 0.0 {
                     //self.tempRequest?.transaction = stripe.paymentIntent
                     self.startPaymentFlow(custId: stripe.customer, epk: stripe.ephemeralKey, piId: stripe.paymentIntent, parameters: params)
                 } else {
-                    if response.status == "Success" {
-                        Cart.shared.supportNumber = orderData.support
-                        self.orderPlaced?()
-                    } else {
-                        self.showError?("Something went wrong. Please try again later.")
-                    }
+                    Cart.shared.supportNumber = orderData.support ?? ""
+                    self.orderPlaced?()
                 }
             } else {
-                if response.status == "Success" {
-                    Cart.shared.supportNumber = orderData.support
-                    self.orderPlaced?()
-                } else {
-                    self.showError?("Something went wrong. Please try again later.")
-                }
+                Cart.shared.supportNumber = orderData.support ?? ""
+                self.orderPlaced?()
             }
         } errorHandler: { errorMessage in
             self.hideLoader?()

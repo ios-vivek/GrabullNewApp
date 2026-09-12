@@ -146,11 +146,23 @@ let total = GroceryCartData.shared.total + GroceryCartData.shared.tipAmount + Gr
             // MARK: - API Call
         WebServices.placeOrderService(parameters: params, serviceType: "add-order-grocery/") { response in
             self.hideLoader?()
-            let orderData = response.data
+            
+            // Check for error response first
+            if response.status != "Success" {
+                let errorMsg = response.error ?? "Something went wrong. Please try again later."
+                self.showError?(errorMsg)
+                return
+            }
+            
+            guard let orderData = response.data else {
+                self.showError?("Invalid server response")
+                return
+            }
+            
             GroceryCartData.shared.orderNumber = orderData.oid ?? ""
             GroceryCartData.shared.orderTime = orderData.orderTime ?? ""
             self.tempRequest?.oid = orderData.oid ?? ""
-            self.tempRequest?.orderId = orderData.orderId
+            self.tempRequest?.orderId = orderData.orderId ?? ""
 
             let orderURL = (orderData.orderUrl ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
             if !orderURL.isEmpty {
@@ -159,31 +171,18 @@ let total = GroceryCartData.shared.total + GroceryCartData.shared.tipAmount + Gr
             }
 
             if self.payBy == .card, let stripe = orderData.gateway {
-                if response.status != "Success"{
-                    self.showError?("Something went wrong. Please try again later.")
-                }
-                else if stripe.chargeAmount > 0.0 && response.status == "Success"{
+                if stripe.chargeAmount > 0.0 && response.status == "Success"{
                    // self.tempRequest?.transaction = stripe.paymentIntent
                     self.startPaymentFlow(custId: stripe.customer, epk: stripe.ephemeralKey, piId: stripe.paymentIntent, parameters: params)
                 } else {
-                    if response.status == "Success" {
-                        GroceryCartData.shared.supportNumber = orderData.support
-                        GroceryCartData.shared.orderTime = orderData.orderTime ?? ""
-
-                        self.orderPlaced?()
-                    } else {
-                        self.showError?("Something went wrong. Please try again later.")
-                    }
+                    GroceryCartData.shared.supportNumber = orderData.support ?? ""
+                    GroceryCartData.shared.orderTime = orderData.orderTime ?? ""
+                    self.orderPlaced?()
                 }
             } else {
-                if response.status == "Success" {
-                    GroceryCartData.shared.supportNumber = orderData.support
-                    GroceryCartData.shared.orderTime = orderData.orderTime ?? ""
-
-                    self.orderPlaced?()
-                } else {
-                    self.showError?("Something went wrong. Please try again later.")
-                }
+                GroceryCartData.shared.supportNumber = orderData.support ?? ""
+                GroceryCartData.shared.orderTime = orderData.orderTime ?? ""
+                self.orderPlaced?()
             }
         } errorHandler: { errorMessage in
             self.hideLoader?()

@@ -11,14 +11,14 @@ struct PlaceOrderResponse: Codable {
     let code: Int
     let status: String
     let error: String?
-    let data: OrderData
+    let data: OrderData?
 }
 
 struct OrderData: Codable {
     let oid: String?
     let orderTime: String?
-    let orderId: String
-    let support: String
+    let orderId: String?
+    let support: String?
     let payment: String?
     let orderStatus: String?
     let payType: String?
