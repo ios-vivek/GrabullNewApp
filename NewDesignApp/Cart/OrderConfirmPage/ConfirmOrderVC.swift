@@ -9,6 +9,7 @@ import UIKit
 import Stripe
 import StripePaymentSheet
 import SafariServices
+import WebKit
 
 //import PassKit
 enum PayBy: String {
@@ -48,7 +49,7 @@ class ConfirmOrderVC: UIViewController, SFSafariViewControllerDelegate {
         controller.dismiss(animated: true)
         // stripeConfirmedApi will handle showing/hiding the loader
        // self.viewModel.tempRequest?.transaction = "Authorize"
-        self.viewModel.stripeConfirmedApi(request: self.viewModel.tempRequest)
+        self.viewModel.orderConfirmedApi(request: self.viewModel.tempRequest)
     }
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -127,12 +128,20 @@ class ConfirmOrderVC: UIViewController, SFSafariViewControllerDelegate {
             safariVC.modalPresentationStyle = .fullScreen
             self.present(safariVC, animated: true)
         }
+        
+        viewModel.presentFeedbackWidget = { [weak self] htmlString in
+            guard let self else { return }
+            let feedbackViewController = FeedBackViewController(htmlString: htmlString)
+            let navController = UINavigationController(rootViewController: feedbackViewController)
+            navController.modalPresentationStyle = .fullScreen
+            self.present(navController, animated: true)
+        }
        }
 
     @IBAction func backAction() {
         self.navigationController?.popViewController(animated: true)
     }
-   
+
     func setAmountValue(sizes: Sizes, toppings: [SelectedTopping])-> Float {
         var price: Float = 0.0
         price = Float(sizes.price)! * Float(sizes.itemQty)

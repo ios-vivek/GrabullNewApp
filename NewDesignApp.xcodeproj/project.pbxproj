@@ -1778,7 +1778,7 @@
 				CODE_SIGN_ENTITLEMENTS = NewDesignApp/NewDesignApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.43;
+				CURRENT_PROJECT_VERSION = 1.44;
 				DEVELOPMENT_TEAM = 6J7UZY2EAL;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NewDesignApp/Info.plist;
@@ -1819,7 +1819,7 @@
 				CODE_SIGN_ENTITLEMENTS = NewDesignApp/NewDesignApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.43;
+				CURRENT_PROJECT_VERSION = 1.44;
 				DEVELOPMENT_TEAM = 6J7UZY2EAL;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NewDesignApp/Info.plist;

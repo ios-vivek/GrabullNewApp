@@ -25,9 +25,10 @@ final class ConfirmOrderViewModel {
     var showError: ((String) -> Void)?
     var orderPlaced: (() -> Void)?
     var goToHomeAfterPayment: (() -> Void)?
-    // Payment presentation binding: view controller will present PaymentSheet when provided
+    // Payment presentation binding: view model will provide a configured PaymentSheet to present
     var presentPaymentSheet: ((PaymentSheet) -> Void)?
     var presentAuthorizeURL: ((URL) -> Void)?
+    var presentFeedbackWidget: ((String) -> Void)?
     
     // MARK: - API
     func fetchRewards() {
@@ -265,7 +266,7 @@ final class ConfirmOrderViewModel {
         switch paymentResult {
         case .completed:
             print("Your order is confirmed")
-            self.stripeConfirmedApi(request: self.tempRequest)
+            self.orderConfirmedApi(request: self.tempRequest)
         case .canceled:
             print("Payment canceled")
            // showError?("Payment was canceled")
@@ -277,7 +278,56 @@ final class ConfirmOrderViewModel {
         }
     }
     
-    func stripeConfirmedApi(request: StripeConfirmRequest?) {
+    func buildFeedbackWidgetHTML(orderId: String) -> String {
+        let fname = APPDELEGATE.userResponse?.customer.firstName ?? ""
+        let lname = APPDELEGATE.userResponse?.customer.lastName ?? ""
+        let email = APPDELEGATE.userResponse?.customer.email ?? ""
+        let phone = APPDELEGATE.userResponse?.customer.phone ?? ""
+        let today = Date().formatted(date: .abbreviated, time: .omitted)
+        
+        return """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta http-equiv="Content-Security-Policy" content="default-src *; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'">
+            <title>Feedback</title>
+            <style>
+                body { margin: 0; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+                #loading { text-align: center; padding: 40px; color: #666; }
+            </style>
+        </head>
+        <body>
+            <div id="loading">Loading feedback form...</div>
+            <div id="InstantFeedbackWidget"></div>
+            <script src="https://static.sitejabber.com/js/widget.min.js"></script>
+            <script>
+                window.addEventListener('load', function() {
+                    if (typeof STJR !== 'undefined' && STJR.InstantFeedbackWidget) {
+                        new STJR.InstantFeedbackWidget({
+                            id: 'InstantFeedbackWidget',
+                            url: 'grabull.com',
+                            language: 'en',
+                            user: {
+                                first_name: '\(fname)',
+                                last_name: '\(lname)',
+                                email: '\(email)',
+                                phone: '\(phone)'
+                            },
+                            order_date: '\(today)',
+                            order_id: '\(orderId)'
+                        }).render();
+                        document.getElementById('loading').style.display = 'none';
+                    }
+                });
+            </script>
+        </body>
+        </html>
+        """
+    }
+    
+    func orderConfirmedApi(request: StripeConfirmRequest?) {
         guard let finalRequest = request else { return }
         var parameters = CommonAPIParams.base()
         parameters.merge([
@@ -292,8 +342,13 @@ final class ConfirmOrderViewModel {
             self.hideLoader?()
 
             if success.data.status == "Success" && success.data.code == 200 {
-                Cart.shared.refreshCartData()
-                self.goToHomeAfterPayment?()
+//                let feedbackHTML = self.buildFeedbackWidgetHTML(orderId: finalRequest.oid)
+//                self.presentFeedbackWidget?(feedbackHTML)
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    Cart.shared.refreshCartData()
+                    self.goToHomeAfterPayment?()
+                }
                 return
             }
 
