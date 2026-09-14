@@ -106,40 +106,6 @@ class LocationVC: UIViewController {
     func getAddressLatlongFromApi(text: String) {
         self.fromGoogle(text: text)
     }
-    func validateGoogleAddress(text: String, completion: @escaping (Bool) -> Void) {
-        UtilsClass.showProgressHud(view: self.view)
-        GoogleAPisService.googleAddressLatLong(
-            searchtext: text,
-            forModelType: GoogleAddressLatLongResponse.self
-        ) { success in
-            UtilsClass.hideProgressHud(view: self.view)
-            guard let result = success.data.results?.first else {
-                completion(false)
-                return
-            }
-            guard let components = result.address_components else {
-                completion(false)
-                return
-            }
-            let types = components.flatMap { $0.types ?? [] }
-          //  let hasStreetNumber = types.contains("street_number")
-            let hasRoute = types.contains("route")
-            let hasCity = types.contains("locality") ||
-                          types.contains("administrative_area_level_2")
-            let hasState = types.contains("administrative_area_level_1")
-            let hasZip = types.contains("postal_code")
-            let hasCountry = types.contains("country")
-            let isValid = hasRoute &&
-                          hasCity &&
-                          hasState &&
-                          hasZip &&
-                          hasCountry
-            completion(isValid)
-        } ErrorHandler: { error in
-            UtilsClass.hideProgressHud(view: self.view)
-            completion(false)
-        }
-    }
     func fromGoogle(text: String) {
         
         LocalUtils.showProgressHud(view: self.view)
@@ -233,13 +199,8 @@ extension LocationVC: UITableViewDelegate, UITableViewDataSource {
             return count > 0 ? count + 1 : 0
         }
         if section == 1 {
+            // Recent-address history is intentionally hidden for now.
             return 0
-            /*
-            if activeSearch {
-                return 0
-            }
-            return recentAddress.count > 5 ? 6 : recentAddress.count + 1
-            */
         }
         else {
             // Section 2: Google search results
@@ -251,6 +212,13 @@ extension LocationVC: UITableViewDelegate, UITableViewDataSource {
             }
             return 0
         }
+    }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let isSavedAddressRow = indexPath.section == 0 && !fromProfile && indexPath.row > 0
+        let isRecentAddressRow = indexPath.section == 1 && indexPath.row > 0
+        return indexPath.section == 2 || isSavedAddressRow || isRecentAddressRow
+            ? 64
+            : UITableView.automaticDimension
     }
     
     
@@ -293,7 +261,7 @@ extension LocationVC: UITableViewDelegate, UITableViewDataSource {
                     }
                     
                     let address = userResponse.customer.address[indexPath.row - 1]
-                    cell.recentAddressUpdateUI(address: address.fullAddress)
+                    cell.savedAddressUpdateUI(address: address)
                     
                     return cell
                 }
@@ -356,8 +324,9 @@ extension LocationVC: UITableViewDelegate, UITableViewDataSource {
                 let selectedAddress = recentAddress[index].address
                 
                 if fromProfile {
-                    // Validate before proceeding to add address screen
-                    validateAndProceed(addressText: selectedAddress)
+                    // A locality/postal-code result is a valid starting point for the
+                    // add-address form even though it has no street/route component.
+                    getAddressLatlongFromApi(text: selectedAddress)
                 } else {
                     getAddressLatlongFromApi(text: selectedAddress)
                 }
@@ -370,8 +339,9 @@ extension LocationVC: UITableViewDelegate, UITableViewDataSource {
             }
             
             if fromProfile {
-                // Validate the address before allowing it to be added
-                validateAndProceed(addressText: selectedAddressText)
+                // Let the user complete a postal-code/locality selection on the
+                // Add Address screen instead of rejecting it as incomplete.
+                getAddressLatlongFromApi(text: selectedAddressText)
             } else {
                 // For non-profile flow, proceed with geocoding
                 getAddressLatlongFromApi(text: selectedAddressText)
@@ -379,54 +349,6 @@ extension LocationVC: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
-    /// Validates an address and proceeds to AddAddressVC if valid
-    private func validateAndProceed(addressText: String) {
-        validateGoogleAddress(text: addressText) { isValid in
-            if isValid {
-                // Address is valid, geocode it and proceed
-                self.geocodeAndNavigateToAddAddress(addressText: addressText)
-            } else {
-                // Address is incomplete or invalid
-                self.showAlert(
-                    title: "Incomplete Address",
-                    msg: "The selected address is missing required information (street, city, state, zip, or country). Please enter a complete address."
-                )
-            }
-        }
-    }
-    
-    /// Geocodes the address and navigates to AddAddressVC
-    private func geocodeAndNavigateToAddAddress(addressText: String) {
-        LocalUtils.showProgressHud(view: self.view)
-        GoogleAPisService.googleAddressLatLong(
-            searchtext: addressText,
-            forModelType: GoogleAddressLatLongResponse.self
-        ) { success in
-            LocalUtils.hideProgressHud(view: self.view)
-
-            guard let result = success.data.results?.first else {
-                self.showAlert(
-                    title: "Location Error",
-                    msg: "Unable to resolve this address. Please try a different search."
-                )
-                return
-            }
-
-            let locationAddress = self.locationAddress(from: result)
-
-            // Navigate to add address screen
-            let vc = self.viewController(viewController: AddAddressVC.self, storyName: StoryName.Profile.rawValue) as! AddAddressVC
-            vc.isUpdateAddress = false
-            vc.locationAddress = locationAddress
-            self.navigationController?.pushViewController(vc, animated: true)
-
-            // Save to recent addresses
-            LocalUtils.saveAddress(address: SavedAddressInDB(address: result.formatted_address, date: Date()))
-        } ErrorHandler: { _ in
-            LocalUtils.hideProgressHud(view: self.view)
-            self.showAlert(title: "Location Error", msg: "Unable to resolve this address. Please try again.")
-        }
-    }
     /*
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if activeSearch {

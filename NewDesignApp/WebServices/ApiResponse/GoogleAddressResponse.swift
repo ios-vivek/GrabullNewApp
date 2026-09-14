@@ -12,6 +12,11 @@ struct GoogleAddressResponse: Codable {
 }
 struct Prediction: Codable {
     let description: String?
+    let terms: [AddressTerm]?
+}
+
+struct AddressTerm: Codable {
+    let value: String
 }
 
 struct GoogleAddressLatLongResponse: Codable {
