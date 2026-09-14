@@ -69,7 +69,7 @@ class LocationVC: UIViewController {
             activeSearch = true
             
             // Only search if we have at least 3 characters
-            if searchText.count >= 3 {
+            if searchText.count >= 1 {
                 getAddressFromApi(text: searchText)
             } else {
                 // Show empty search results for 1-2 characters
@@ -145,46 +145,70 @@ class LocationVC: UIViewController {
         LocalUtils.showProgressHud(view: self.view)
         GoogleAPisService.googleAddressLatLong(searchtext: text, forModelType: GoogleAddressLatLongResponse.self) { success in
             LocalUtils.hideProgressHud(view: self.view)
-            // We avoid relying on GoogleAddressResult internals; instead geocode the human-readable text.
-            LocalUtils.getAddressDetails(from: text) { locationAddress in
-                guard let _ = locationAddress else {
-                    // If geocoding fails, keep the list for display but don't crash.
-                    self.addressWithLatLong = success.data.results ?? []
-                    self.addressTbl.reloadData()
-                    if self.addressWithLatLong.isEmpty {
-                        self.showAlert(title: "Location", msg: "Unable to resolve this address. Please try a different search.")
-                    }
-                    self.showToast(message: "Please refine your search", font: .boldSystemFont(ofSize: 14.0))
+            guard let result = success.data.results?.first else {
+                self.showAlert(title: "Location", msg: "Unable to resolve this address. Please try a different search.")
+                return
+            }
+
+            let locationAddress = self.locationAddress(from: result)
+
+            // Navigate after successful Google resolution.
+            if self.fromProfile {
+                let vc = self.viewController(viewController: AddAddressVC.self, storyName: StoryName.Profile.rawValue) as! AddAddressVC
+                vc.isUpdateAddress = false
+                vc.locationAddress = locationAddress
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
+            else if self.fromSearch {
+                self.navigationController?.popViewController(animated: true)
+            } else {
+                guard let navController = self.navigationController,
+                      navController.viewControllers.count > 1,
+                      let tabbar = navController.viewControllers[1] as? TabBarVC else {
+                    self.navigationController?.popViewController(animated: true)
                     return
                 }
-
-                // Navigate after successful resolution
-                if self.fromProfile {
-                    let vc = self.viewController(viewController: AddAddressVC.self, storyName: StoryName.Profile.rawValue) as! AddAddressVC
-                    vc.isUpdateAddress = false
-                    vc.locationAddress = locationAddress
-                    self.navigationController?.pushViewController(vc, animated: true)
-                }
-                else if self.fromSearch {
-                    self.navigationController?.popViewController(animated: true)
-                } else {
-                    // Safely navigate to TabBarVC
-                    guard let navController = self.navigationController,
-                          navController.viewControllers.count > 1,
-                          let tabbar = navController.viewControllers[1] as? TabBarVC else {
-                        self.navigationController?.popViewController(animated: true)
-                        return
-                    }
-                    self.navigationController?.popToViewController(tabbar, animated: true)
-                }
-
-                // Persist the typed address
-                LocalUtils.saveAddress(address: SavedAddressInDB(address: text, date: Date()))
+                self.navigationController?.popToViewController(tabbar, animated: true)
             }
+
+            LocalUtils.saveAddress(address: SavedAddressInDB(address: result.formatted_address, date: Date()))
         } ErrorHandler: { error in
             LocalUtils.hideProgressHud(view: self.view)
         }
          
+    }
+
+    /// Uses the Google Geocoding result already returned for the selected prediction.
+    /// Do not re-geocode it through CLGeocoder: business names can resolve differently there.
+    private func locationAddress(from result: ResultLatLong) -> LocationAddress {
+        let address = LocationAddress()
+        address.addressID = UUID().uuidString
+        address.latLong = CLLocationCoordinate2D(latitude: result.geometry.location.lat,
+                                                  longitude: result.geometry.location.lng)
+
+        for component in result.address_components ?? [] {
+            guard let type = component.types.first else { continue }
+            switch type {
+            case "street_number": address.streetNumber = component.long_name
+            case "route": address.route = component.long_name
+            case "subpremise": address.premise = component.long_name
+            case "sublocality", "neighborhood": address.subLocality = component.long_name
+            case "locality": address.city = component.long_name
+            case "administrative_area_level_1": address.state = component.short_name
+            case "postal_code": address.zipcode = component.long_name
+            case "country": address.country = component.long_name
+            default: break
+            }
+        }
+
+        address.city = address.city ?? ""
+        address.state = address.state ?? ""
+        address.zipcode = address.zipcode ?? ""
+        address.country = address.country ?? ""
+        address.subLocality = address.subLocality ?? ""
+        address.locality = address.city
+        APPDELEGATE.selectedLocationAddress = address
+        return address
     }
     func getAddress(){
         // No longer needed: we now resolve address via UtilsClass.getAddressDetails(from:)
@@ -374,25 +398,33 @@ extension LocationVC: UITableViewDelegate, UITableViewDataSource {
     /// Geocodes the address and navigates to AddAddressVC
     private func geocodeAndNavigateToAddAddress(addressText: String) {
         LocalUtils.showProgressHud(view: self.view)
-        LocalUtils.getAddressDetails(from: addressText) { locationAddress in
+        GoogleAPisService.googleAddressLatLong(
+            searchtext: addressText,
+            forModelType: GoogleAddressLatLongResponse.self
+        ) { success in
             LocalUtils.hideProgressHud(view: self.view)
-            
-            guard let locationAddress = locationAddress else {
+
+            guard let result = success.data.results?.first else {
                 self.showAlert(
                     title: "Location Error",
                     msg: "Unable to resolve this address. Please try a different search."
                 )
                 return
             }
-            
+
+            let locationAddress = self.locationAddress(from: result)
+
             // Navigate to add address screen
             let vc = self.viewController(viewController: AddAddressVC.self, storyName: StoryName.Profile.rawValue) as! AddAddressVC
             vc.isUpdateAddress = false
             vc.locationAddress = locationAddress
             self.navigationController?.pushViewController(vc, animated: true)
-            
+
             // Save to recent addresses
-            LocalUtils.saveAddress(address: SavedAddressInDB(address: addressText, date: Date()))
+            LocalUtils.saveAddress(address: SavedAddressInDB(address: result.formatted_address, date: Date()))
+        } ErrorHandler: { _ in
+            LocalUtils.hideProgressHud(view: self.view)
+            self.showAlert(title: "Location Error", msg: "Unable to resolve this address. Please try again.")
         }
     }
     /*
@@ -542,4 +574,3 @@ private enum LocalUtils {
         return []
     }
 }
-

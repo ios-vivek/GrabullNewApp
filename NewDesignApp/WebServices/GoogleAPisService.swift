@@ -7,7 +7,6 @@
 
 import UIKit
 import Alamofire
-import CoreLocation
 
 class GoogleAPisService: NSObject {
     private static var autocompleteSessionToken: String?
@@ -16,23 +15,17 @@ class GoogleAPisService: NSObject {
         autocompleteSessionToken = nil
     }
     public static func googleAddressSearch<T:Codable>(searchtext: String, forModelType modelType: T.Type, SuccessHandler: @escaping (APIResponse<T>) -> Void, ErrorHandler: @escaping (String) -> Void) {
-        if APPDELEGATE.selectedLocationAddress.latLong == nil {
-            APPDELEGATE.selectedLocationAddress = LocationAddress()
-            let latLong : CLLocationCoordinate2D = CLLocationCoordinate2DMake(0.0, 0.0)
-            APPDELEGATE.selectedLocationAddress.latLong = latLong
-        }
         // Ensure we have a session token for Places Autocomplete (reuse across a single user session)
         if autocompleteSessionToken == nil {
             autocompleteSessionToken = UUID().uuidString
         }
 
+        let trimmedSearchText = searchtext.trimmingCharacters(in: .whitespacesAndNewlines)
+
         var components = URLComponents(string: "https://maps.googleapis.com/maps/api/place/autocomplete/json")!
         components.queryItems = [
-            URLQueryItem(name: "input", value: searchtext),
+            URLQueryItem(name: "input", value: trimmedSearchText),
             URLQueryItem(name: "components", value: "country:us"),
-            URLQueryItem(name: "types", value: "establishment"),
-            URLQueryItem(name: "location", value: "\(APPDELEGATE.selectedLocationAddress.latLong.latitude),\(APPDELEGATE.selectedLocationAddress.latLong.longitude)"),
-            URLQueryItem(name: "radius", value: "500"),
             URLQueryItem(name: "language", value: "en"),
             URLQueryItem(name: "sessiontoken", value: autocompleteSessionToken),
             URLQueryItem(name: "key", value: GoogleApiKey)
