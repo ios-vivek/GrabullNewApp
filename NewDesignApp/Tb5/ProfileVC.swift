@@ -24,10 +24,36 @@ enum ProfileItem: String, CaseIterable {
    // case workWithUs = "Work With Us"
     case support = "Help"
     case logout = "Logout"
+    case deleteAccount = "Delete Account"
     
     /// Display text (if you don’t want to rely on rawValue everywhere)
     var title: String {
         return self.rawValue
+    }
+    
+    var icon: UIImage? {
+        switch self {
+        case .profileDetails:
+            return nil
+        case .myaddress:
+            return UIImage(named: "icon_address")
+        case .orders:
+            return UIImage(named: "icon_orders")
+        case .changePassword:
+            return UIImage(named: "icon_passwordchange")
+        case .notifications:
+            return UIImage(named: "icon_notifications")
+        case .myRewards:
+            return UIImage(named: "icon_rewards")
+        case .referAFriend, .referARestaurant:
+            return UIImage(named: "icon_refere")
+        case .support:
+            return UIImage(named: "icon_support")
+        case .logout:
+            return UIImage(named: "icon_logout")
+        case .deleteAccount:
+            return UIImage(systemName: "trash")?.withTintColor(.systemRed, renderingMode: .alwaysOriginal) ?? UIImage(systemName: "trash")
+        }
     }
 }
 class ProfileVC: UIViewController {
@@ -35,7 +61,7 @@ class ProfileVC: UIViewController {
 
     @IBOutlet weak var tbl: UITableView!
     weak var delegate: LoginSuccessDelegate?
-    let itemsicon = ["","icon_address","icon_payments","icon_orders","icon_passwordchange","icon_notifications","icon_rewards","icon_refere","icon_refere","icon_workWithUs","icon_support","icon_logout"]
+    let itemsicon = ["","icon_address","icon_orders","icon_passwordchange","icon_notifications","icon_rewards","icon_refere","icon_refere","icon_support","icon_logout","trash"]
     var loggedIn = false
     var fromOtherPage = false
     override func viewDidLoad() {
@@ -105,6 +131,42 @@ class ProfileVC: UIViewController {
         }
     }
 
+    func deleteAccountService() {
+        guard let customerId = APPDELEGATE.userResponse?.customer.customerId, !customerId.isEmpty else {
+            self.showAlert(title: "Error", msg: "Please login to delete your account.")
+            return
+        }
+
+        var parameters = CommonAPIParams.base()
+        parameters.merge([
+            "customer_id": customerId,
+            "reasonType": "Other"
+        ]) { _, new in new }
+
+        UtilsClass.showProgressHud(view: self.view)
+        WebServices.loadDataFromServiceWithBaseResponse(
+            parameter: parameters,
+            servicename: OldServiceType.deleteAccount,
+            forModelType: DeleteAccountResponse.self
+        ) { [weak self] success in
+            guard let self = self else { return }
+            UtilsClass.hideProgressHud(view: self.view)
+            let message = success.data.message ?? success.data.result ?? success.data.data?.result ?? success.data.data?.message ?? "Your account has been deleted successfully."
+            let alertController = UIAlertController(title: "Success", message: message, preferredStyle: .alert)
+            let okAction = UIAlertAction(title: "Ok", style: .default) { _ in
+                self.logoutPage()
+            }
+            alertController.addAction(okAction)
+            OperationQueue.main.addOperation {
+                self.present(alertController, animated: true, completion: nil)
+            }
+        } ErrorHandler: { [weak self] error in
+            guard let self = self else { return }
+            UtilsClass.hideProgressHud(view: self.view)
+            self.showAlert(title: "Error", msg: error)
+        }
+    }
+
 }
 extension ProfileVC: EditProfileDelegate {
     func editProfileSelected() {
@@ -158,7 +220,7 @@ extension ProfileVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if loggedIn {
             let sectionItem = items[indexPath.row]
-            switch sectionItem{
+            switch sectionItem {
             case .profileDetails:
                 let cell = tableView.dequeueReusableCell(withIdentifier: "UserDetailsTVCell", for: indexPath) as! UserDetailsTVCell
                 cell.selectionStyle = .none
@@ -168,11 +230,17 @@ extension ProfileVC: UITableViewDelegate, UITableViewDataSource {
                 return cell
             default:
                 let cell = tableView.dequeueReusableCell(withIdentifier: "ProfileItemTVCell", for: indexPath) as! ProfileItemTVCell
-                cell.itemName.text = items[indexPath.row].title
-                cell.imageIcon.image = UIImage(named: itemsicon[indexPath.row])
-                cell.accessoryType = .disclosureIndicator
-                if indexPath.row == ProfileItem.allCases.count - 1 {
+                cell.itemName.text = sectionItem.title
+                cell.imageIcon.image = sectionItem.icon ?? (indexPath.row < itemsicon.count ? UIImage(named: itemsicon[indexPath.row]) : nil)
+                if sectionItem == .deleteAccount {
+                    cell.itemName.textColor = .systemRed
                     cell.accessoryType = .none
+                } else if sectionItem == .logout {
+                   // cell.itemName.textColor = .systemRed
+                    cell.accessoryType = .none
+                } else {
+                    cell.itemName.textColor = .black
+                    cell.accessoryType = .disclosureIndicator
                 }
                 return cell
             }
@@ -187,7 +255,7 @@ extension ProfileVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if loggedIn {
             let sectionItem = items[indexPath.row]
-            switch sectionItem{
+            switch sectionItem {
             case .myaddress:
                 let vc = self.viewController(viewController: LocationVC.self, storyName: StoryName.Location.rawValue) as! LocationVC
                 vc.fromProfile = true
@@ -221,22 +289,38 @@ extension ProfileVC: UITableViewDelegate, UITableViewDataSource {
                 self.navigationController?.pushViewController(vc, animated: true)
             case .notifications:
                 navigateToNotification()
+            case .logout:
+                let alertController = UIAlertController(title: "Logout", message: "Are you sure want to logout?", preferredStyle: .alert)
+                let OKAction = UIAlertAction(title: "Cancel", style: .default) { action in
+                    
+                }
+                let cancel = UIAlertAction(title: "Ok", style: .cancel) { alert in
+                    self.logout()
+                }
+                alertController.addAction(OKAction)
+                alertController.addAction(cancel)
+                OperationQueue.main.addOperation {
+                    self.present(alertController, animated: true,
+                                 completion:nil)
+                }
+            case .deleteAccount:
+                let alertController = UIAlertController(
+                    title: "Delete Account",
+                    message: "Are you sure you want to delete your account? This will permanently delete your account, order history, and personal data. This action cannot be undone.",
+                    preferredStyle: .alert
+                )
+                let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in }
+                let deleteAction = UIAlertAction(title: "Delete Account", style: .destructive) { [weak self] _ in
+                    self?.deleteAccountService()
+                }
+                alertController.addAction(cancelAction)
+                alertController.addAction(deleteAction)
+                OperationQueue.main.addOperation {
+                    self.present(alertController, animated: true, completion: nil)
+                }
             default:
-                if indexPath.row == ProfileItem.allCases.count - 1 {
-                    let alertController = UIAlertController(title: "Logout", message: "Are you sure want to logout?", preferredStyle: .alert)
-                    let OKAction = UIAlertAction(title: "Cancel", style: .default) { action in
-                        
-                    }
-                    let cancel = UIAlertAction(title: "Ok", style: .cancel) { alert in
-                        self.logout()
-                    }
-                    alertController.addAction(OKAction)
-                    alertController.addAction(cancel)
-                    OperationQueue.main.addOperation {
-                        self.present(alertController, animated: true,
-                                     completion:nil)
-                    }
-                }}
+                break
+            }
         }
             
     }

@@ -6,20 +6,13 @@
 //
 
 import UIKit
-import Stripe
-import StripePaymentSheet
 import SafariServices
 import WebKit
 
-//import PassKit
 enum PayBy: String {
     case cash = "Cash"
     case gift = "Gift"
     case card = "card"
-}
-enum PaymentGateway: String {
-    case stripe = "Stripe"
-    case authorizeNet = "AuthorizeNet"
 }
 enum CellTypeSelected: Int {
     case Restname
@@ -36,7 +29,6 @@ enum CellTypeSelected: Int {
     case TotalRowsCount
 }
 class ConfirmOrderVC: UIViewController, SFSafariViewControllerDelegate {
-    private var paymentSheet: PaymentSheet?
     @IBOutlet weak var cartTableView: UITableView!
 //let sectionArr = ["restname","deliveryto", "deliveryat", "SendAsGift, "Special","payment, "Redeem", "tips", "donate", "itemdetails", "totalprice"]
     private let viewModel = ConfirmOrderViewModel()
@@ -113,13 +105,6 @@ class ConfirmOrderVC: UIViewController, SFSafariViewControllerDelegate {
                    self.navigationController?.popToRootViewController(animated: true)
                }
            }
-        // PaymentSheet presentation: view model will provide a configured PaymentSheet to present
-        viewModel.presentPaymentSheet = { [weak self] paymentSheet in
-            guard let self = self else { return }
-            paymentSheet.present(from: self) { paymentResult in
-                self.viewModel.paymentResultReceived(paymentResult)
-            }
-        }
 
         viewModel.presentAuthorizeURL = { [weak self] url in
             guard let self else { return }
@@ -419,14 +404,8 @@ extension ConfirmOrderVC: PaymentTypeDeledate {
             return
         }
 
-        self.viewModel.selectedGateway = .stripe
         self.viewModel.payBy = .card
         cartTableView.reloadData()
-        /*
-        if index == 2 {
-            openApplePay()
-        }
-        */
     }
     func displayDefaultAlert(title: String?, message: String?) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -434,56 +413,8 @@ extension ConfirmOrderVC: PaymentTypeDeledate {
         alert.addAction(okAction)
         self.present(alert, animated: true, completion: nil)
     }
-    /*
-    func openApplePay() {
-#if DEBUG
-print("Running in Sandbox")
-#else
-print("Running in Production")
-#endif
-        let pricedetails: CheckoutPrice = Cart.shared.getAllPriceDeatils()
+}
 
-        let paymentItem = PKPaymentSummaryItem.init(label: "Grabull Food Order", amount: NSDecimalNumber(value: pricedetails.total))
-        let paymentNetworks = [PKPaymentNetwork.amex, .discover, .masterCard, .visa]
-        
-        if PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: paymentNetworks) {
-            let request = PKPaymentRequest()
-                request.currencyCode = "USD" // 1
-                request.countryCode = "US" // 2
-                request.merchantIdentifier = "merchant.com.grabull" // 3
-            request.merchantCapabilities = PKMerchantCapability.threeDSecure// 4
-                request.supportedNetworks = paymentNetworks // 5
-                request.paymentSummaryItems = [paymentItem] // 6
-            
-            guard let paymentVC = PKPaymentAuthorizationViewController(paymentRequest: request) else {
-            displayDefaultAlert(title: "Error", message: "Unable to present Apple Pay authorization.")
-            return
-        }
-            paymentVC.delegate = self
-            self.present(paymentVC, animated: true, completion: nil)
-            
-        } else {
-            displayDefaultAlert(title: "Error", message: "Unable to make Apple Pay transaction.")
-        }
-        
-       
-     }
-    */
-    
-}
-/*
-extension ConfirmOrderVC: PKPaymentAuthorizationViewControllerDelegate {
-    func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
-        dismiss(animated: true, completion: nil)
-    }
-    func paymentAuthorizationViewController(_ controller: PKPaymentAuthorizationViewController, didAuthorizePayment payment: PKPayment, handler completion: @escaping (PKPaymentAuthorizationResult) -> Void) {
-        print("token--\(payment.token.transactionIdentifier)")
-        dismiss(animated: true, completion: nil)
-       // displayDefaultAlert(title: "Success!", message: "The Apple Pay transaction was complete.")
-        self.addOrder(transactionIdentifier: "\(payment.token.transactionIdentifier)")
-    }
-}
-*/
 extension ConfirmOrderVC: TipsDelegate {
     func tipsAction(isTips: Bool, tipsAmount: Double) {
         Cart.shared.tipsAmount = Float(tipsAmount)

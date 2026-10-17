@@ -22,12 +22,29 @@ var currectCoordinate: CLLocationCoordinate2D = CLLocationCoordinate2D()
     }
     func getUserLocation() {
         self.fetchedLatLong = false
-           locationManager = CLLocationManager()
-           locationManager?.requestAlwaysAuthorization()
+        locationManager = CLLocationManager()
         locationManager?.delegate = self
+        locationManager?.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+        locationManager?.requestWhenInUseAuthorization()
+        if CLLocationManager.locationServicesEnabled() {
+            locationManager?.startUpdatingLocation()
+        }
+    }
 
-           locationManager?.startUpdatingLocation()
-       }
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("LocationManagerClass failed with error: \(error.localizedDescription)")
+    }
+
+    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
+        switch manager.authorizationStatus {
+        case .authorizedWhenInUse, .authorizedAlways:
+            manager.startUpdatingLocation()
+        case .denied, .restricted:
+            print("Location access denied or restricted")
+        default:
+            break
+        }
+    }
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         if let location = locations.last {
             print( "Lat : \(location.coordinate.latitude) \nLng : \(location.coordinate.longitude)")

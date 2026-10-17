@@ -1,6 +1,4 @@
 import Foundation
-import Stripe
-import StripePaymentSheet
 
 final class GroceryPaymentViewModel {
     
@@ -23,8 +21,6 @@ final class GroceryPaymentViewModel {
     var showError: ((String) -> Void)?
     var orderPlaced: (() -> Void)?
     var presentAuthorizeURL: ((URL) -> Void)?
-    // Payment presentation binding: view controller will present PaymentSheet when provided
-    var presentPaymentSheet: ((PaymentSheet) -> Void)?
     var goToHomeAfterPayment: (() -> Void)?
     var presentFeedbackWidget: ((String) -> Void)?    
     // MARK: - API
@@ -170,20 +166,9 @@ let total = GroceryCartData.shared.total + GroceryCartData.shared.tipAmount + Gr
                 return
             }
 
-            if self.payBy == .card, let stripe = orderData.gateway {
-                if stripe.chargeAmount > 0.0 && response.status == "Success"{
-                   // self.tempRequest?.transaction = stripe.paymentIntent
-                    self.startPaymentFlow(custId: stripe.customer, epk: stripe.ephemeralKey, piId: stripe.paymentIntent, parameters: params)
-                } else {
-                    GroceryCartData.shared.supportNumber = orderData.support ?? ""
-                    GroceryCartData.shared.orderTime = orderData.orderTime ?? ""
-                    self.orderPlaced?()
-                }
-            } else {
-                GroceryCartData.shared.supportNumber = orderData.support ?? ""
-                GroceryCartData.shared.orderTime = orderData.orderTime ?? ""
-                self.orderPlaced?()
-            }
+            GroceryCartData.shared.supportNumber = orderData.support ?? ""
+            GroceryCartData.shared.orderTime = orderData.orderTime ?? ""
+            self.orderPlaced?()
         } errorHandler: { errorMessage in
             self.hideLoader?()
             self.showError?(errorMessage)
@@ -203,37 +188,7 @@ let total = GroceryCartData.shared.total + GroceryCartData.shared.tipAmount + Gr
         presentAuthorizeURL?(url)
     }
 
-    // MARK: - Stripe Payment Helpers
-    func startPaymentFlow(custId: String, epk: String, piId: String, parameters: [String: AnyObject]) {
-        self.tempParam = parameters
-        var configuration = PaymentSheet.Configuration()
-        configuration.applePay = .init(
-            merchantId: "merchant.com.grabullShop",
-            merchantCountryCode: "US"   // or "IN", etc.
-        )
-        configuration.merchantDisplayName = "Grabull"
-        configuration.customer = .init(id: custId, ephemeralKeySecret: epk)
 
-        let paymentSheet = PaymentSheet(paymentIntentClientSecret: piId, configuration: configuration)
-
-        presentPaymentSheet?(paymentSheet)
-    }
-
-    func paymentResultReceived(_ paymentResult: PaymentSheetResult) {
-        switch paymentResult {
-        case .completed:
-            print("Your order is confirmed")
-            self.orderConfirmedApi(request: self.tempRequest)
-        case .canceled:
-            print("Payment canceled")
-           // showError?("Payment was canceled")
-//            self.tempRequest?.transaction = "123"
- //           self.stripeConfirmedApi(request: self.tempRequest)
-        case .failed(let error):
-            print("Payment failed: \n\(error.localizedDescription)")
-            showError?(error.localizedDescription)
-        }
-    }
     
     func buildFeedbackWidgetHTML(orderId: String) -> String {
         let fname = APPDELEGATE.userResponse?.customer.firstName ?? ""

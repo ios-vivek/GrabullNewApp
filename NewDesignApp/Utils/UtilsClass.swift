@@ -477,6 +477,7 @@ public static func getAttributedString(str1: String, str2: String) -> NSMutableA
 
         // 🔹 Assign once
         APPDELEGATE.selectedLocationAddress = address
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "location"), object: nil)
     }
     public static func getStringDateFromString(stringDate: String) -> String {
         let currentTimeZone = TimeZone.current
@@ -759,7 +760,22 @@ class LocationAddress: NSObject {
     var route : String = ""
     
     override init() {
-        
+        super.init()
+        self.addressID = UUID().uuidString
+        self.streetNumber = "571"
+        self.route = "Massachusetts Ave"
+        self.premise = "571"
+        self.subLocality = "Central Square"
+        self.city = "Cambridge"
+        self.state = "MA"
+        self.zipcode = "02139"
+        self.country = "United States"
+        self.locality = "Cambridge"
+        self.latLong = CLLocationCoordinate2D(latitude: 42.3635, longitude: -71.1005)
+    }
+
+    static func defaultLocation() -> LocationAddress {
+        return LocationAddress()
     }
     init(json: NSDictionary) { // Dictionary object
         self.zipcode = json["zipcode"] as? String

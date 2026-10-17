@@ -22,6 +22,7 @@ class LocationVC: UIViewController {
 
     var fromProfile = false
     var fromSearch = false
+    var fromFirstPage = false
     var activeSearch = false
     var recentAddress = [SavedAddressInDB]()
 //let url = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=amoeba&components=country:us&types=establishment&location=37.76999%2C-122.44696&radius=500&key=AIzaSyAcpD8juDqASzLRWCdNP-ns4UzdVph1koU"
@@ -127,6 +128,9 @@ class LocationVC: UIViewController {
             }
             else if self.fromSearch {
                 self.navigationController?.popViewController(animated: true)
+            } else if self.fromFirstPage {
+                let vc = self.viewController(viewController: TabBarVC.self, storyName: StoryName.Main.rawValue)
+                self.navigationController?.pushViewController(vc, animated: true)
             } else {
                 guard let navController = self.navigationController,
                       navController.viewControllers.count > 1,
@@ -174,6 +178,9 @@ class LocationVC: UIViewController {
         address.subLocality = address.subLocality ?? ""
         address.locality = address.city
         APPDELEGATE.selectedLocationAddress = address
+        LocationManagerClass.shared.firstAddress = address.subLocality ?? address.city ?? ""
+        LocationManagerClass.shared.secondAddress = "\(address.city ?? ""), \(address.state ?? "") \(address.zipcode ?? "")"
+        NotificationCenter.default.post(name: Notification.Name("location"), object: nil)
         return address
     }
     func getAddress(){

@@ -6,8 +6,6 @@
 //
 
 import UIKit
-import Stripe
-import StripePaymentSheet
 import SafariServices
 import WebKit
 enum GroceryCellTypes: Int {
@@ -25,7 +23,6 @@ enum GroceryCellTypes: Int {
     case TotalRowsCount
 }
 class GroceryPaymentVC: UIViewController {
-    private var paymentSheet: PaymentSheet?
     @IBOutlet weak var cartTableView: UITableView!
     private let viewModel = GroceryPaymentViewModel()
     var payBy = PayBy.card
@@ -110,13 +107,6 @@ class GroceryPaymentVC: UIViewController {
                    self.navigationController?.popToRootViewController(animated: true)
                }
            }
-        // PaymentSheet presentation: view model will provide a configured PaymentSheet to present
-        viewModel.presentPaymentSheet = { [weak self] paymentSheet in
-            guard let self = self else { return }
-            paymentSheet.present(from: self) { paymentResult in
-                self.viewModel.paymentResultReceived(paymentResult)
-            }
-        }
 
         viewModel.presentAuthorizeURL = { [weak self] url in
             guard let self else { return }
@@ -388,11 +378,6 @@ extension GroceryPaymentVC: PaymentTypeDeledate {
     func selectedPaymentType(index: Int) {
         self.viewModel.selectedPaymentType = index
         cartTableView.reloadData()
-        /*
-        if index == 2 {
-            openApplePay()
-        }
-        */
     }
     func displayDefaultAlert(title: String?, message: String?) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)

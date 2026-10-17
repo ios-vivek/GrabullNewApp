@@ -20,11 +20,12 @@ struct AppConfig {
 }
 
 struct OldServiceType {
-    static let BASE = "https://www.webapi.grabull.shop/"
+    static let BASE = "https://www.webapi.grabull.com/"
     //static let BASE = "https://www.grabull.com/web-api-ios/"
     
     static let groceryList = "grocery/GetAllGroceryStorte"
     static let storeDetailByID = "grocery-details/GetGroceryStoreById"
+    
     
     static let resturantList = "restaurant/GetAllRestaurant"
     static let cuisine = "cuisine/"
@@ -82,6 +83,9 @@ struct OldServiceType {
     static let hiddenRestList = "hiddenRestList"
     static let favoriteRest = "favoriteRestList"
     static let hiddenRest = "hiddenRest"
+    //Delete Account
+    static let deleteAccount = "request/DeleteAccount"
+
 
 
 

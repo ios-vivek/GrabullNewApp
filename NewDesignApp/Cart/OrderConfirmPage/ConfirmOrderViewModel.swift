@@ -1,12 +1,9 @@
 import Foundation
-import Stripe
-import StripePaymentSheet
 
 final class ConfirmOrderViewModel {
     
     // MARK: - State
     var selectedPaymentType: Int = 0
-    var selectedGateway: PaymentGateway = .stripe
     var payBy: PayBy = .card
     var isSpecialSelected = false
     
@@ -25,8 +22,6 @@ final class ConfirmOrderViewModel {
     var showError: ((String) -> Void)?
     var orderPlaced: (() -> Void)?
     var goToHomeAfterPayment: (() -> Void)?
-    // Payment presentation binding: view model will provide a configured PaymentSheet to present
-    var presentPaymentSheet: ((PaymentSheet) -> Void)?
     var presentAuthorizeURL: ((URL) -> Void)?
     var presentFeedbackWidget: ((String) -> Void)?
     
@@ -218,19 +213,8 @@ final class ConfirmOrderViewModel {
                 return
             }
 
-            // Legacy gateway logic kept only as fallback if orderUrl is not returned.
-            if let stripe = orderData.gatewayStripe ?? orderData.gateway {
-                if stripe.chargeAmount > 0.0 {
-                    //self.tempRequest?.transaction = stripe.paymentIntent
-                    self.startPaymentFlow(custId: stripe.customer, epk: stripe.ephemeralKey, piId: stripe.paymentIntent, parameters: params)
-                } else {
-                    Cart.shared.supportNumber = orderData.support ?? ""
-                    self.orderPlaced?()
-                }
-            } else {
-                Cart.shared.supportNumber = orderData.support ?? ""
-                self.orderPlaced?()
-            }
+            Cart.shared.supportNumber = orderData.support ?? ""
+            self.orderPlaced?()
         } errorHandler: { errorMessage in
             self.hideLoader?()
             self.showError?(errorMessage)
@@ -250,33 +234,7 @@ final class ConfirmOrderViewModel {
         presentAuthorizeURL?(url)
     }
 
-    // MARK: - Stripe Payment Helpers
-    func startPaymentFlow(custId: String, epk: String, piId: String, parameters: [String: AnyObject]) {
-        self.tempParam = parameters
-        var configuration = PaymentSheet.Configuration()
-        configuration.merchantDisplayName = "Grabull"
-        configuration.customer = .init(id: custId, ephemeralKeySecret: epk)
 
-        let paymentSheet = PaymentSheet(paymentIntentClientSecret: piId, configuration: configuration)
-
-        presentPaymentSheet?(paymentSheet)
-    }
-
-    func paymentResultReceived(_ paymentResult: PaymentSheetResult) {
-        switch paymentResult {
-        case .completed:
-            print("Your order is confirmed")
-            self.orderConfirmedApi(request: self.tempRequest)
-        case .canceled:
-            print("Payment canceled")
-           // showError?("Payment was canceled")
-//            self.tempRequest?.transaction = "123"
-//            self.stripeConfirmedApi(request: self.tempRequest)
-        case .failed(let error):
-            print("Payment failed: \n\(error.localizedDescription)")
-            showError?(error.localizedDescription)
-        }
-    }
     
     func buildFeedbackWidgetHTML(orderId: String) -> String {
         let fname = APPDELEGATE.userResponse?.customer.firstName ?? ""

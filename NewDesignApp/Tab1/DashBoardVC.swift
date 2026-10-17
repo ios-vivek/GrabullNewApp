@@ -396,7 +396,7 @@ extension DashBoardVC: DashBoardSectionDelegate {
         if index == 1 {
             self.tabBarController?.selectedIndex = 1
         }
-        if index == 2 {
+        if index == 3 {
 //            let story = UIStoryboard.init(name: "FoodSearch", bundle: nil)
 //            let vc = story.instantiateViewController(withIdentifier: "SearchDetailVC") as! SearchDetailVC
 //            //vc.listResponse = success.data.restaurant
@@ -408,7 +408,7 @@ extension DashBoardVC: DashBoardSectionDelegate {
             GroceryCartData.shared.orderSource = "Flowers"
             self.navigationController?.pushViewController(vc, animated: true)
         }
-        if index == 3 {
+        if index == 2 {
             GroceryCartData.shared.orderSource = "Grocery"
             let story = UIStoryboard.init(name: "Grocery", bundle: nil)
             let vc = story.instantiateViewController(withIdentifier: "GroceryVC") as! GroceryVC

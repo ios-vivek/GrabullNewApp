@@ -121,3 +121,17 @@ struct AddressListResponse: Codable {
     let code: Int
     let data: [UserAdd]
 }
+
+struct DeleteAccountResponse: Codable {
+    let status: String?
+    let error: String?
+    let code: Int?
+    let message: String?
+    let result: String?
+    let data: DeleteAccountData?
+}
+
+struct DeleteAccountData: Codable {
+    let result: String?
+    let message: String?
+}
