@@ -6,7 +6,6 @@
 //
 
 import UIKit
-//import Alamofire
 struct ChooseOptions {
     let title: String
     let imageName: String
@@ -21,12 +20,12 @@ class OnYourMindCollectionViewCell: UICollectionViewCell {
     override func awakeFromNib() {
         let chooseOptions1 = ChooseOptions.init(title: "Food Delivery", imageName: "food_image", subTitle: "From Restaurants")
         let chooseOptions2 = ChooseOptions.init(title: "Catering", imageName: "catering_image", subTitle: "From Catering Restaurants")
-        let chooseOptions3 = ChooseOptions.init(title: "Dine in", imageName: "dine_in", subTitle: "Local Fine Dine Place's")
-        let chooseOptions4 = ChooseOptions.init(title: "Grocery", imageName: "grocery_image", subTitle: "From Local Stores")
+        let chooseOptions3 = ChooseOptions.init(title: "Grocery", imageName: "grocery_image", subTitle: "From Local Stores")
+        let chooseOptions4 = ChooseOptions.init(title: "Flower & Gift", imageName: "gift", subTitle: "Local Fine Dine Place's")
         typeList.append(chooseOptions1)
         typeList.append(chooseOptions2)
         typeList.append(chooseOptions3)
-        typeList.append(chooseOptions4)
+        //typeList.append(chooseOptions4)
         
         self.shadow(Vw: roundView)
         self.backgroundColor = .clear

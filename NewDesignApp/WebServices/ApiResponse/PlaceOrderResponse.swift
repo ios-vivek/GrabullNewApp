@@ -6,18 +6,32 @@
 //
 
 import Foundation
+
 struct PlaceOrderResponse: Codable {
     let code: Int
     let status: String
     let error: String?
-    let data: OrderData
+    let data: OrderData?
 }
 
 struct OrderData: Codable {
     let oid: String?
-    let orderId: String
-    let support: String
+    let orderTime: String?
+    let orderId: String?
+    let support: String?
+    let payment: String?
+    let orderStatus: String?
+    let payType: String?
+    let chargeAmount: Float?
+    let message: String?
+    let orderUrl: String?
     let gateway: GatewayData?
+    let gatewayStripe: GatewayData?
+    let gatewayAuthorize: AuthorizeGatewayData?
+
+    enum CodingKeys: String, CodingKey {
+        case oid, orderTime, orderId, support, payment, orderStatus, payType, chargeAmount, message, orderUrl, gateway, gatewayStripe, gatewayAuthorize
+    }
 }
 
 struct GatewayData: Codable {
@@ -30,24 +44,34 @@ struct GatewayData: Codable {
     let chargeAmount: Float
 }
 
+struct AuthorizeGatewayData: Codable {
+    let chargeAmount: Float
+    let paymentUrl: String
+    let token: String
+    let code: String
+    let message: String
+}
+
 struct StripeConfirmRequest: Codable {
     let restaurantId: String
     var orderId: String
     var oid: String
-    var transaction: String
+   // var transaction: String
 }
 
 struct StripeConfirmResponse: Codable {
     let status: String
-    let error: String
+    let error: String?
     let code: Int
     let data: FinalOrderData
 }
+
 struct FinalOrderData: Codable {
-    let oid: String
-    let orderId: String
-    let payment: String
-    let status: String
-    let message: String
-    let support: String
+    let oid: String?
+    let orderId: String?
+    let payment: String?
+    let status: String?
+    let message: String?
+    let support: String?
+    let orderTime: String?
 }

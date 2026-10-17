@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Alamofire
 //import SkeletonView
 class NearYouCollectionViewCell: UICollectionViewCell {
     
@@ -60,27 +59,7 @@ class NearYouCollectionViewCell: UICollectionViewCell {
         distantLbl.text = "\(restaurant.distance ?? 0.0)mi"
         favImage.image = UIImage.init(named: restaurant.isFav ? "favoriteSelected" : "favorite")
         let url = restaurant.restImage
-        AF.request( url,method: .get).response{ response in
-            switch response.result {
-            case .success(let responseData):
-                if responseData != nil {
-                    self.foodImage.image = UIImage(data: responseData!)
-                    self.foodImage.contentMode = .scaleToFill
-                    if self.foodImage.image == nil {
-                        self.foodImage.image = UIImage(named: "img_midium")
-                        self.foodImage.contentMode = .center
-                    }
-                }else {
-                    self.foodImage.image = UIImage(named: "img_midium")
-                    self.foodImage.contentMode = .center
-                }
-            case .failure:
-                self.foodImage.image = UIImage(named: "img_midium")
-                self.foodImage.contentMode = .center
-            }
-        }
-
-        
+        foodImage.setImage(urlString: url)
     }
     func configUIForDeals(restaurant: Restaurant) {
         // Safely unwrap offers and sort by minorder descending (convert String to Double)
@@ -115,26 +94,7 @@ class NearYouCollectionViewCell: UICollectionViewCell {
         distantLbl.text = "\(restaurant.distance ?? 0.0)mi"
         favImage.image = UIImage.init(named: restaurant.isFav ? "favoriteSelected" : "favorite")
         let url = restaurant.restImage
-        AF.request( url,method: .get).response{ response in
-            switch response.result {
-            case .success(let responseData):
-                if responseData != nil {
-                    self.foodImage.image = UIImage(data: responseData!)
-                    self.foodImage.contentMode = .scaleToFill
-                    if self.foodImage.image == nil {
-                        self.foodImage.image = UIImage(named: "img_midium")
-                        self.foodImage.contentMode = .center
-                    }
-                }else {
-                    self.foodImage.image = UIImage(named: "img_midium")
-                    self.foodImage.contentMode = .center
-                }
-            case .failure:
-                self.foodImage.image = UIImage(named: "img_midium")
-                self.foodImage.contentMode = .center
-            }
-        }
-
+        foodImage.setImage(urlString: url)
         
     }
 }

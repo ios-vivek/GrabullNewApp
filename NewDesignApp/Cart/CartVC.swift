@@ -20,7 +20,6 @@ class CartVC: UIViewController {
     @IBOutlet weak var titlelbl: UILabel!
     var completeItemList = [CustMenuCategory]()
     var allDisplayItems = [CustMenuCategory]()
-    //var allMenuList = [RestMenu]()
     var isOpen = false
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -79,6 +78,10 @@ class CartVC: UIViewController {
         }
         Cart.shared.isReward = false
         Cart.shared.rewardAmount = 0.0
+        Cart.shared.isTips = false
+        Cart.shared.tipsAmount = 0.0
+        Cart.shared.isDonate = false
+        Cart.shared.donateAmount = 0.0
     }
    
     func getAddressesFromApi() {
@@ -104,7 +107,10 @@ class CartVC: UIViewController {
         }
         if APPDELEGATE.userLoggedIn() && Cart.shared.orderType == .delivery {
             addressView.isHidden = cartTableView.isHidden
-            if Cart.shared.userAddress != nil {
+            let add = Cart.shared.userAddress?.fullAddress ?? ""
+            if Cart.shared.userAddress == nil || add == "" || add.isEmpty {
+                addressView.isHidden = false
+            } else {
                 addressView.isHidden = true
             }
         }
@@ -231,11 +237,15 @@ class CartVC: UIViewController {
         return menuType
     }
     @IBAction func proceedAction() {
-        let add = Cart.shared.userAddress.fullAddress
+        let add = Cart.shared.userAddress?.fullAddress ?? ""
        // let add = "2 Barnsley Rd, Lynnfield, MA 01940, USA"//Cart.shared.userAddress.fullAddress
 
         if Cart.shared.orderType == .delivery {
-            checkDeliveryAvailability(restID: Cart.shared.restDetails.rid, menuType: getMenuTypesFromItems(), address: add)
+            if add == "" {
+                refreshView()
+            } else {
+                checkDeliveryAvailability(restID: Cart.shared.restDetails.rid, menuType: getMenuTypesFromItems(), address: add)
+            }
         } else {
             contionueAction()
         }
@@ -464,21 +474,40 @@ extension CartVC: UITableViewDelegate, UITableViewDataSource{
                     cell.changeAddressBtn.isHidden = true
                     cell.changePhoneBtn.isHidden = true
                     cell.phoneLbl.text = "Phone: \(Cart.shared.restDetails.phone)"
-                }else {
+                    cell.deliveryAtLbl.text = add
+                } else {
                     cell.headingLbl.text = "Delivery At:"
                     let address = Cart.shared.userAddress
-                    add = "\(address!.add1 ?? "") \(address!.add2 ?? ""), \(address!.city ?? ""), \(address!.state ?? ""), \(address!.zip ?? "")"
+                    let street = address!.street?.isEmpty == false ? "\(address!.street ?? "") " : ""
+                    let baseFont = cell.deliveryAtLbl.font ?? UIFont.systemFont(ofSize: 14)
+                    let paragraphStyle = NSMutableParagraphStyle()
+                    paragraphStyle.paragraphSpacingBefore = 5
+                    let regularAttributes: [NSAttributedString.Key: Any] = [
+                        .font: baseFont
+                    ]
+                    let semiboldAttributes: [NSAttributedString.Key: Any] = [
+                        .font: UIFont.systemFont(ofSize: baseFont.pointSize, weight: .semibold),
+                        .paragraphStyle: paragraphStyle
+                    ]
+
+                    let addressString = NSMutableAttributedString()
+                    addressString.append(NSAttributedString(
+                        string: "\(street)\(address!.add1 ?? "")\n\(address!.city ?? ""), \(address!.state ?? ""), \(address!.zip ?? "")",
+                        attributes: regularAttributes
+                    ))
+                    if let landmark = address!.add2, !landmark.isEmpty {
+                        addressString.append(NSAttributedString(string: "\nLandmark: ", attributes: semiboldAttributes))
+                        addressString.append(NSAttributedString(string: landmark, attributes: regularAttributes))
+                    }
                     cell.changeAddressBtn.isHidden = false
                     cell.changePhoneBtn.isHidden = false
                     cell.phoneLbl.text = "Phone: \(APPDELEGATE.userResponse?.customer.phone ?? "")"
                     if Cart.shared.alternateNumber.count == 10 {
                         cell.phoneLbl.text = "Phone: \(Cart.shared.alternateNumber)"
                     }
-                    
+                    cell.delegate = self
+                    cell.deliveryAtLbl.attributedText = addressString
                 }
-                
-                cell.delegate = self
-                cell.deliveryAtLbl.text = add
             }
             
            
@@ -517,7 +546,8 @@ extension CartVC: ChangeAddressDelegate {
     }
 }
 extension CartVC: ChangePhoneNumberDelegate {
-    func changesNumber() {
+    func changesNumber(updatedNumber: String) {
+        Cart.shared.alternateNumber = updatedNumber
         cartTableView.reloadData()
     }
 }
@@ -660,8 +690,9 @@ extension CartVC: OpenItemDetailDelegate {
     func addItemInList(index: IndexPath) {
         let menu = completeItemList[index.section]
         let newItem = completeItemList[index.section].itemList[index.row]
+        let displaySection = DisplaySection.init(parentID: menu.id, parent: menu.heading, title: newItem.heading, items: [newItem])
         Cart.shared.itemData = newItem
-        var newSize = Cart.shared.getAllSizes(menu: menu, item: newItem, isCatering: false, menuType: "")[0]
+        var newSize = Cart.shared.getAllSizes(menu: displaySection, item: newItem, isCatering: false, menuType: "")[0]
             newSize.itemQty = 1
             Cart.shared.itemSizes = [Sizes]()
             Cart.shared.itemSizes.append(newSize)
@@ -671,6 +702,7 @@ extension CartVC: OpenItemDetailDelegate {
         Cart.shared.itemExtra = 0.0
         Cart.shared.addInCart()
         self.refreshView()
+        
     }
     
     func selectedItem(index: IndexPath) {

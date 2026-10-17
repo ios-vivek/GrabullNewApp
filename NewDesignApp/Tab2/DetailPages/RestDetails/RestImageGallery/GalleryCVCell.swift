@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Alamofire
 class GalleryCVCell: UICollectionViewCell {
     @IBOutlet weak var restImage: UIImageView!
 
@@ -18,25 +17,7 @@ class GalleryCVCell: UICollectionViewCell {
         restImage.contentMode = .scaleToFill
         restImage.layer.cornerRadius = 10
         restImage.backgroundColor = .gGray100
+        restImage.setImage(urlString: url)
         
-        AF.request( url,method: .get).response{ response in
-            switch response.result {
-            case .success(let responseData):
-                if responseData != nil {
-                    self.restImage.image = UIImage(data: responseData!)
-                    self.restImage.contentMode = .scaleToFill
-                    if self.restImage.image == nil {
-                        self.restImage.image = UIImage(named: "restaurant_placeholder")
-                        self.restImage.contentMode = .center
-                    }
-                }else {
-                    self.restImage.image = UIImage(named: "restaurant_placeholder")
-                    self.restImage.contentMode = .center
-                }
-            case .failure(let error):
-                self.restImage.image = UIImage(named: "restaurant_placeholder")
-                self.restImage.contentMode = .center
-            }
-        }
     }
 }

@@ -41,18 +41,31 @@ struct CommonAPIParams {
             "dbname" : Cart.shared.dbname,
         ]
     }
+    static func groceryBase() -> [String: Any] {
+        return [
+            "api_id": AppConfig.API_ID,
+            "api_key": AppConfig.OldAPI_KEY,
+            "devicetoken": APPDELEGATE.deviceToken,
+            "devicedetails": APPDELEGATE.getMobileInfo(),
+            "appversion": APPDELEGATE.getAppVersion(),
+            "devicetype": AppConfig.DeviceType,
+            "customer_id": APPDELEGATE.userResponse?.customer.customerId ?? "",
+            "dbname" : GroceryCartData.shared.dbname,
+            "type" : moduleType
+        ]
+    }
 }
 
 class WebServices: NSObject {
 
     public static func placeOrderService(
-        parameters: [String: AnyObject],
+        parameters: [String: AnyObject], serviceType: String,
         successHandler: @escaping (_ successResult: PlaceOrderResponse) -> Void,
         errorHandler: @escaping (_ errorResult: String) -> Void
     ) {
 
-        let requestUrl = OldServiceType.BASE + "add-order/"
-
+        let requestUrl = OldServiceType.BASE + serviceType
+        print("Request url: \(requestUrl) \n Request Data: \(parameters.json) \n===========================================================================")
         AF.request(
             requestUrl,
             method: .post,
@@ -86,7 +99,7 @@ class WebServices: NSObject {
                         successHandler(decodedResponse)
                         return
                     }
-                    Cart.shared.orderNumber = decodedResponse.data.oid ?? ""
+                    Cart.shared.orderNumber = decodedResponse.data?.oid ?? ""
 
                     // ❌ API Error
                     errorHandler(

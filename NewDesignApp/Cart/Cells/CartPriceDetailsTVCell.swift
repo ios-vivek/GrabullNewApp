@@ -67,7 +67,8 @@ class CartPriceDetailsTVCell: UITableViewCell {
             let subt = Cart.shared.roundValue2Digit(value: details.subTotal)
             let dist = Cart.shared.roundValue2Digit(value: details.discount)
             let taxt = Cart.shared.roundValue2Digit(value: details.tax)
-
+                discountValueLbl.isHidden = dist <= 0 ? true : false
+                discountLbl.isHidden = dist <= 0 ? true : false
             subtotalValueLbl.text = "\(UtilsClass.getCurrencySymbol())\(subt.toString())"
             discountValueLbl.text = "-\(UtilsClass.getCurrencySymbol())\(dist.toString())"
             taxesValueLbl.text = "\(UtilsClass.getCurrencySymbol())\(taxt.toString())"
@@ -83,9 +84,6 @@ class CartPriceDetailsTVCell: UITableViewCell {
             if Cart.shared.isTips {
                 tipsLbl.isHidden = false
                 tipsLbl.text = "🌟 \(UtilsClass.getCurrencySymbol())\(Cart.shared.tipsAmount.toString()) added tips"
-                
-                temp = details.total + Cart.shared.tipsAmount + details.deliveryCharge
-                temp = Cart.shared.roundValue2Digit(value: temp)
                 totalValueLbl.text = "\(UtilsClass.getCurrencySymbol())\(temp.toString())"
                 checkoutButton.setFontWithString(text: "\(str): \(UtilsClass.getCurrencySymbol())\(temp.toString())", fontSize: 16)
             }
@@ -102,8 +100,8 @@ class CartPriceDetailsTVCell: UITableViewCell {
                 deliveryChargeValueLbl.text = "\(UtilsClass.getCurrencySymbol())\(details.deliveryCharge.toString())"
             }
             if Cart.shared.isDonate {
-                temp = details.total + Cart.shared.donateAmount + Cart.shared.tipsAmount + details.deliveryCharge
-                temp = Cart.shared.roundValue2Digit(value: temp)
+               // temp = details.total + Cart.shared.donateAmount + Cart.shared.tipsAmount + details.deliveryCharge
+               // temp = Cart.shared.roundValue2Digit(value: temp)
                 totalValueLbl.text = "\(UtilsClass.getCurrencySymbol())\(temp.toString())"
                 checkoutButton.setFontWithString(text: "\(str): \(UtilsClass.getCurrencySymbol())\(temp.toString())", fontSize: 16)
                 donateLbl.isHidden = false

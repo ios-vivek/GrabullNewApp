@@ -96,7 +96,6 @@ extension PaymentVC: UITableViewDelegate, UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if viaConirmPage {
-            Cart.shared.cardNumber = self.cardDetails[indexPath.row].cardn
             self.delegate?.selectedCardDetails()
             self.navigationController?.popViewController(animated: true)
         }

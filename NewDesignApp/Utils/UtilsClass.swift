@@ -130,6 +130,7 @@ class UtilsClass: NSObject {
         if let savedAdd = defaults.object(forKey: "inspairedPast") as? [String] {
             restList = savedAdd
         }
+        print("restList \(restList)")
         return restList
     }
     public static func savePastOrderRest(pastOrderRest: PastOrderRest) {
@@ -223,25 +224,30 @@ public static func getAttributedString(str1: String, str2: String) -> NSMutableA
     return combination
 }
     
-    public static func getOptionAttributedString(str1: String, str2: String) -> NSMutableAttributedString{
-        let myString1:NSString = str1 as NSString
-        let myString2:NSString = str2 as NSString
-        var myMutableString1 = NSMutableAttributedString()
-        myMutableString1 = NSMutableAttributedString(string: myString1 as String, attributes: [NSAttributedString.Key.font:UIFont.boldSystemFont(ofSize: 16.0)])
-       // myMutableString1.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.green, range: NSRange(location:0,length:myString1.length))
-        
-        var myMutableString2 = NSMutableAttributedString()
-       // myMutableString2 = NSMutableAttributedString(string: myString2 as String, attributes: [NSAttributedString.Key.font:UIFont.boldSystemFont(ofSize: 17.0)])
-        //myMutableString2.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.red, range: NSRange(location:0,length:myString2.length))
-        myMutableString2.addAttributes([NSAttributedString.Key.backgroundColor: UIColor.red, NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 16.0)], range: NSRange(location: 0, length: myMutableString2.length))
+    public static func getOptionAttributedString(str1: String, str2: String) -> NSMutableAttributedString {
 
-        
-        
-        let combination = NSMutableAttributedString()
-        
-        combination.append(myMutableString1)
-        combination.append(myMutableString2)
-        return combination
+        let result = NSMutableAttributedString()
+
+        let first = NSAttributedString(
+            string: str1,
+            attributes: [
+                .font: UIFont.systemFont(ofSize: 16),
+                .foregroundColor: UIColor.black
+            ]
+        )
+
+        let second = NSAttributedString(
+            string: str2,
+            attributes: [
+                .font: UIFont.boldSystemFont(ofSize: 16),
+                .foregroundColor: kOrangeColor
+            ]
+        )
+
+        result.append(first)
+        result.append(second)
+
+        return result
     }
 
     public static func getFloatFromString(stringNumber: String) -> Float{
@@ -434,8 +440,10 @@ public static func getAttributedString(str1: String, str2: String) -> NSMutableA
         let address = LocationAddress()
         address.latLong = coordinate
         address.subLocality = ""
-
-        for component in result.address_components {
+        guard let components = result.address_components else {
+            return
+        }
+        for component in components {
 
             let types = component.types
 
@@ -469,6 +477,7 @@ public static func getAttributedString(str1: String, str2: String) -> NSMutableA
 
         // 🔹 Assign once
         APPDELEGATE.selectedLocationAddress = address
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "location"), object: nil)
     }
     public static func getStringDateFromString(stringDate: String) -> String {
         let currentTimeZone = TimeZone.current
@@ -751,7 +760,22 @@ class LocationAddress: NSObject {
     var route : String = ""
     
     override init() {
-        
+        super.init()
+        self.addressID = UUID().uuidString
+        self.streetNumber = "571"
+        self.route = "Massachusetts Ave"
+        self.premise = "571"
+        self.subLocality = "Central Square"
+        self.city = "Cambridge"
+        self.state = "MA"
+        self.zipcode = "02139"
+        self.country = "United States"
+        self.locality = "Cambridge"
+        self.latLong = CLLocationCoordinate2D(latitude: 42.3635, longitude: -71.1005)
+    }
+
+    static func defaultLocation() -> LocationAddress {
+        return LocationAddress()
     }
     init(json: NSDictionary) { // Dictionary object
         self.zipcode = json["zipcode"] as? String

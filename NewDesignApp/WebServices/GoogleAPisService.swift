@@ -7,19 +7,35 @@
 
 import UIKit
 import Alamofire
-import CoreLocation
 
 class GoogleAPisService: NSObject {
+    private static var autocompleteSessionToken: String?
+
+    public static func resetAutocompleteSessionToken() {
+        autocompleteSessionToken = nil
+    }
     public static func googleAddressSearch<T:Codable>(searchtext: String, forModelType modelType: T.Type, SuccessHandler: @escaping (APIResponse<T>) -> Void, ErrorHandler: @escaping (String) -> Void) {
-        if APPDELEGATE.selectedLocationAddress.latLong == nil {
-            APPDELEGATE.selectedLocationAddress = LocationAddress()
-            let latLong : CLLocationCoordinate2D = CLLocationCoordinate2DMake(0.0, 0.0)
-            APPDELEGATE.selectedLocationAddress.latLong = latLong
+        // Ensure we have a session token for Places Autocomplete (reuse across a single user session)
+        if autocompleteSessionToken == nil {
+            autocompleteSessionToken = UUID().uuidString
         }
-        let requestUrl = "https://maps.googleapis.com/maps/api/place/autocomplete/json?input=\(searchtext)&components=country:us&types=establishment&location=\(APPDELEGATE.selectedLocationAddress.latLong.latitude)%2C\(APPDELEGATE.selectedLocationAddress.latLong.longitude)&radius=500&key=\(GoogleApiKey)"
-        print("google suggestion requestUrl: \(requestUrl)")
-        AF.request(requestUrl,
-                   method: .post,
+
+        let trimmedSearchText = searchtext.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        var components = URLComponents(string: "https://maps.googleapis.com/maps/api/place/autocomplete/json")!
+        components.queryItems = [
+            URLQueryItem(name: "input", value: trimmedSearchText),
+            URLQueryItem(name: "components", value: "country:us"),
+            URLQueryItem(name: "language", value: "en"),
+            URLQueryItem(name: "sessiontoken", value: autocompleteSessionToken),
+            URLQueryItem(name: "key", value: GoogleApiKey)
+        ]
+
+        let url = components.url!
+        print("google suggestion requestUrl: \(url.absoluteString)")
+
+        AF.request(url.absoluteString,
+                   method: .get,
                    parameters: nil,
                    encoding: URLEncoding.default,
                    interceptor: nil)
@@ -51,7 +67,7 @@ class GoogleAPisService: NSObject {
         var components = URLComponents(string: "https://maps.googleapis.com/maps/api/geocode/json")!
         components.queryItems = [
             URLQueryItem(name: "address", value: searchtext),
-            URLQueryItem(name: "key", value: "AIzaSyAcpD8juDqASzLRWCdNP-ns4UzdVph1koU")
+            URLQueryItem(name: "key", value: "\(GoogleApiKey)")
         ]
 
         let url = components.url!

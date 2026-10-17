@@ -18,7 +18,7 @@ class TrackOrderVC: UIViewController, WKNavigationDelegate {
 //        webView = WKWebView()
 //           webView.navigationDelegate = self
 //        webView.frame
-        
+        self.view.backgroundColor = .white
         
         webView = WKWebView(frame: .zero, configuration: WKWebViewConfiguration())
         if let webView = webView {

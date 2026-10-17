@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Alamofire
 
 protocol GalleryDelegate: AnyObject {
     func selectedGalleryView()
@@ -134,16 +133,7 @@ var restData: CustomRestDetails?
         userRatinglbl.text = "\(restData?.ratingHD1 ?? "")"
         reorderedLbl.text = "\(restData?.ratingHD2 ?? "")"
         
-        let url = restImage
-        AF.request( url,method: .get).response{ response in
-          switch response.result {
-           case .success(let responseData):
-               self.restImage.image = UIImage(data: responseData!, scale:1)
-
-           case .failure(let error):
-               print("error--->",error)
-           }
-       }
+        self.restImage.setImage(urlString: restImage)
       
         deliveryBtn.isUserInteractionEnabled = false
         pickupBtn.isUserInteractionEnabled = false

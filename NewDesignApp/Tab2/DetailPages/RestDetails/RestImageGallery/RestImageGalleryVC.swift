@@ -39,6 +39,13 @@ extension RestImageGalleryVC: UICollectionViewDelegate,UICollectionViewDataSourc
 
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let viewer = ImageViewerVC()
+        viewer.modalPresentationStyle = .fullScreen
+        viewer.images = galleryImages
+        viewer.startIndex = indexPath.item
+        self.present(viewer, animated: true)
+    }
     
 }
 extension RestImageGalleryVC: UICollectionViewDelegateFlowLayout{
@@ -69,3 +76,4 @@ extension RestImageGalleryVC: UICollectionViewDelegateFlowLayout{
 //        }
 //    }
 }
+

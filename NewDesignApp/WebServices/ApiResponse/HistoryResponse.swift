@@ -53,6 +53,7 @@ struct OrderHistory: Codable {
         let tips2: Double
         let reward: Double
         let total: Double
+        let displayStatus: String?
 
         let details: String
         let orderItems: [OrderItem]
@@ -87,6 +88,8 @@ struct OrderHistory: Codable {
             case tips2
             case reward
             case total
+            case displayStatus
+
             case details
             case orderItems
             case addedItems

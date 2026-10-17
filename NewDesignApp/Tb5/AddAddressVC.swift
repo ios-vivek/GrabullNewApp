@@ -12,6 +12,7 @@ protocol ReloadNewAddressDelegate: AnyObject {
 class AddAddressVC: UIViewController {
     @IBOutlet weak var address1TxtFld: UITextField!
     @IBOutlet weak var address2TxtFld: UITextField!
+    @IBOutlet weak var landmarkTxtFld: UITextField!
     @IBOutlet weak var cityTxtFld: UITextField!
     @IBOutlet weak var stateTxtFld: UITextField!
     @IBOutlet weak var zipcodeTxtFld: UITextField!
@@ -21,6 +22,7 @@ class AddAddressVC: UIViewController {
     weak var delegate: ReloadNewAddressDelegate?
 
     var selectedAddressType = "Home"
+    var locationAddress: LocationAddress?
     var isUpdateAddress: Bool = false
     var fromCheckoutPage: Bool = false
     var updateUserAdd: UserAdd?
@@ -33,11 +35,12 @@ class AddAddressVC: UIViewController {
         addressType.setTextColor()
         addressType.addTarget(self, action: #selector(segmentedControlValueChanged(_:)), for: .valueChanged)
         if isUpdateAddress {
-            address1TxtFld.text = updateUserAdd?.add1
-            address2TxtFld.text = updateUserAdd?.add2
+            address1TxtFld.text = updateUserAdd?.street
+            address2TxtFld.text = updateUserAdd?.add1
             cityTxtFld.text = updateUserAdd?.city
             stateTxtFld.text = updateUserAdd?.state
             zipcodeTxtFld.text = updateUserAdd?.zip
+            landmarkTxtFld.text = updateUserAdd?.add2
             if updateUserAdd?.type == "Home" {
                 addressType.selectedSegmentIndex = 0
             }
@@ -47,18 +50,33 @@ class AddAddressVC: UIViewController {
             if updateUserAdd?.type == "Other" {
                 addressType.selectedSegmentIndex = 2
             }
+        } else {
+            updateData()
         }
         headerLbl.text = isUpdateAddress ? "Update Address" : "New Address"
         saveBtn.setFontWithString(text: isUpdateAddress ? "UPDATE" : "SAVE", fontSize: 14)
         self.view.backgroundColor = .white
         address1TxtFld.setPlaceHolderColor(.gGray200)
         address2TxtFld.setPlaceHolderColor(.gGray200)
+        landmarkTxtFld.setPlaceHolderColor(.gGray200)
         cityTxtFld.setPlaceHolderColor(.gGray200)
         zipcodeTxtFld.setPlaceHolderColor(.gGray200)
         stateTxtFld.setPlaceHolderColor(.gGray200)
+        
+        // Add tap gesture to state text field
+        stateTxtFld.isUserInteractionEnabled = true
+        let stateTap = UITapGestureRecognizer(target: self, action: #selector(stateFieldTapped))
+        stateTxtFld.addGestureRecognizer(stateTap)
 
 
-
+    }
+    func updateData() {
+        address1TxtFld.text = locationAddress?.streetNumber
+        address2TxtFld.text = locationAddress?.route
+        landmarkTxtFld.text = ""
+        cityTxtFld.text = locationAddress?.city
+        zipcodeTxtFld.text = locationAddress?.zipcode
+        stateTxtFld.text = locationAddress?.state
     }
     @objc func segmentedControlValueChanged(_ sender: UISegmentedControl) {
         //self.delegate?.selectedPaymentType(index: sender.selectedSegmentIndex)
@@ -73,16 +91,24 @@ class AddAddressVC: UIViewController {
         }
     }
     
+    @objc func stateFieldTapped() {
+        let popupVC = StateSelectionPopupVC()
+        popupVC.delegate = self
+        popupVC.modalPresentationStyle = .overCurrentContext
+        popupVC.modalTransitionStyle = .crossDissolve
+        self.present(popupVC, animated: true)
+    }
+    
     @IBAction func backAction() {
         self.navigationController?.popViewController(animated: true)
     }
     @IBAction func submitAction() {
-        if address1TxtFld.text!.isEmpty {
-            self.showAlert(title: "Error", msg: "Please enter address1.")
-            return
-        }
-        else if address2TxtFld.text!.isEmpty {
-            self.showAlert(title: "Error", msg: "Please enter address2.")
+//        if address1TxtFld.text!.isEmpty {
+//            self.showAlert(title: "Error", msg: "Please enter address.")
+//            return
+//        }
+         if address2TxtFld.text!.isEmpty {
+            self.showAlert(title: "Error", msg: "Please enter address.")
             return
         }
         else if cityTxtFld.text!.isEmpty {
@@ -99,9 +125,81 @@ class AddAddressVC: UIViewController {
         }
         else {
             if isUpdateAddress {
-                self.updateAddressService()
+                let fullAddress = """
+
+                   \(address1TxtFld.text ?? ""),
+
+                   \(address2TxtFld.text ?? ""),
+
+                   \(cityTxtFld.text ?? ""),
+
+                   \(stateTxtFld.text ?? ""),
+
+                   \(zipcodeTxtFld.text ?? "")
+
+                   """
+
+                   validateGoogleAddress(text: fullAddress) { isValid in
+
+                       DispatchQueue.main.async {
+
+                           if isValid {
+
+                               self.updateAddressService()
+
+                           } else {
+
+                               self.showAlert(
+
+                                   title: "Invalid Address",
+
+                                   msg: "Please enter a valid address recognized by Google."
+
+                               )
+
+                           }
+
+                       }
+
+                   }
             }else {
-                self.addAddressService()
+                let fullAddress = """
+
+                   \(address1TxtFld.text ?? ""),
+
+                   \(address2TxtFld.text ?? ""),
+
+                   \(cityTxtFld.text ?? ""),
+
+                   \(stateTxtFld.text ?? ""),
+
+                   \(zipcodeTxtFld.text ?? "")
+
+                   """
+
+                   validateGoogleAddress(text: fullAddress) { isValid in
+
+                       DispatchQueue.main.async {
+
+                           if isValid {
+
+                               self.addAddressService()
+
+                           } else {
+
+                               self.showAlert(
+
+                                   title: "Invalid Address",
+
+                                   msg: "Please enter a valid address recognized by Google."
+
+                               )
+
+                           }
+
+                       }
+
+                   }
             }
            // self.navigationController?.popViewController(animated: true)
         }
@@ -109,8 +207,9 @@ class AddAddressVC: UIViewController {
     func addAddressService() {
         var parameters = CommonAPIParams.base()
         parameters.merge([
-            "add1" : address1TxtFld.text!,
-            "add2" : address2TxtFld.text!,
+            "street" : address1TxtFld.text ?? "",
+            "add1" : address2TxtFld.text!,
+            "add2" : landmarkTxtFld.text ?? "",
             "city" : cityTxtFld.text!,
             "state" : stateTxtFld.text!,
             "zip" : zipcodeTxtFld.text!,
@@ -122,13 +221,14 @@ class AddAddressVC: UIViewController {
             let alertController = UIAlertController(title: "Success", message: "Address added successfully.", preferredStyle: .alert)
             let OKAction = UIAlertAction(title: "Ok", style: .default) { action in
                 if self.fromCheckoutPage {
-                    let add = UserAdd(id: "0", street: "", add1: self.address1TxtFld.text!, add2: self.address2TxtFld.text!, add3: "", type: self.selectedAddressType, city: self.cityTxtFld.text!, state: self.stateTxtFld.text!, zip: self.zipcodeTxtFld.text!)
+                    let add = UserAdd(id: "0", street: self.address1TxtFld.text ?? "", add1: self.address2TxtFld.text!, add2: self.landmarkTxtFld.text!, add3: "", type: self.selectedAddressType, city: self.cityTxtFld.text!, state: self.stateTxtFld.text!, zip: self.zipcodeTxtFld.text!)
 //                    let deliveryZipsArray = Cart.shared.restDetails.deliveryzip.components(separatedBy: ",")
 //                    if !deliveryZipsArray.contains(self.zipcodeTxtFld.text!) {
 //                        self.showAlert(title: "Error", msg: "Oops! Out of Delivery Radius, We Deliver Within 4 Miles Radius..")
 //                        return
 //                    }
                     Cart.shared.userAddress = add
+                    GroceryCartData.shared.userAddress = add
                     self.delegate?.addednewAddress()
                 }
                 self.navigationController?.popViewController(animated: true)
@@ -153,8 +253,9 @@ class AddAddressVC: UIViewController {
     func updateAddressService() {
         var parameters = CommonAPIParams.base()
         parameters.merge([
-            "add1" : address1TxtFld.text!,
-            "add2" : address2TxtFld.text!,
+            "street" : address1TxtFld.text ?? "",
+            "add1" : address2TxtFld.text!,
+            "add2" : landmarkTxtFld.text ?? "",
             "city" : cityTxtFld.text!,
             "state" : stateTxtFld.text!,
             "zip" : zipcodeTxtFld.text!,
@@ -185,6 +286,51 @@ class AddAddressVC: UIViewController {
             UtilsClass.hideProgressHud(view: self.view)
         }
     }
+    func validateGoogleAddress(text: String, completion: @escaping (Bool) -> Void) {
+
+        UtilsClass.showProgressHud(view: self.view)
+
+        GoogleAPisService.googleAddressLatLong(
+            searchtext: text,
+            forModelType: GoogleAddressLatLongResponse.self
+        ) { success in
+
+            UtilsClass.hideProgressHud(view: self.view)
+
+            guard let result = success.data.results?.first else {
+                completion(false)
+                return
+            }
+
+            guard let components = result.address_components else {
+                completion(false)
+                return
+            }
+
+            let types = components.flatMap { $0.types ?? [] }
+
+          //  let hasStreetNumber = types.contains("street_number")
+            let hasRoute = types.contains("route")
+            let hasCity = types.contains("locality") ||
+                          types.contains("administrative_area_level_2")
+            let hasState = types.contains("administrative_area_level_1")
+            let hasZip = types.contains("postal_code")
+            let hasCountry = types.contains("country")
+
+            let isValid = hasRoute &&
+                          hasCity &&
+                          hasState &&
+                          hasZip &&
+                          hasCountry
+
+            completion(isValid)
+
+        } ErrorHandler: { error in
+
+            UtilsClass.hideProgressHud(view: self.view)
+            completion(false)
+        }
+    }
     /*
     // MARK: - Navigation
 
@@ -195,4 +341,10 @@ class AddAddressVC: UIViewController {
     }
     */
 
+}
+
+extension AddAddressVC: StateSelectionDelegate {
+    func didSelectState(_ state: String) {
+        stateTxtFld.text = state
+    }
 }

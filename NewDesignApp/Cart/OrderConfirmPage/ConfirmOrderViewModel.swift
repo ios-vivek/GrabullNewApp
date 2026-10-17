@@ -1,12 +1,10 @@
 import Foundation
-import Stripe
-import StripePaymentSheet
 
 final class ConfirmOrderViewModel {
     
     // MARK: - State
     var selectedPaymentType: Int = 0
-    var payBy: PayBy = .Stripe
+    var payBy: PayBy = .card
     var isSpecialSelected = false
     
     var userRewardAmount: String = "0.0"
@@ -23,8 +21,9 @@ final class ConfirmOrderViewModel {
     var hideLoader: (() -> Void)?
     var showError: ((String) -> Void)?
     var orderPlaced: (() -> Void)?
-    // Payment presentation binding: view controller will present PaymentSheet when provided
-    var presentPaymentSheet: ((PaymentSheet) -> Void)?
+    var goToHomeAfterPayment: (() -> Void)?
+    var presentAuthorizeURL: ((URL) -> Void)?
+    var presentFeedbackWidget: ((String) -> Void)?
     
     // MARK: - API
     func fetchRewards() {
@@ -58,7 +57,7 @@ final class ConfirmOrderViewModel {
             let toppings = item.restItemTopping.flatMap { $0.option }
 
             let toppingText = toppings.map {
-                $0.price > 0 ? "\($0.optionHeading) \($0.price)" : $0.optionHeading
+                $0.price > 0 ? "\($0.optionHeading) $\($0.price)" : $0.optionHeading
             }.joined(separator: " | ")
 
             let toppingAmount = Cart.shared.roundValue2Digit(
@@ -81,9 +80,9 @@ final class ConfirmOrderViewModel {
                 tax: item.restItem.tax,
                 menutype: size.menuType,
                 addedInst: item.instructionText,
-                sizeh: size.sizeKey,
+                sizeh: size.name,
                 id: item.restItem.id,
-                size: size.name,
+                size: size.sizeKey,
                 price: "\(size.price)",
                 heading: item.restItem.heading,
                 qty: "\(size.itemQty)"
@@ -97,14 +96,14 @@ final class ConfirmOrderViewModel {
                           transactionIdentifier: String) {
         switch selectedPaymentType {
         case 1:
-            payBy = .Gift
+            payBy = .gift
             if Cart.shared.giftNumber.isEmpty {
                 showError?("Please enter gift number")
                 return
             }
             placeOrder(recipientFName: recipientFName, recipientLName: recipientLName, recipientPhone: recipientPhone, transactionIdentifier: transactionIdentifier)
         default:
-            payBy = .Stripe
+            payBy = .card
             placeOrder(recipientFName: recipientFName, recipientLName: recipientLName, recipientPhone: recipientPhone, transactionIdentifier: transactionIdentifier)
         }
     }
@@ -142,38 +141,31 @@ final class ConfirmOrderViewModel {
         let cartRequest = CartRequest(
             name: APPDELEGATE.userResponse?.customer.fullName ?? "",
             recipientphone: recipientPhone,
-            cvv: selectedPaymentType == 0 ? Cart.shared.cardCvv : "",
             email: APPDELEGATE.userResponse?.customer.email ?? "",
             orderType: "\(Cart.shared.orderType)".capitalized,
             customerId: APPDELEGATE.userResponse?.customer.customerId ?? "",
             add2: address?.add2 ?? "",
             devicetype: AppConfig.DeviceType,
-            newcard: "New",
             holddate: Cart.shared.orderDate == .ASAP ? "" : "\(holddate) \(holdTime)",
             dcharge: "\(price.deliveryCharge)",
             holdtime: Cart.shared.orderDate == .ASAP ? "No" : "Yes",
             items: buildItemList(),
             apiKey: AppConfig.OldAPI_KEY,
             apiId: AppConfig.API_ID,
-            addcard: "No",
-            cardholder: selectedPaymentType == 0 ? Cart.shared.cardHolder : "",
             offeramount: price.offeramount,
-            expiry: selectedPaymentType == 0 ? Cart.shared.cardExpiry : "",
             state: address?.state ?? "",
             recipientname: "\(recipientFName) \(recipientLName)",
-            cardno: selectedPaymentType == 0 ? Cart.shared.cardNumber : "",
             total: "\(price.total)",
             tips: Cart.shared.isTips ? "\(Cart.shared.tipsAmount)" : "0.0",
             transactionIdentifier: transactionIdentifier,
             dbname: Cart.shared.dbname,
             city: address?.city ?? "",
-            payBy: "\(payBy)",
+            payBy: payBy.rawValue,
             orderasGift: orderAsGift,
             scharge: "\(price.serviceCharge)",
             restaurantId: Cart.shared.restDetails.rid,
             donate: "\(donateAmount)",
             orderat: address?.type ?? "",
-            billingzip: selectedPaymentType == 0 ? Cart.shared.cardZip : "",
             did: Cart.shared.orderNumber,
             rewards: Cart.shared.isReward ? "\(Cart.shared.rewardAmount)" : "0.0",
             specialinstruction: Cart.shared.specialInstructionText,
@@ -194,35 +186,35 @@ final class ConfirmOrderViewModel {
         print(params.json)
             
             // MARK: - API Call
-        WebServices.placeOrderService(parameters: params) { response in
+        WebServices.placeOrderService(parameters: params, serviceType: "add-order/") { response in
             self.hideLoader?()
-            let orderData = response.data
-            Cart.shared.orderNumber = orderData.oid ?? ""
-            self.tempRequest?.oid = orderData.oid ?? ""
-            self.tempRequest?.orderId = orderData.orderId
-            if self.payBy == .Stripe, let stripe = orderData.gateway {
-                if response.status != "Success"{
-                    self.showError?("Something went wrong. Please try again later.")
-                }
-                else if stripe.chargeAmount > 0.0 && response.status == "Success"{
-                    self.tempRequest?.transaction = stripe.paymentIntent
-                    self.startPaymentFlow(custId: stripe.customer, epk: stripe.ephemeralKey, piId: stripe.paymentIntent, parameters: params)
-                } else {
-                    if response.status == "Success" {
-                        Cart.shared.supportNumber = orderData.support
-                        self.orderPlaced?()
-                    } else {
-                        self.showError?("Something went wrong. Please try again later.")
-                    }
-                }
-            } else {
-                if response.status == "Success" {
-                    Cart.shared.supportNumber = orderData.support
-                    self.orderPlaced?()
-                } else {
-                    self.showError?("Something went wrong. Please try again later.")
-                }
+            
+            // Check for error response first
+            if response.status != "Success" {
+                let errorMsg = response.error ?? "Something went wrong. Please try again later."
+                self.showError?(errorMsg)
+                return
             }
+            
+            guard let orderData = response.data else {
+                self.showError?("Invalid server response")
+                return
+            }
+            
+            Cart.shared.orderNumber = orderData.oid ?? ""
+            Cart.shared.orderTime = orderData.orderTime ?? ""
+            self.tempRequest?.oid = orderData.oid ?? ""
+            self.tempRequest?.orderId = orderData.orderId ?? ""
+
+            // New API contract: always open the returned orderUrl in browser if present.
+            let orderURL = (orderData.orderUrl ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            if !orderURL.isEmpty {
+                self.startAuthorizePaymentFlow(urlString: orderURL)
+                return
+            }
+
+            Cart.shared.supportNumber = orderData.support ?? ""
+            self.orderPlaced?()
         } errorHandler: { errorMessage in
             self.hideLoader?()
             self.showError?(errorMessage)
@@ -231,56 +223,101 @@ final class ConfirmOrderViewModel {
     }
     
     func setTempdata(temp: CartRequest) {
-        self.tempRequest = StripeConfirmRequest(restaurantId: temp.restaurantId, orderId: "", oid: "", transaction: "")
+        self.tempRequest = StripeConfirmRequest(restaurantId: temp.restaurantId, orderId: "", oid: "")
     }
 
-    // MARK: - Stripe Payment Helpers
-    func startPaymentFlow(custId: String, epk: String, piId: String, parameters: [String: AnyObject]) {
-        self.tempParam = parameters
-        var configuration = PaymentSheet.Configuration()
-        configuration.merchantDisplayName = "Grabull"
-        configuration.customer = .init(id: custId, ephemeralKeySecret: epk)
-
-        let paymentSheet = PaymentSheet(paymentIntentClientSecret: piId, configuration: configuration)
-
-        presentPaymentSheet?(paymentSheet)
-    }
-
-    func paymentResultReceived(_ paymentResult: PaymentSheetResult) {
-        switch paymentResult {
-        case .completed:
-            print("Your order is confirmed")
-            self.stripeConfirmedApi(request: self.tempRequest)
-        case .canceled:
-            print("Payment canceled")
-           // showError?("Payment was canceled")
-//            self.tempRequest?.transaction = "123"
-//            self.stripeConfirmedApi(request: self.tempRequest)
-        case .failed(let error):
-            print("Payment failed: \n\(error.localizedDescription)")
-            showError?(error.localizedDescription)
+    func startAuthorizePaymentFlow(urlString: String) {
+        guard let url = URL(string: urlString) else {
+            showError?("Invalid payment link")
+            return
         }
+        presentAuthorizeURL?(url)
+    }
+
+
+    
+    func buildFeedbackWidgetHTML(orderId: String) -> String {
+        let fname = APPDELEGATE.userResponse?.customer.firstName ?? ""
+        let lname = APPDELEGATE.userResponse?.customer.lastName ?? ""
+        let email = APPDELEGATE.userResponse?.customer.email ?? ""
+        let phone = APPDELEGATE.userResponse?.customer.phone ?? ""
+        let today = Date().formatted(date: .abbreviated, time: .omitted)
+        
+        return """
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta http-equiv="Content-Security-Policy" content="default-src *; script-src * 'unsafe-inline' 'unsafe-eval'; style-src * 'unsafe-inline'">
+            <title>Feedback</title>
+            <style>
+                body { margin: 0; padding: 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+                #loading { text-align: center; padding: 40px; color: #666; }
+            </style>
+        </head>
+        <body>
+            <div id="loading">Loading feedback form...</div>
+            <div id="InstantFeedbackWidget"></div>
+            <script src="https://static.sitejabber.com/js/widget.min.js"></script>
+            <script>
+                window.addEventListener('load', function() {
+                    if (typeof STJR !== 'undefined' && STJR.InstantFeedbackWidget) {
+                        new STJR.InstantFeedbackWidget({
+                            id: 'InstantFeedbackWidget',
+                            url: 'grabull.com',
+                            language: 'en',
+                            user: {
+                                first_name: '\(fname)',
+                                last_name: '\(lname)',
+                                email: '\(email)',
+                                phone: '\(phone)'
+                            },
+                            order_date: '\(today)',
+                            order_id: '\(orderId)'
+                        }).render();
+                        document.getElementById('loading').style.display = 'none';
+                    }
+                });
+            </script>
+        </body>
+        </html>
+        """
     }
     
-    func stripeConfirmedApi(request: StripeConfirmRequest?) {
+    func orderConfirmedApi(request: StripeConfirmRequest?) {
         guard let finalRequest = request else { return }
         var parameters = CommonAPIParams.base()
         parameters.merge([
             "restaurant_id" : finalRequest.restaurantId,
             "order_id" : finalRequest.orderId,
             "oid" : finalRequest.oid,
-            "transaction" : finalRequest.transaction,
-            "items" : self.tempParam["items"] ?? []
+           // "transaction" : finalRequest.transaction
+           // "items" : self.tempParam["items"] ?? []
         ]) { _, new in new }
         self.showLoader?()
         WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.stripeConfirmedOrder, forModelType: StripeConfirmResponse.self) { success in
             self.hideLoader?()
-            Cart.shared.orderNumber = success.data.data.orderId
-            Cart.shared.supportNumber = success.data.data.support
+
+            if success.data.status == "Success" && success.data.code == 200 {
+//                let feedbackHTML = self.buildFeedbackWidgetHTML(orderId: finalRequest.oid)
+//                self.presentFeedbackWidget?(feedbackHTML)
+                
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    Cart.shared.refreshCartData()
+                    self.goToHomeAfterPayment?()
+                }
+                return
+            }
+
+            Cart.shared.orderNumber = success.data.data.orderId ?? ""
+            Cart.shared.supportNumber = success.data.data.support ?? ""
+            Cart.shared.orderTime = success.data.data.orderTime ?? ""
             self.orderPlaced?()
             
         } ErrorHandler: { error in
             self.hideLoader?()
+            self.showError?(error)
         }
     }
 }

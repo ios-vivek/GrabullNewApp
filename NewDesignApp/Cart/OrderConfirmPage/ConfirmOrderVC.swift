@@ -6,14 +6,13 @@
 //
 
 import UIKit
-import Stripe
-import StripePaymentSheet
+import SafariServices
+import WebKit
 
-//import PassKit
-enum PayBy {
-    case Cash
-    case Gift
-    case Stripe
+enum PayBy: String {
+    case cash = "Cash"
+    case gift = "Gift"
+    case card = "card"
 }
 enum CellTypeSelected: Int {
     case Restname
@@ -29,15 +28,21 @@ enum CellTypeSelected: Int {
     case Totalprice
     case TotalRowsCount
 }
-class ConfirmOrderVC: UIViewController {
-    private var paymentSheet: PaymentSheet?
+class ConfirmOrderVC: UIViewController, SFSafariViewControllerDelegate {
     @IBOutlet weak var cartTableView: UITableView!
-//let sectionArr = ["restname","deliveryto", "deliveryat", "SendAsGift", "Special","payment", "Redeem", "tips", "donate", "itemdetails", "totalprice"]
+//let sectionArr = ["restname","deliveryto", "deliveryat", "SendAsGift, "Special","payment, "Redeem", "tips", "donate", "itemdetails", "totalprice"]
     private let viewModel = ConfirmOrderViewModel()
-    var payBy = PayBy.Stripe
+    var payBy = PayBy.card
     var recipientfName: String = ""
     var recipientlName: String = ""
     var recipientPhone: String = ""
+    
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        controller.dismiss(animated: true)
+        // stripeConfirmedApi will handle showing/hiding the loader
+       // self.viewModel.tempRequest?.transaction = "Authorize"
+        self.viewModel.orderConfirmedApi(request: self.viewModel.tempRequest)
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         Cart.shared.isTips = false
@@ -47,12 +52,11 @@ class ConfirmOrderVC: UIViewController {
         Cart.shared.alternateNumber = ""
         Cart.shared.isReward =  false
         Cart.shared.rewardAmount =  0.0
-        Cart.shared.cardNumber = ""
-        Cart.shared.cardCvv = ""
-        Cart.shared.cardExpiry = ""
-        Cart.shared.cardHolder = ""
-        Cart.shared.cardZip = ""
         // Do any additional setup after loading the view.
+        let details = Cart.shared.getAllPriceDeatils()
+        let tipsAmount = (details.subTotal * 10) / 100
+        Cart.shared.tipsAmount = Float(tipsAmount)
+        Cart.shared.isTips = true
         bindViewModel()
         viewModel.fetchRewards()
         self.setDefaultBack()
@@ -90,19 +94,39 @@ class ConfirmOrderVC: UIViewController {
                ) as! FinalOrderPageVC
                self?.navigationController?.pushViewController(vc, animated: true)
            }
-        // PaymentSheet presentation: view model will provide a configured PaymentSheet to present
-        viewModel.presentPaymentSheet = { [weak self] paymentSheet in
-            guard let self = self else { return }
-            paymentSheet.present(from: self) { paymentResult in
-                self.viewModel.paymentResultReceived(paymentResult)
-            }
+
+           viewModel.goToHomeAfterPayment = { [weak self] in
+               guard let self else { return }
+               Cart.shared.refreshCartData()
+               let tabbar = self.navigationController?.viewControllers[1] as? TabBarVC
+               if let tabbar {
+                   self.navigationController?.popToViewController(tabbar, animated: true)
+               } else {
+                   self.navigationController?.popToRootViewController(animated: true)
+               }
+           }
+
+        viewModel.presentAuthorizeURL = { [weak self] url in
+            guard let self else { return }
+            let safariVC = SFSafariViewController(url: url)
+            safariVC.delegate = self
+            safariVC.modalPresentationStyle = .fullScreen
+            self.present(safariVC, animated: true)
+        }
+        
+        viewModel.presentFeedbackWidget = { [weak self] htmlString in
+            guard let self else { return }
+            let feedbackViewController = FeedBackViewController(htmlString: htmlString)
+            let navController = UINavigationController(rootViewController: feedbackViewController)
+            navController.modalPresentationStyle = .fullScreen
+            self.present(navController, animated: true)
         }
        }
-   
+
     @IBAction func backAction() {
         self.navigationController?.popViewController(animated: true)
     }
-   
+
     func setAmountValue(sizes: Sizes, toppings: [SelectedTopping])-> Float {
         var price: Float = 0.0
         price = Float(sizes.price)! * Float(sizes.itemQty)
@@ -197,7 +221,9 @@ extension ConfirmOrderVC: UITableViewDelegate, UITableViewDataSource{
         case CellTypeSelected.SendAsGift.rawValue:
             return self.viewModel.orderAsGift == "Yes" ? 2 : 1
         case CellTypeSelected.Redeem.rawValue:
-            return self.viewModel.selectedPaymentType == 1 ? 0 : 1
+            if Float(viewModel.userRewardAmount) ?? 0.0 > 0.0 {
+                return self.viewModel.selectedPaymentType == 1 ? 0 : 1
+            } else {return 0}
 
         default:
             return 1
@@ -263,6 +289,7 @@ extension ConfirmOrderVC: UITableViewDelegate, UITableViewDataSource{
         case CellTypeSelected.Special.rawValue:
             let cell = tableView.dequeueReusableCell(withIdentifier: "SpecialRequestTVCell", for: indexPath) as! SpecialRequestTVCell
             cell.selectionStyle = .none
+            cell.delegate = self
             return cell
         case CellTypeSelected.Payment.rawValue:
             if indexPath.row == 0 {
@@ -280,7 +307,6 @@ extension ConfirmOrderVC: UITableViewDelegate, UITableViewDataSource{
                 else if self.viewModel.selectedPaymentType == 0 {
                     let cell = tableView.dequeueReusableCell(withIdentifier: "CardNumberTVCell", for: indexPath) as! CardNumberTVCell
                     cell.selectionStyle = .none
-                    cell.updateCardUI()
                     return cell
                 } else {
                     let cell = tableView.dequeueReusableCell(withIdentifier: "GiftNumberTVCell", for: indexPath) as! GiftNumberTVCell
@@ -298,6 +324,7 @@ extension ConfirmOrderVC: UITableViewDelegate, UITableViewDataSource{
         case CellTypeSelected.Tips.rawValue:
             let cell = tableView.dequeueReusableCell(withIdentifier: "TipsTVCell", for: indexPath) as! TipsTVCell
             cell.delegate = self
+            cell.updateValue(itemPrice: Double(Cart.shared.getAllPriceDeatils().subTotal))
             cell.selectionStyle = .none
             return cell
         case CellTypeSelected.Donate.rawValue:
@@ -370,12 +397,15 @@ extension ConfirmOrderVC: PaymentTypeDeledate {
     
     func selectedPaymentType(index: Int) {
         self.viewModel.selectedPaymentType = index
-        cartTableView.reloadData()
-        /*
-        if index == 2 {
-            openApplePay()
+
+        if index == 0 {
+            self.viewModel.payBy = .card
+            self.cartTableView.reloadData()
+            return
         }
-        */
+
+        self.viewModel.payBy = .card
+        cartTableView.reloadData()
     }
     func displayDefaultAlert(title: String?, message: String?) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -383,58 +413,12 @@ extension ConfirmOrderVC: PaymentTypeDeledate {
         alert.addAction(okAction)
         self.present(alert, animated: true, completion: nil)
     }
-    /*
-    func openApplePay() {
-#if DEBUG
-print("Running in Sandbox")
-#else
-print("Running in Production")
-#endif
-        let pricedetails: CheckoutPrice = Cart.shared.getAllPriceDeatils()
+}
 
-        let paymentItem = PKPaymentSummaryItem.init(label: "Grabull Food Order", amount: NSDecimalNumber(value: pricedetails.total))
-        let paymentNetworks = [PKPaymentNetwork.amex, .discover, .masterCard, .visa]
-        
-        if PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: paymentNetworks) {
-            let request = PKPaymentRequest()
-                request.currencyCode = "USD" // 1
-                request.countryCode = "US" // 2
-                request.merchantIdentifier = "merchant.com.grabull" // 3
-            request.merchantCapabilities = PKMerchantCapability.threeDSecure// 4
-                request.supportedNetworks = paymentNetworks // 5
-                request.paymentSummaryItems = [paymentItem] // 6
-            
-            guard let paymentVC = PKPaymentAuthorizationViewController(paymentRequest: request) else {
-            displayDefaultAlert(title: "Error", message: "Unable to present Apple Pay authorization.")
-            return
-        }
-            paymentVC.delegate = self
-            self.present(paymentVC, animated: true, completion: nil)
-            
-        } else {
-            displayDefaultAlert(title: "Error", message: "Unable to make Apple Pay transaction.")
-        }
-        
-       
-     }
-    */
-    
-}
-/*
-extension ConfirmOrderVC: PKPaymentAuthorizationViewControllerDelegate {
-    func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
-        dismiss(animated: true, completion: nil)
-    }
-    func paymentAuthorizationViewController(_ controller: PKPaymentAuthorizationViewController, didAuthorizePayment payment: PKPayment, handler completion: @escaping (PKPaymentAuthorizationResult) -> Void) {
-        print("token--\(payment.token.transactionIdentifier)")
-        dismiss(animated: true, completion: nil)
-       // displayDefaultAlert(title: "Success!", message: "The Apple Pay transaction was complete.")
-        self.addOrder(transactionIdentifier: "\(payment.token.transactionIdentifier)")
-    }
-}
-*/
 extension ConfirmOrderVC: TipsDelegate {
-    func tipsAction() {
+    func tipsAction(isTips: Bool, tipsAmount: Double) {
+        Cart.shared.tipsAmount = Float(tipsAmount)
+        Cart.shared.isTips = isTips
         cartTableView.reloadData()
     }
 }
@@ -476,10 +460,10 @@ extension ConfirmOrderVC: ReloadNewAddressDelegate {
     func addednewAddress() {
         cartTableView.reloadData()
     }
-    
 }
 extension ConfirmOrderVC: ChangePhoneNumberDelegate {
-    func changesNumber() {
+    func changesNumber(updatedNumber: String) {
+        Cart.shared.alternateNumber = updatedNumber
         cartTableView.reloadData()
     }
 }
@@ -522,5 +506,11 @@ extension ConfirmOrderVC: RecipientDetailsDelegate {
 extension ConfirmOrderVC: SelectedCardDeledate {
     func selectedCardDetails() {
         cartTableView.reloadData()
+    }
+}
+
+extension ConfirmOrderVC: SpecialInstructionDelegate {
+    func typedInstruction(msgTyped: String) {
+        Cart.shared.specialInstructionText = msgTyped
     }
 }

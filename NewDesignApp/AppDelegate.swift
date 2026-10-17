@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  NewDesignApp
+//  NewDesignApp piyush@grabull.com/Aryan@@79@12
 // https://www.grabull.com/web-api/
 //pass - admin / api_gb@2019
 
@@ -13,7 +13,6 @@ import UIKit
 import CoreLocation
 import IQKeyboardManagerSwift
 import UserNotifications
-import Stripe
 
 let APPDELEGATE = UIApplication.shared.delegate as! AppDelegate
 
@@ -37,7 +36,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        StripeAPI.defaultPublishableKey = "pk_test_51MBnMwI2xj9owfknjowsJGrw7fB1UdeSyAZIYqORBT7EgTY0wRP6fLb4hajFcE0ehOGIQQXTqc618DOaZQ8P0chT00Ut2oqKvN"
         IQKeyboardManager.shared.isEnabled = true
         IQKeyboardManager.shared.resignOnTouchOutside = true
         IQKeyboardManager.shared.enableAutoToolbar = true
@@ -121,15 +119,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     }
     
     func setupLoactionManager() {
-        locationManager.requestWhenInUseAuthorization();
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+        locationManager.requestWhenInUseAuthorization()
         if CLLocationManager.locationServicesEnabled() {
-            locationManager.delegate = self
-            locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
-            self.locationManager.requestAlwaysAuthorization()
             locationManager.startUpdatingLocation()
-        }
-        else{
-            print("Location service disabled");
+        } else {
+            print("Location service disabled")
         }
     }
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {

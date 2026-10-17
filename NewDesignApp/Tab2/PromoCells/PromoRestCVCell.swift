@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Alamofire
 
 protocol PromoCellDelegate: AnyObject {
     func didSelectPromoCell(promoRestaurant: Restaurant)

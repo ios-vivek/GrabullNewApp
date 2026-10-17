@@ -85,6 +85,7 @@ var gotResponseFromService = false
             let vc = story.instantiateViewController(withIdentifier: "RestDetailsVC") as! RestDetailsVC
             let customModel = success.data.toCustomModel()
             vc.restDetailsData = customModel
+            vc.restDetailsRes = success.data.data
             self.navigationController?.pushViewController(vc, animated: true)
             
         } ErrorHandler: { error in

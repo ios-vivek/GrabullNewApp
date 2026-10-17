@@ -14,6 +14,7 @@ class OrderDetailVC: UIViewController {
     @IBOutlet weak var tipLbl: UILabel!
     @IBOutlet weak var rewardLbl: UILabel!
     @IBOutlet weak var totalLbl: UILabel!
+    @IBOutlet weak var tip2LblTitle: UILabel!
     @IBOutlet weak var tip2Lbl: UILabel!
     @IBOutlet weak var customerNameLbl: UILabel!
     @IBOutlet weak var custPhoneLbl: UILabel!
@@ -34,6 +35,8 @@ class OrderDetailVC: UIViewController {
         customerNameLbl.text = "Name: \(hOrder.name)"
         custPhoneLbl.text = "Mobile: \(hOrder.phone)"
         orderTblView.backgroundColor = .white
+        tip2Lbl.isHidden = hOrder.tips2 > 0 ? false : true
+        tip2LblTitle.isHidden = hOrder.tips2 > 0 ? false : true
 
 
     }

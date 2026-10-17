@@ -25,6 +25,7 @@ import UIKit
             super.viewDidLoad()
             self.view.backgroundColor = pageBackgroundColor
             messageTxtView.backgroundColor = .clear
+            messageTxtView.textColor = .black
             tbl.backgroundColor = .clear
             restNameTextField.layer.borderWidth = 1
             restNameTextField.layer.borderColor = kborderColor.cgColor
