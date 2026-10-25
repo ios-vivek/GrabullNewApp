@@ -73,51 +73,7 @@ class CardNumberTVCell: UITableViewCell, UITextFieldDelegate {
         expiryTxtFld.setPlaceHolderColor(.gGray200)
         cvvTxtFld.setPlaceHolderColor(.gGray200)
         zipTxtFld.setPlaceHolderColor(.gGray200)
-
-
-
-
     }
-    func updateCardUI() {
-        cardTxtFld.text = Cart.shared.cardNumber
-        cardHolderTxtFld.text = Cart.shared.cardHolder
-    }
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            if let text = textField.text, let textRange = Range(range, in: text) {
-                let updatedText = text.replacingCharacters(in: textRange, with: string)
-                if textField == cardTxtFld {
-                    if updatedText.count <= 19 {
-                        Cart.shared.cardNumber = updatedText
-                    } else {
-                        return false
-                    }
-                }
-                if textField == expiryTxtFld {
-                    if updatedText.count <= 4 {
-                        Cart.shared.cardExpiry = updatedText
-                    }
-                    else {
-                        return false
-                    }
-                }
-                if textField == cvvTxtFld {
-                    if updatedText.count <= 4 {
-                        Cart.shared.cardCvv = updatedText
-                    } else {
-                        return false
-                    }
-                }
-                if textField == zipTxtFld {
-                    Cart.shared.cardZip = updatedText
-                }
-                if textField == cardHolderTxtFld {
-                    Cart.shared.cardHolder = updatedText
-                }
-               // print(Cart.shared.giftNumber)
-            }
-
-            return true
-        }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)

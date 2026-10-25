@@ -130,6 +130,7 @@ class UtilsClass: NSObject {
         if let savedAdd = defaults.object(forKey: "inspairedPast") as? [String] {
             restList = savedAdd
         }
+        print("restList \(restList)")
         return restList
     }
     public static func savePastOrderRest(pastOrderRest: PastOrderRest) {
@@ -223,25 +224,30 @@ public static func getAttributedString(str1: String, str2: String) -> NSMutableA
     return combination
 }
     
-    public static func getOptionAttributedString(str1: String, str2: String) -> NSMutableAttributedString{
-        let myString1:NSString = str1 as NSString
-        let myString2:NSString = str2 as NSString
-        var myMutableString1 = NSMutableAttributedString()
-        myMutableString1 = NSMutableAttributedString(string: myString1 as String, attributes: [NSAttributedString.Key.font:UIFont.boldSystemFont(ofSize: 16.0)])
-       // myMutableString1.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.green, range: NSRange(location:0,length:myString1.length))
-        
-        var myMutableString2 = NSMutableAttributedString()
-       // myMutableString2 = NSMutableAttributedString(string: myString2 as String, attributes: [NSAttributedString.Key.font:UIFont.boldSystemFont(ofSize: 17.0)])
-        //myMutableString2.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.red, range: NSRange(location:0,length:myString2.length))
-        myMutableString2.addAttributes([NSAttributedString.Key.backgroundColor: UIColor.red, NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 16.0)], range: NSRange(location: 0, length: myMutableString2.length))
+    public static func getOptionAttributedString(str1: String, str2: String) -> NSMutableAttributedString {
 
-        
-        
-        let combination = NSMutableAttributedString()
-        
-        combination.append(myMutableString1)
-        combination.append(myMutableString2)
-        return combination
+        let result = NSMutableAttributedString()
+
+        let first = NSAttributedString(
+            string: str1,
+            attributes: [
+                .font: UIFont.systemFont(ofSize: 16),
+                .foregroundColor: UIColor.black
+            ]
+        )
+
+        let second = NSAttributedString(
+            string: str2,
+            attributes: [
+                .font: UIFont.boldSystemFont(ofSize: 16),
+                .foregroundColor: kOrangeColor
+            ]
+        )
+
+        result.append(first)
+        result.append(second)
+
+        return result
     }
 
     public static func getFloatFromString(stringNumber: String) -> Float{
@@ -356,8 +362,8 @@ public static func getAttributedString(str1: String, str2: String) -> NSMutableA
             locationAddress.zipcode = placemark.postalCode
 
             // MARK: - Area Info
-            locationAddress.subLocality = placemark.subLocality
-            locationAddress.locality = placemark.locality
+            locationAddress.subLocality = placemark.subLocality ?? ""
+            locationAddress.locality = placemark.locality ?? ""
 
             // MARK: - Street Details
             locationAddress.streetNumber = placemark.subThoroughfare ?? ""
@@ -389,7 +395,7 @@ public static func getAttributedString(str1: String, str2: String) -> NSMutableA
             if APPDELEGATE.selectedLocationAddress.premise.isEmpty {
                 APPDELEGATE.selectedLocationAddress.premise = APPDELEGATE.selectedLocationAddress.streetNumber
             }
-            if APPDELEGATE.selectedLocationAddress.subLocality.isEmpty {
+            if let loc = APPDELEGATE.selectedLocationAddress.subLocality , loc.isEmpty {
                 APPDELEGATE.selectedLocationAddress.subLocality = APPDELEGATE.selectedLocationAddress.route
             }
 
@@ -433,23 +439,36 @@ public static func getAttributedString(str1: String, str2: String) -> NSMutableA
 
         let address = LocationAddress()
         address.latLong = coordinate
+        address.streetNumber = ""
+        address.route = ""
+        address.premise = ""
         address.subLocality = ""
+        address.city = ""
+        address.state = ""
+        address.zipcode = ""
+        address.country = ""
+        address.locality = ""
+        guard let components = result.address_components else {
+            return
+        }
+        var county = ""
 
-        for component in result.address_components {
-
+        for component in components {
             let types = component.types
 
-            if types.contains("premise") {
+            if types.contains("premise") || types.contains("subpremise") {
                 address.premise = component.short_name
             } else if types.contains("country") {
                 address.country = component.short_name
             } else if types.contains("postal_code") {
                 address.zipcode = component.short_name
-            } else if types.contains("locality") {
+            } else if types.contains("locality") || types.contains("postal_town") {
                 address.city = component.short_name
+            } else if types.contains("administrative_area_level_2") {
+                county = component.short_name
             } else if types.contains("administrative_area_level_1") {
                 address.state = component.short_name
-            } else if types.contains("sublocality_level_1") {
+            } else if types.contains("sublocality") || types.contains("sublocality_level_1") || types.contains("neighborhood") {
                 address.subLocality = component.short_name
             } else if types.contains("street_number") {
                 address.streetNumber = component.short_name
@@ -458,17 +477,44 @@ public static func getAttributedString(str1: String, str2: String) -> NSMutableA
             }
         }
 
-        // 🔹 Fallback logic
-        if address.premise.isEmpty {
-            address.premise = address.streetNumber
+        if address.city.isEmpty && !county.isEmpty {
+            address.city = county
         }
 
-        if address.subLocality.isEmpty {
-            address.subLocality = address.route
+        // 🔹 Fallback logic
+        if address.premise.isEmpty {
+            if !address.streetNumber.isEmpty && !address.route.isEmpty {
+                address.premise = "\(address.streetNumber) \(address.route)"
+            } else if !address.streetNumber.isEmpty {
+                address.premise = address.streetNumber
+            } else if !address.route.isEmpty {
+                address.premise = address.route
+            }
         }
 
         // 🔹 Assign once
         APPDELEGATE.selectedLocationAddress = address
+        if !address.subLocality.isEmpty {
+            LocationManagerClass.shared.firstAddress = address.subLocality
+        } else if !address.premise.isEmpty {
+            LocationManagerClass.shared.firstAddress = address.premise
+        } else {
+            LocationManagerClass.shared.firstAddress = address.city ?? ""
+        }
+
+        var secondParts: [String] = []
+        if !address.subLocality.isEmpty && !address.city.isEmpty {
+            secondParts.append(address.city)
+        }
+        var stateZip = ""
+        if !address.state.isEmpty { stateZip += address.state }
+        if !address.zipcode.isEmpty {
+            stateZip += (stateZip.isEmpty ? "" : " ") + address.zipcode
+        }
+        if !stateZip.isEmpty { secondParts.append(stateZip) }
+        LocationManagerClass.shared.secondAddress = secondParts.joined(separator: ", ")
+
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "location"), object: nil)
     }
     public static func getStringDateFromString(stringDate: String) -> String {
         let currentTimeZone = TimeZone.current
@@ -573,7 +619,7 @@ public static func getAttributedString(str1: String, str2: String) -> NSMutableA
        }
     public static func getDates() -> [DayDateList] {
         var dayList = [DayDateList]()
-        for i in (0 ..< 19) {
+        for i in (1 ..< 19) {
             let currentDate = self.dateAddingDay(value: i)
             let day = self.getDayInEEE(date: currentDate)
             let  date = self.getDateInDDMMM(date: currentDate)
@@ -751,7 +797,22 @@ class LocationAddress: NSObject {
     var route : String = ""
     
     override init() {
-        
+        super.init()
+        self.addressID = UUID().uuidString
+        self.streetNumber = "571"
+        self.route = "Massachusetts Ave"
+        self.premise = "571"
+        self.subLocality = "Central Square"
+        self.city = "Cambridge"
+        self.state = "MA"
+        self.zipcode = "02139"
+        self.country = "United States"
+        self.locality = "Cambridge"
+        self.latLong = CLLocationCoordinate2D(latitude: 42.3635, longitude: -71.1005)
+    }
+
+    static func defaultLocation() -> LocationAddress {
+        return LocationAddress()
     }
     init(json: NSDictionary) { // Dictionary object
         self.zipcode = json["zipcode"] as? String

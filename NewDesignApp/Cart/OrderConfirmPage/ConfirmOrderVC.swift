@@ -6,15 +6,13 @@
 //
 
 import UIKit
-import Stripe
-import StripePaymentSheet
+import SafariServices
+import WebKit
 
-//import PassKit
-enum PayBy {
-    case Cash
-    case Card
-    case Gift
-    case ApplePay
+enum PayBy: String {
+    case cash = "Cash"
+    case gift = "Gift"
+    case card = "card"
 }
 enum CellTypeSelected: Int {
     case Restname
@@ -30,16 +28,21 @@ enum CellTypeSelected: Int {
     case Totalprice
     case TotalRowsCount
 }
-class ConfirmOrderVC: UIViewController {
-    private var paymentSheet: PaymentSheet?
+class ConfirmOrderVC: UIViewController, SFSafariViewControllerDelegate {
     @IBOutlet weak var cartTableView: UITableView!
-//let sectionArr = ["restname","deliveryto", "deliveryat", "SendAsGift", "Special","payment", "Redeem", "tips", "donate", "itemdetails", "totalprice"]
+//let sectionArr = ["restname","deliveryto", "deliveryat", "SendAsGift, "Special","payment, "Redeem", "tips", "donate", "itemdetails", "totalprice"]
     private let viewModel = ConfirmOrderViewModel()
-    var payBy = PayBy.Card
-    var userRewardAmount: String = "0.0"
+    var payBy = PayBy.card
     var recipientfName: String = ""
     var recipientlName: String = ""
     var recipientPhone: String = ""
+    
+    func safariViewControllerDidFinish(_ controller: SFSafariViewController) {
+        controller.dismiss(animated: true)
+        // stripeConfirmedApi will handle showing/hiding the loader
+       // self.viewModel.tempRequest?.transaction = "Authorize"
+        self.viewModel.orderConfirmedApi(request: self.viewModel.tempRequest)
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         Cart.shared.isTips = false
@@ -49,12 +52,11 @@ class ConfirmOrderVC: UIViewController {
         Cart.shared.alternateNumber = ""
         Cart.shared.isReward =  false
         Cart.shared.rewardAmount =  0.0
-        Cart.shared.cardNumber = ""
-        Cart.shared.cardCvv = ""
-        Cart.shared.cardExpiry = ""
-        Cart.shared.cardHolder = ""
-        Cart.shared.cardZip = ""
         // Do any additional setup after loading the view.
+        let details = Cart.shared.getAllPriceDeatils()
+        let tipsAmount = (details.subTotal * 10) / 100
+        Cart.shared.tipsAmount = Float(tipsAmount)
+        Cart.shared.isTips = true
         bindViewModel()
         viewModel.fetchRewards()
         self.setDefaultBack()
@@ -92,12 +94,39 @@ class ConfirmOrderVC: UIViewController {
                ) as! FinalOrderPageVC
                self?.navigationController?.pushViewController(vc, animated: true)
            }
+
+           viewModel.goToHomeAfterPayment = { [weak self] in
+               guard let self else { return }
+               Cart.shared.refreshCartData()
+               let tabbar = self.navigationController?.viewControllers[1] as? TabBarVC
+               if let tabbar {
+                   self.navigationController?.popToViewController(tabbar, animated: true)
+               } else {
+                   self.navigationController?.popToRootViewController(animated: true)
+               }
+           }
+
+        viewModel.presentAuthorizeURL = { [weak self] url in
+            guard let self else { return }
+            let safariVC = SFSafariViewController(url: url)
+            safariVC.delegate = self
+            safariVC.modalPresentationStyle = .fullScreen
+            self.present(safariVC, animated: true)
+        }
+        
+        viewModel.presentFeedbackWidget = { [weak self] htmlString in
+            guard let self else { return }
+            let feedbackViewController = FeedBackViewController(htmlString: htmlString)
+            let navController = UINavigationController(rootViewController: feedbackViewController)
+            navController.modalPresentationStyle = .fullScreen
+            self.present(navController, animated: true)
+        }
        }
-   
+
     @IBAction func backAction() {
         self.navigationController?.popViewController(animated: true)
     }
-   
+
     func setAmountValue(sizes: Sizes, toppings: [SelectedTopping])-> Float {
         var price: Float = 0.0
         price = Float(sizes.price)! * Float(sizes.itemQty)
@@ -135,37 +164,31 @@ class ConfirmOrderVC: UIViewController {
         }
         
     }
-    func openStripPage(){
-        //var paymentSheet: PaymentSheet?
-             var configuration = PaymentSheet.Configuration()
-             configuration.merchantDisplayName = "UDS"
-             configuration.customer = .init(id: "19012412412921", ephemeralKeySecret: "empkey")
-             self.paymentSheet = PaymentSheet(paymentIntentClientSecret: "\("clientSecret")", configuration: configuration)
-        // MARK: Start the checkout process
-         paymentSheet?.present(from: self) { paymentResult in
-           // MARK: Handle the payment result
-           switch paymentResult {
-           case .completed:
-             print("Your order is confirmed")
-              // let tempamount = Int(amount)!/100
-              // self.confirmPaymentWS(orderid: orderid, amount: "\(tempamount)", intentID: intentID)
-           case .canceled:
-             print("Cancelled!")
-           // Alert.showDefaultAlert(for: self, message: "kPaymentCanceled")
-           case .failed(let error):
-             print("Payment failed: \n\(error.localizedDescription)")
-           // Alert.showDefaultAlert(for: self, message: error.localizedDescription)
-           }
-         }
-        }
+   
     func addOrder(transactionIdentifier: String) {
-        openStripPage()
-//        viewModel.placeOrder(
-//            recipientFName: recipientfName,
-//            recipientLName: recipientlName,
-//            recipientPhone: recipientPhone,
-//            transactionIdentifier: transactionIdentifier
-//        )
+        if ((Cart.shared.restDetails.openStatus.status.contains("Closed") || Cart.shared.restDetails.openStatus.status.contains("closed")) && Cart.shared.orderDate == .ASAP){
+            let alertController = UIAlertController(title: "Alert", message: "Restaurant is closed for now. Please change your delivery / pickup timing.", preferredStyle: .alert)
+            let OKAction = UIAlertAction(title: "Ok", style: .default) { action in
+                self.clickedOnChangeTime()
+
+            }
+            let cancel = UIAlertAction(title: "Cancel", style: .cancel) { alert in
+                
+            }
+            alertController.addAction(OKAction)
+            alertController.addAction(cancel)
+            OperationQueue.main.addOperation {
+                self.present(alertController, animated: true,
+                             completion:nil)
+            }
+            return
+        }
+        viewModel.checkPaymentType(
+            recipientFName: recipientfName,
+            recipientLName: recipientlName,
+            recipientPhone: recipientPhone,
+            transactionIdentifier: transactionIdentifier
+        )
     }
 
 }
@@ -184,7 +207,7 @@ extension ConfirmOrderVC: UITableViewDelegate, UITableViewDataSource{
             }
             return 0//Cart.shared.restDetails.donatechange == "Yes" ? 1 : 0
         case CellTypeSelected.Payment.rawValue:
-            if self.viewModel.selectedPaymentType == 2 {
+            if self.viewModel.selectedPaymentType == 2 || self.viewModel.selectedPaymentType == 0 {
                return 1
             }
             if viewModel.hideCard() {
@@ -198,7 +221,9 @@ extension ConfirmOrderVC: UITableViewDelegate, UITableViewDataSource{
         case CellTypeSelected.SendAsGift.rawValue:
             return self.viewModel.orderAsGift == "Yes" ? 2 : 1
         case CellTypeSelected.Redeem.rawValue:
-            return self.viewModel.selectedPaymentType == 1 ? 0 : 1
+            if Float(viewModel.userRewardAmount) ?? 0.0 > 0.0 {
+                return self.viewModel.selectedPaymentType == 1 ? 0 : 1
+            } else {return 0}
 
         default:
             return 1
@@ -264,6 +289,7 @@ extension ConfirmOrderVC: UITableViewDelegate, UITableViewDataSource{
         case CellTypeSelected.Special.rawValue:
             let cell = tableView.dequeueReusableCell(withIdentifier: "SpecialRequestTVCell", for: indexPath) as! SpecialRequestTVCell
             cell.selectionStyle = .none
+            cell.delegate = self
             return cell
         case CellTypeSelected.Payment.rawValue:
             if indexPath.row == 0 {
@@ -281,7 +307,6 @@ extension ConfirmOrderVC: UITableViewDelegate, UITableViewDataSource{
                 else if self.viewModel.selectedPaymentType == 0 {
                     let cell = tableView.dequeueReusableCell(withIdentifier: "CardNumberTVCell", for: indexPath) as! CardNumberTVCell
                     cell.selectionStyle = .none
-                    cell.updateCardUI()
                     return cell
                 } else {
                     let cell = tableView.dequeueReusableCell(withIdentifier: "GiftNumberTVCell", for: indexPath) as! GiftNumberTVCell
@@ -292,13 +317,14 @@ extension ConfirmOrderVC: UITableViewDelegate, UITableViewDataSource{
             
         case CellTypeSelected.Redeem.rawValue:
             let cell = tableView.dequeueReusableCell(withIdentifier: "RedeemTVCell", for: indexPath) as! RedeemTVCell
-            cell.update(amount: "\(userRewardAmount)")
+            cell.update(amount: "\(viewModel.userRewardAmount)")
             cell.delegate = self
             cell.selectionStyle = .none
             return cell
         case CellTypeSelected.Tips.rawValue:
             let cell = tableView.dequeueReusableCell(withIdentifier: "TipsTVCell", for: indexPath) as! TipsTVCell
             cell.delegate = self
+            cell.updateValue(itemPrice: Double(Cart.shared.getAllPriceDeatils().subTotal))
             cell.selectionStyle = .none
             return cell
         case CellTypeSelected.Donate.rawValue:
@@ -371,12 +397,15 @@ extension ConfirmOrderVC: PaymentTypeDeledate {
     
     func selectedPaymentType(index: Int) {
         self.viewModel.selectedPaymentType = index
-        cartTableView.reloadData()
-        /*
-        if index == 2 {
-            openApplePay()
+
+        if index == 0 {
+            self.viewModel.payBy = .card
+            self.cartTableView.reloadData()
+            return
         }
-        */
+
+        self.viewModel.payBy = .card
+        cartTableView.reloadData()
     }
     func displayDefaultAlert(title: String?, message: String?) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
@@ -384,58 +413,12 @@ extension ConfirmOrderVC: PaymentTypeDeledate {
         alert.addAction(okAction)
         self.present(alert, animated: true, completion: nil)
     }
-    /*
-    func openApplePay() {
-#if DEBUG
-print("Running in Sandbox")
-#else
-print("Running in Production")
-#endif
-        let pricedetails: CheckoutPrice = Cart.shared.getAllPriceDeatils()
+}
 
-        let paymentItem = PKPaymentSummaryItem.init(label: "Grabull Food Order", amount: NSDecimalNumber(value: pricedetails.total))
-        let paymentNetworks = [PKPaymentNetwork.amex, .discover, .masterCard, .visa]
-        
-        if PKPaymentAuthorizationViewController.canMakePayments(usingNetworks: paymentNetworks) {
-            let request = PKPaymentRequest()
-                request.currencyCode = "USD" // 1
-                request.countryCode = "US" // 2
-                request.merchantIdentifier = "merchant.com.grabull" // 3
-            request.merchantCapabilities = PKMerchantCapability.threeDSecure// 4
-                request.supportedNetworks = paymentNetworks // 5
-                request.paymentSummaryItems = [paymentItem] // 6
-            
-            guard let paymentVC = PKPaymentAuthorizationViewController(paymentRequest: request) else {
-            displayDefaultAlert(title: "Error", message: "Unable to present Apple Pay authorization.")
-            return
-        }
-            paymentVC.delegate = self
-            self.present(paymentVC, animated: true, completion: nil)
-            
-        } else {
-            displayDefaultAlert(title: "Error", message: "Unable to make Apple Pay transaction.")
-        }
-        
-       
-     }
-    */
-    
-}
-/*
-extension ConfirmOrderVC: PKPaymentAuthorizationViewControllerDelegate {
-    func paymentAuthorizationViewControllerDidFinish(_ controller: PKPaymentAuthorizationViewController) {
-        dismiss(animated: true, completion: nil)
-    }
-    func paymentAuthorizationViewController(_ controller: PKPaymentAuthorizationViewController, didAuthorizePayment payment: PKPayment, handler completion: @escaping (PKPaymentAuthorizationResult) -> Void) {
-        print("token--\(payment.token.transactionIdentifier)")
-        dismiss(animated: true, completion: nil)
-       // displayDefaultAlert(title: "Success!", message: "The Apple Pay transaction was complete.")
-        self.addOrder(transactionIdentifier: "\(payment.token.transactionIdentifier)")
-    }
-}
-*/
 extension ConfirmOrderVC: TipsDelegate {
-    func tipsAction() {
+    func tipsAction(isTips: Bool, tipsAmount: Double) {
+        Cart.shared.tipsAmount = Float(tipsAmount)
+        Cart.shared.isTips = isTips
         cartTableView.reloadData()
     }
 }
@@ -477,10 +460,10 @@ extension ConfirmOrderVC: ReloadNewAddressDelegate {
     func addednewAddress() {
         cartTableView.reloadData()
     }
-    
 }
 extension ConfirmOrderVC: ChangePhoneNumberDelegate {
-    func changesNumber() {
+    func changesNumber(updatedNumber: String) {
+        Cart.shared.alternateNumber = updatedNumber
         cartTableView.reloadData()
     }
 }
@@ -523,5 +506,11 @@ extension ConfirmOrderVC: RecipientDetailsDelegate {
 extension ConfirmOrderVC: SelectedCardDeledate {
     func selectedCardDetails() {
         cartTableView.reloadData()
+    }
+}
+
+extension ConfirmOrderVC: SpecialInstructionDelegate {
+    func typedInstruction(msgTyped: String) {
+        Cart.shared.specialInstructionText = msgTyped
     }
 }

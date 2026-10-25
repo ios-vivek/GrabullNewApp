@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Alamofire
 private enum Layout {
     static let heroHeight: CGFloat = 150
     static let section0Height: CGFloat = 130
@@ -127,12 +126,27 @@ class DashBoardVC: UIViewController, UITableViewDelegate, UITableViewDataSource 
         if local.count > 0 {
             mainAdd = "\(premise)\(local), \(city)"
         }
+        else if premise.count > 0 && city.count > 0 {
+            mainAdd = "\(premise)\(city)"
+        }
+        else if premise.count > 0 {
+            mainAdd = APPDELEGATE.selectedLocationAddress.premise
+        }
         else if city.count > 0 {
             mainAdd = "\(city)"
         }
         
         self.locationButton.setTitle(mainAdd, for: .normal)
-        self.headingLabel.text = "\(APPDELEGATE.selectedLocationAddress.state ?? ""), \(APPDELEGATE.selectedLocationAddress.zipcode ?? "")"
+        
+        let state = APPDELEGATE.selectedLocationAddress.state ?? ""
+        let zip = APPDELEGATE.selectedLocationAddress.zipcode ?? ""
+        if !state.isEmpty && !zip.isEmpty {
+            self.headingLabel.text = "\(state), \(zip)"
+        } else if !state.isEmpty {
+            self.headingLabel.text = state
+        } else {
+            self.headingLabel.text = zip
+        }
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
@@ -397,11 +411,22 @@ extension DashBoardVC: DashBoardSectionDelegate {
         if index == 1 {
             self.tabBarController?.selectedIndex = 1
         }
+        if index == 3 {
+//            let story = UIStoryboard.init(name: "FoodSearch", bundle: nil)
+//            let vc = story.instantiateViewController(withIdentifier: "SearchDetailVC") as! SearchDetailVC
+//            //vc.listResponse = success.data.restaurant
+//            vc.isDineFilter = true
+//            self.navigationController?.pushViewController(vc, animated: true)
+            
+            let story = UIStoryboard.init(name: "FlowerGift", bundle: nil)
+            let vc = story.instantiateViewController(withIdentifier: "FlowerGiftListVC") as! FlowerGiftListVC
+            GroceryCartData.shared.orderSource = "Flowers"
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
         if index == 2 {
-            let story = UIStoryboard.init(name: "FoodSearch", bundle: nil)
-            let vc = story.instantiateViewController(withIdentifier: "SearchDetailVC") as! SearchDetailVC
-            //vc.listResponse = success.data.restaurant
-            vc.isDineFilter = true
+            GroceryCartData.shared.orderSource = "Grocery"
+            let story = UIStoryboard.init(name: "Grocery", bundle: nil)
+            let vc = story.instantiateViewController(withIdentifier: "GroceryVC") as! GroceryVC
             self.navigationController?.pushViewController(vc, animated: true)
         }
     }

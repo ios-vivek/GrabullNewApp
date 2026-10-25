@@ -19,7 +19,12 @@ class ChooseAddressVC: UIViewController {
 
         // Do any additional setup after loading the view.
         self.view.backgroundColor = .white
+        addressTbl.backgroundColor = .clear
 
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.getAddressesFromApi()
     }
     @IBAction func backAction() {
         self.dismiss(animated: true) {
@@ -29,6 +34,20 @@ class ChooseAddressVC: UIViewController {
     @IBAction func addNewAddressAction() {
         self.dismiss(animated: true) {
             self.delegate?.addNewAddress()
+        }
+    }
+    func getAddressesFromApi() {
+        let parameters = CommonAPIParams.base()
+       
+        UtilsClass.showProgressHud(view: self.view)
+        WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.getAddress, forModelType: AddressListResponse.self) { success in
+            UtilsClass.hideProgressHud(view: self.view)
+            APPDELEGATE.userResponse?.customer.address = success.data.data
+            UtilsClass.saveUserDetails()
+            self.addressTbl.reloadData()
+            
+        } ErrorHandler: { error in
+            UtilsClass.hideProgressHud(view: self.view)
         }
     }
 
@@ -48,14 +67,33 @@ extension ChooseAddressVC: UITableViewDelegate, UITableViewDataSource {
         cell.backgroundColor = .white
         let address = APPDELEGATE.userResponse!.customer.address[indexPath.row]
         let selectedAddress = Cart.shared.userAddress
-        //let user = APPDELEGATE.userResponse!.customer
-        cell.addressLbl.text = "\(address.add1 ?? "") \(address.add2 ?? ""), \(address.city ?? ""), \(address.state ?? ""), \(address.zip ?? "")"
-        cell.addressTypeLbl.text = address.addtypes
+        
+        let street = address.street?.isEmpty == false ? "\(address.street!) " : ""
+        let baseFont = cell.addressLbl.font ?? UIFont.systemFont(ofSize: 14)
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.paragraphSpacingBefore = 5
+        let regularAttributes: [NSAttributedString.Key: Any] = [
+            .font: baseFont
+        ]
+        let semiboldAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: baseFont.pointSize, weight: .semibold),
+            .paragraphStyle: paragraphStyle
+        ]
+
+        let addressString = NSMutableAttributedString()
+        addressString.append(NSAttributedString(
+            string: "\(street)\(address.add1 ?? "")\n\(address.city ?? ""), \(address.state ?? ""), \(address.zip ?? "")",
+            attributes: regularAttributes
+        ))
+        if let landmark = address.add2, !landmark.isEmpty {
+            addressString.append(NSAttributedString(string: "\nLandmark: ", attributes: semiboldAttributes))
+            addressString.append(NSAttributedString(string: landmark, attributes: regularAttributes))
+        }
+        cell.addressLbl.attributedText = addressString
+        
+        cell.addressTypeLbl.text = address.type
         cell.updateUI(selected: selectedAddress?.id == address.id)
-       // cell.phoneLbl.text = "Phone Number: \(user.phone)"
-       // cell.delegate = self
-       // cell.editButton.tag = indexPath.row
-       // cell.deleteButton.tag = indexPath.row
+  
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -67,6 +105,7 @@ extension ChooseAddressVC: UITableViewDelegate, UITableViewDataSource {
 
 
         Cart.shared.userAddress = APPDELEGATE.userResponse!.customer.address[indexPath.row]
+        GroceryCartData.shared.userAddress = APPDELEGATE.userResponse!.customer.address[indexPath.row]
         self.dismiss(animated: true) {
             self.delegate?.changedAddress()
         }

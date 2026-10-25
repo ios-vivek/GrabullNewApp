@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Alamofire
 
 class BannerCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var bannerImage: UIImageView!
@@ -21,14 +20,6 @@ class BannerCollectionViewCell: UICollectionViewCell {
         bannerImage.layer.cornerRadius = 10.0
         bannerImage.clipsToBounds = true
         let url = imageUrl
-        AF.request( url,method: .get).response{ response in
-          switch response.result {
-           case .success(let responseData):
-              self.bannerImage.image = UIImage(data: responseData!)
-              self.bannerImage.contentMode = .scaleAspectFill
-           case .failure(let error):
-               print("error--->",error)
-           }
-       }
+        bannerImage.setImage(urlString: url)
     }
 }

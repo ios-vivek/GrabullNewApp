@@ -36,7 +36,14 @@ var index = 0
         self.index = index
         let item = Cart.shared.cartData[index]
         let size = item.restItemSizes.first!
-        itemName.text = item.restItem.heading + " (\(size.manuName))\(size.isCatering ? " (Caterging)" : "")"
+        var name = ""
+        if size.isCatering {
+            name = " \(size.isCatering ? " (Caterging)" : "")"
+        } else {
+            name = " (\(size.manuName))"
+        }
+        let itemsizename = item.restItemSizes[0].name.count == 0 ? "" : " (\(item.restItemSizes[0].name))"
+        itemName.text = item.restItem.heading + itemsizename + name
         itemQtyLbl.text = "\(size.itemQty)"
         let price = self.setAmountValue(sizes: size, toppings: item.restItemTopping)
         let pt = Cart.shared.roundValue2Digit(value: (price + item.extra))
@@ -66,6 +73,7 @@ var index = 0
         if item.instructionText.count > 0 {
             instructionLbl.attributedText = self.configureSplInstText(text1: "Spl Inst: ", text: "\(item.instructionText)")
         }
+        itemName.textColor = .black
     }
     @IBAction func plusAction() {
         var item = Cart.shared.cartData[index]
@@ -126,8 +134,8 @@ var index = 0
         
         let titleAttrText = NSMutableAttributedString(string: "")
         titleAttrText.append(NSAttributedString(string: "\(text1)", attributes: [
-            NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12, weight: .regular),
-            NSAttributedString.Key.foregroundColor: UIColor.gSkyBlue
+            NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12, weight: .bold),
+            NSAttributedString.Key.foregroundColor: UIColor.black
         ]))
         titleAttrText.append(NSAttributedString(string: "\(text)", attributes: [
             NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12, weight: .regular),

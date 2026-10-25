@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import Alamofire
 
 protocol GalleryDelegate: AnyObject {
     func selectedGalleryView()
@@ -69,17 +68,18 @@ var restData: CustomRestDetails?
     }
     @objc func deliveryBtnAction() {
         Cart.shared.orderType = .delivery
+        Cart.shared.resetTime()
         selectedButtonUI()
     }
     @objc func pickupBtnAction() {
         Cart.shared.orderType = .pickup
+        Cart.shared.resetTime()
         selectedButtonUI()
     }
     @objc func scheduleAction() {
         self.delegate?.scheduleDateAction()
     }
     func selectedButtonUI() {
-
         let isDelivery = Cart.shared.orderType == .delivery
 
         // Button colors
@@ -123,30 +123,17 @@ var restData: CustomRestDetails?
              lblAsap.text = "Delivery\(result)"
          }
     }
-    func updateUI(data: CustomRestDetails?, restImage: String) {
+    func updateUI(data: CustomRestDetails?, restImage: String, galleryImages: [String]) {
         restData = data
-//                if restData?.gallery.list.count == 0 {
-//                    photoCountView.isHidden = true
-//                } else {
-//                    photoCountView.isHidden = false
-//                }
-       // lblPhotoCount.text = "\(restData?.gallery.list.count ?? 0) Photos"
+        photoCountView.isHidden = galleryImages.count > 0 ? false : true
+        lblPhotoCount.text = "\(galleryImages.count) Photos"
         restName.text = "\(restData?.name ?? "resta neme")"
         deliveryTimeLbl.text = "\(restData?.deliveryTime ?? 0) Mins"
         ratingLbl.text = "\(restData?.rating ?? 0)"
         userRatinglbl.text = "\(restData?.ratingHD1 ?? "")"
         reorderedLbl.text = "\(restData?.ratingHD2 ?? "")"
         
-        let url = restImage
-        AF.request( url,method: .get).response{ response in
-          switch response.result {
-           case .success(let responseData):
-               self.restImage.image = UIImage(data: responseData!, scale:1)
-
-           case .failure(let error):
-               print("error--->",error)
-           }
-       }
+        self.restImage.setImage(urlString: restImage)
       
         deliveryBtn.isUserInteractionEnabled = false
         pickupBtn.isUserInteractionEnabled = false

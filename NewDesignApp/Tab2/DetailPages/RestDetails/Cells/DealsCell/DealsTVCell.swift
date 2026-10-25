@@ -18,10 +18,7 @@ var offer = [CustOfferlist]()
         super.awakeFromNib()
         // Initialization code
         self.backgroundColor = .white
-       // headingTitle.text = "header title"//"topRatedTitle".localizeString(string: GlobalClass.shared.getLangauge())
-      //  dealsCollection.register(UINib(nibName: "HeaderCollectionView", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "HeaderCollectionView") //elementKindSectionFooter for footerview
         dealsCollection.backgroundColor = .white
-      //  dealsCollection.register(DealCVCell.self, forCellWithReuseIdentifier: "DealCVCell"); //register custom UICollectionViewCell class.
         roundView.layer.masksToBounds = true
         roundView.layer.borderWidth = 1
         roundView.layer.cornerRadius = 20
@@ -39,7 +36,11 @@ var offer = [CustOfferlist]()
         // Configure the view for the selected state
     }
     func updateUI(offer: [CustOfferlist]) {
-        self.offer = offer
+        let validOffers = offer.filter {
+            ["%", "$"].contains($0.type)
+        }
+        
+        self.offer = validOffers
         countTitle.textColor = kOrangeColor
         countTitle.text = "1/\(self.offer.count)"
         self.pageControl.currentPage = 0

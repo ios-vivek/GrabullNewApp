@@ -46,12 +46,12 @@ struct Coupons: Codable {
 }
 struct UserAdd: Codable {
 
-    let id: Int
+    let id: String
     let street: String?
     let add1: String?
     let add2: String?
     let add3: String?
-    let addtypes: String?
+    let type: String?
     let city: String?
     let state: String?
     let zip: String?
@@ -120,4 +120,108 @@ struct AddressListResponse: Codable {
     let error: String
     let code: Int
     let data: [UserAdd]
+}
+
+struct DeleteAccountResponse: Codable {
+    let status: String?
+    let error: String?
+    let code: Int?
+    let message: String?
+    let result: String?
+    let data: DeleteAccountData?
+}
+
+struct DeleteAccountData: Codable {
+    let result: String?
+    let message: String?
+}
+
+// MARK: - App Version Check Response
+
+struct AppVersionResponse: Codable {
+    let status: String?
+    let error: String?
+    let code: Int?
+    let message: String?
+    let data: AppVersionData?
+}
+
+struct AppVersionData: Codable {
+    let latestVersion: String?
+    let minimumVersion: String?
+    let isForceUpdate: Bool?
+    let title: String?
+    let message: String?
+    let appStoreUrl: String?
+
+    enum CodingKeys: String, CodingKey {
+        case latestVersion = "latest_version"
+        case latestVersionAlt = "latestVersion"
+        case minimumVersion = "minimum_version"
+        case minimumVersionAlt = "minimumVersion"
+        case isForceUpdate = "is_force_update"
+        case forceUpdate = "force_update"
+        case isForceUpdateAlt = "isForceUpdate"
+        case title
+        case message
+        case appStoreUrl = "app_store_url"
+        case appStoreUrlAlt = "appStoreUrl"
+    }
+
+    init(
+        latestVersion: String? = nil,
+        minimumVersion: String? = nil,
+        isForceUpdate: Bool? = nil,
+        title: String? = nil,
+        message: String? = nil,
+        appStoreUrl: String? = nil
+    ) {
+        self.latestVersion = latestVersion
+        self.minimumVersion = minimumVersion
+        self.isForceUpdate = isForceUpdate
+        self.title = title
+        self.message = message
+        self.appStoreUrl = appStoreUrl
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+
+        latestVersion = (try? container.decodeIfPresent(String.self, forKey: .latestVersion))
+            ?? (try? container.decodeIfPresent(String.self, forKey: .latestVersionAlt))
+
+        minimumVersion = (try? container.decodeIfPresent(String.self, forKey: .minimumVersion))
+            ?? (try? container.decodeIfPresent(String.self, forKey: .minimumVersionAlt))
+
+        title = try? container.decodeIfPresent(String.self, forKey: .title)
+        message = try? container.decodeIfPresent(String.self, forKey: .message)
+
+        appStoreUrl = (try? container.decodeIfPresent(String.self, forKey: .appStoreUrl))
+            ?? (try? container.decodeIfPresent(String.self, forKey: .appStoreUrlAlt))
+
+        var force: Bool? = nil
+        for key in [CodingKeys.isForceUpdate, .forceUpdate, .isForceUpdateAlt] {
+            if let b = try? container.decodeIfPresent(Bool.self, forKey: key) {
+                force = b
+                break
+            } else if let i = try? container.decodeIfPresent(Int.self, forKey: key) {
+                force = (i == 1)
+                break
+            } else if let s = try? container.decodeIfPresent(String.self, forKey: key) {
+                force = (s == "1" || s.lowercased() == "true")
+                break
+            }
+        }
+        isForceUpdate = force
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(latestVersion, forKey: .latestVersion)
+        try container.encodeIfPresent(minimumVersion, forKey: .minimumVersion)
+        try container.encodeIfPresent(isForceUpdate, forKey: .isForceUpdate)
+        try container.encodeIfPresent(title, forKey: .title)
+        try container.encodeIfPresent(message, forKey: .message)
+        try container.encodeIfPresent(appStoreUrl, forKey: .appStoreUrl)
+    }
 }

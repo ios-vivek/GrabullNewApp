@@ -10,7 +10,7 @@ import WebKit
 
 class WorkWithUsVC: UIViewController , WKNavigationDelegate {
 	var webView: WKWebView!
-	var trackURL = "https://www.grabull.com/web-api-ios/work-with-us/?customer_id=\(APPDELEGATE.userResponse?.customer.customerId ?? "")"
+	var trackURL = "https://www.webapi.grabull.shop/work-with-us/?customer_id=\(APPDELEGATE.userResponse?.customer.customerId ?? "")"
 	override func viewDidLoad() {
 		super.viewDidLoad()
 

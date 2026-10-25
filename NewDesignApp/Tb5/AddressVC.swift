@@ -24,6 +24,7 @@ class AddressVC: UIViewController {
     @IBAction func backAction() {
         self.navigationController?.popViewController(animated: true)
     }
+    
     func getAddressesFromApi() {
         let parameters = CommonAPIParams.base()
        
@@ -32,6 +33,7 @@ class AddressVC: UIViewController {
             UtilsClass.hideProgressHud(view: self.view)
             self.address = success.data.data
             APPDELEGATE.userResponse?.customer.address = self.address
+            UtilsClass.saveUserDetails()
             self.addressTbl.reloadData()
             
         } ErrorHandler: { error in
@@ -86,6 +88,7 @@ extension AddressVC: UITableViewDelegate, UITableViewDataSource {
         cell.delegate = self
         cell.editButton.tag = indexPath.row
         cell.deleteButton.tag = indexPath.row
+        cell.deleteButton.isHidden = false
         return cell
     }
 //    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -94,16 +97,23 @@ extension AddressVC: UITableViewDelegate, UITableViewDataSource {
 }
 extension AddressVC: AddressDelegate {
     func editAddress(selectedIndex: Int) {
+        guard let addresses = APPDELEGATE.userResponse?.customer.address,
+              selectedIndex >= 0 && selectedIndex < addresses.count else { return }
         let vc = self.viewController(viewController: AddAddressVC.self, storyName: StoryName.Profile.rawValue) as! AddAddressVC
         vc.isUpdateAddress = true
-        vc.updateUserAdd = APPDELEGATE.userResponse?.customer.address[selectedIndex]
+        vc.updateUserAdd = addresses[selectedIndex]
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
     func deleteAddress(selectedIndex: Int) {
+        guard let addresses = APPDELEGATE.userResponse?.customer.address,
+              selectedIndex >= 0 && selectedIndex < addresses.count else { return }
         let alertController = UIAlertController(title: "Delete", message: "Are you sure want to delete address?", preferredStyle: .alert)
-        let OKAction = UIAlertAction(title: "Ok", style: .default) { action in
-            self.deleteAddress(addressID: APPDELEGATE.userResponse!.customer.address[selectedIndex].id.toString(), index: selectedIndex)
+        let OKAction = UIAlertAction(title: "Ok", style: .default) { [weak self] action in
+            guard let self = self,
+                  let currentAddresses = APPDELEGATE.userResponse?.customer.address,
+                  selectedIndex < currentAddresses.count else { return }
+            self.deleteAddress(addressID: currentAddresses[selectedIndex].id, index: selectedIndex)
         }
         let cancel = UIAlertAction(title: "Cancel", style: .cancel) { alert in
             
@@ -115,6 +125,4 @@ extension AddressVC: AddressDelegate {
                          completion:nil)
         }
     }
-    
-    
 }

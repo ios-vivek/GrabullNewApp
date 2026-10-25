@@ -10,6 +10,7 @@ import UIKit
 class ItemSizeTVCell: UITableViewCell {
     @IBOutlet weak var foodTypeImage: UIImageView!
     @IBOutlet weak var sizeNameLbl: UILabel!
+    @IBOutlet weak var toppingNameLbl: UILabel!
     @IBOutlet weak var priceLbl: UILabel!
     @IBOutlet weak var selectedSizeImage: UIImageView!
     @IBOutlet weak var roundView: UIView!
@@ -21,8 +22,35 @@ class ItemSizeTVCell: UITableViewCell {
         selectedSizeImage.layer.borderColor = UIColor.black.cgColor
         selectedSizeImage.image = UIImage.init(named: "checkIcon")
     }
+    func groceryUpdateUIForSelectSize(indexPath: IndexPath, sizes: [SizeOption], selectedSize: Int) {
+        selectedSizeImage.isHidden = false
+        toppingNameLbl.isHidden = true
+        sizeNameLbl.isHidden = false
+        if indexPath.row == 0 && sizes.count == 1 {
+            roundView.layer.cornerRadius = 10
+            roundView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        } else{
+            if indexPath.row == 0 {
+                roundView.layer.cornerRadius = 10
+                roundView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+            }
+            if indexPath.row == sizes.count - 1 {
+                roundView.layer.cornerRadius = 10
+                roundView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+            }
+        }
+        selectedSizeImage.image = UIImage.init(named: "")
+        if selectedSize == indexPath.row {
+            selectedSizeImage.image = UIImage.init(named: "checkIcon")
+        }
+        if sizes.count == 1 {
+            selectedSizeImage.isHidden = true
+            sizeNameLbl.isHidden = true
+        }
+    }
     func updateUIForSelectSize(indexPath: IndexPath, sizes: [Sizes], selectedSize: Int) {
         selectedSizeImage.isHidden = false
+        toppingNameLbl.isHidden = true
         sizeNameLbl.isHidden = false
         if indexPath.row == 0 && sizes.count == 1 {
             roundView.layer.cornerRadius = 10
@@ -49,10 +77,11 @@ class ItemSizeTVCell: UITableViewCell {
 
     func updateUIForSelectOption(indexPath: IndexPath, option: [RestOptionList], isChecked: Bool, sizes: Sizes?) {
        let aOption = option[indexPath.row]
-        sizeNameLbl.text = aOption.heading
+        toppingNameLbl.text = aOption.heading
         priceLbl.text = ""
+        toppingNameLbl.isHidden = false
+        sizeNameLbl.isHidden = true
         selectedSizeImage.isHidden = false
-        sizeNameLbl.isHidden = false
         if indexPath.row == 0 && option.count == 1 {
             roundView.layer.cornerRadius = 10
             roundView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner, .layerMinXMaxYCorner, .layerMaxXMaxYCorner]
@@ -76,7 +105,7 @@ class ItemSizeTVCell: UITableViewCell {
         if  optionPrice > 0  {
             price = " (\(UtilsClass.getCurrencySymbol())\(optionPrice.toString()))"
         }
-        sizeNameLbl.text = aOption.heading + price
+        toppingNameLbl.text = aOption.heading + price
 
     }
     override func setSelected(_ selected: Bool, animated: Bool) {

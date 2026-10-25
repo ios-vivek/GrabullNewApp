@@ -10,12 +10,12 @@ import UIKit
 class RestImageGalleryVC: UIViewController {
     @IBOutlet weak var navView: UIView!
     @IBOutlet weak var galleryCollection: UICollectionView!
-    var galleryImages: Gallery?
+    var galleryImages = [String]()
     override func viewDidLoad() {
         super.viewDidLoad()
         navView.backgroundColor = themeBackgrounColor
        // galleryCollection.register(UINib(nibName: "HeaderCollectionView", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "HeaderCollectionView") //elementKindSectionFooter for footerview
-        galleryCollection.backgroundColor = .gGray100
+        galleryCollection.backgroundColor = .white
     }
     
     @IBAction func backAction() {
@@ -28,17 +28,24 @@ extension RestImageGalleryVC: UICollectionViewDelegate,UICollectionViewDataSourc
         1
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        galleryImages?.list.count ?? 0
+        galleryImages.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "GalleryCVCell", for: indexPath as IndexPath) as! GalleryCVCell
-        cell.backgroundColor = .clear
-        cell.updateUI(url: galleryImages?.list[indexPath.row].url ?? "")
+        cell.updateUI(url: galleryImages[indexPath.row])
+        cell.backgroundColor = .gGray100
         return cell;
 
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let viewer = ImageViewerVC()
+        viewer.modalPresentationStyle = .fullScreen
+        viewer.images = galleryImages
+        viewer.startIndex = indexPath.item
+        self.present(viewer, animated: true)
+    }
     
 }
 extension RestImageGalleryVC: UICollectionViewDelegateFlowLayout{
@@ -69,3 +76,4 @@ extension RestImageGalleryVC: UICollectionViewDelegateFlowLayout{
 //        }
 //    }
 }
+

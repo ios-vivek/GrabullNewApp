@@ -32,10 +32,17 @@ struct BookingItem: Codable {
 }
 
 struct ReviewResponse: Codable {
+    let status: String
+    let code: Int
+    let data: ReviewData
+    let error: String
+}
+
+struct ReviewData: Codable {
     let comment: String?
     let date: String?
     let name: String?
-    let rating: String?
+    let rating: Float?
     let reply: String?
     let status: String?
 }

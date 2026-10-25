@@ -128,12 +128,27 @@ class RestaurantVC: UIViewController {
         if local.count > 0 {
             mainAdd = "\(premise)\(local), \(city)"
         }
+        else if premise.count > 0 && city.count > 0 {
+            mainAdd = "\(premise)\(city)"
+        }
+        else if premise.count > 0 {
+            mainAdd = APPDELEGATE.selectedLocationAddress.premise
+        }
         else if city.count > 0 {
             mainAdd = "\(city)"
         }
         
         self.locationButton.setTitle(mainAdd, for: .normal)
-        self.headingLabel.text = "\(APPDELEGATE.selectedLocationAddress.state ?? ""), \(APPDELEGATE.selectedLocationAddress.zipcode ?? "")"
+        
+        let state = APPDELEGATE.selectedLocationAddress.state ?? ""
+        let zip = APPDELEGATE.selectedLocationAddress.zipcode ?? ""
+        if !state.isEmpty && !zip.isEmpty {
+            self.headingLabel.text = "\(state), \(zip)"
+        } else if !state.isEmpty {
+            self.headingLabel.text = state
+        } else {
+            self.headingLabel.text = zip
+        }
     }
 
     func getRestDataFromApi() {
@@ -232,18 +247,34 @@ class RestaurantVC: UIViewController {
 
 	}
     private func uniqueInspiredRestaurants() -> [Restaurant] {
-        let pastIds = Set(
-            UtilsClass.getPastOrdersRest().map { $0.restId } +
-            UtilsClass.getInspairedPast()
-        )
+        // Preserve order from saved histories and remove duplicates while keeping first occurrence.
+        let pastOrderIds = UtilsClass.getPastOrdersRest().map { $0.restId }
+        let inspiredIds = UtilsClass.getInspairedPast()
 
-        return restList.filter { pastIds.contains($0.rid) }
+        let combined = pastOrderIds + inspiredIds
+        var seen = Set<String>()
+        var orderedIds = [String]()
+        for id in combined {
+            if !seen.contains(id) {
+                seen.insert(id)
+                orderedIds.append(id)
+            }
+        }
+
+        var result = [Restaurant]()
+        for id in orderedIds {
+            if let found = restList.first(where: { $0.rid == id }) {
+                result.append(found)
+            }
+        }
+        return result
     }
     
     func getCuisinesFromApi() {
         let parameters = CommonAPIParams.base()
         WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.cuisine, forModelType: CuisineResponse.self) { [weak self] success in
             guard let self = self else { return }
+            print(success)
             self.cuisineList = success.data.data.cuisine
             APPDELEGATE.cusines = success.data
             self.cuisineHeading = success.data.data.cuisineHeading
@@ -445,6 +476,7 @@ class RestaurantVC: UIViewController {
             */
             vc.restDetailsData = customModel
             vc.restData = restData
+            vc.restDetailsRes = success.data.data
 //            ForEach(success.data.resolvedItems) { item in
 //                print("\(item.name ?? "")")
 //            }

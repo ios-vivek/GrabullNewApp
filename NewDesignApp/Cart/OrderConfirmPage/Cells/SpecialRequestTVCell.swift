@@ -6,9 +6,13 @@
 //
 
 import UIKit
-
+protocol SpecialInstructionDelegate: AnyObject {
+    func typedInstruction(msgTyped: String)
+}
 class SpecialRequestTVCell: UITableViewCell, UITextViewDelegate {
     @IBOutlet weak var specialTxtView: UITextView!
+    var delegate: SpecialInstructionDelegate?
+
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -21,16 +25,16 @@ class SpecialRequestTVCell: UITableViewCell, UITextViewDelegate {
         specialTxtView.textColor = .black
         specialTxtView.backgroundColor = .white
     }
-    func textView(_ textField: UITextView, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-            if let text = textField.text, let textRange = Range(range, in: text) {
-                let updatedText = text.replacingCharacters(in: textRange, with: string)
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        let currentText = textView.text ?? ""
+        guard let stringRange = Range(range, in: currentText) else { return true }
+        let updatedText = currentText.replacingCharacters(in: stringRange, with: text)
+        return updatedText.count <= 60
+    }
 
-                Cart.shared.specialInstructionText = updatedText
-                print(Cart.shared.specialInstructionText)
-            }
-
-            return true
-        }
+    func textViewDidChange(_ textView: UITextView) {
+        self.delegate?.typedInstruction(msgTyped: textView.text ?? "")
+    }
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
