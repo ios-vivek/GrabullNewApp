@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Alamofire
 protocol ItemDetailsDelegate {
     func itemClosed()
     func openSelectSize(index: IndexPath)
@@ -86,22 +85,7 @@ class ItemDetailsVC: UIViewController {
         */
         descLbl.text = itemData.details ?? ""
         let url = ""//"\(ServiceType.imageUrl)\(itemData.img ?? "")"
-        AF.request( url,method: .get).response{ response in
-            switch response.result {
-            case .success(let responseData):
-                if responseData != nil {
-                    self.restImage.image = UIImage(data: responseData!)
-                    self.restImage.contentMode = .scaleToFill
-                    if self.restImage.image == nil {
-                        self.restImage.image = UIImage(named: "restaurant_placeholder")
-                        self.restImage.contentMode = .center
-                    }
-                }
-            case .failure(let error):
-                self.restImage.image = UIImage(named: "restaurant_placeholder")
-                self.restImage.contentMode = .center
-            }
-        }
+        restImage.setImage(urlString: url, placeholder: UIImage(named: "restaurant_placeholder"))
     }
     func shadow(Vw : UIView)
     {

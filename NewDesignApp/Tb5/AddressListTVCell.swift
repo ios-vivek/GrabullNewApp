@@ -27,16 +27,39 @@ class AddressListTVCell: UITableViewCell {
         self.backgroundColor = .white
     }
     func configureUI(address: UserAdd){
-        addressLbl.text = "\(address.add1 ?? "") \(address.add2 ?? ""), \(address.city ?? ""), \(address.state ?? ""), \(address.zip ?? "")"
-        if address.addtypes == "Home" {
+        let street = address.street?.isEmpty == false ? "\(address.street!) " : ""
+        let baseFont = addressLbl.font ?? UIFont.systemFont(ofSize: 14)
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.paragraphSpacingBefore = 5
+
+        let regularAttributes: [NSAttributedString.Key: Any] = [
+            .font: baseFont
+        ]
+        let semiboldAttributes: [NSAttributedString.Key: Any] = [
+            .font: UIFont.systemFont(ofSize: baseFont.pointSize, weight: .semibold),
+            .paragraphStyle: paragraphStyle
+        ]
+
+        let addressString = NSMutableAttributedString()
+        addressString.append(NSAttributedString(
+            string: "\(street)\(address.add1 ?? "")\n\(address.city ?? ""), \(address.state ?? ""), \(address.zip ?? "")",
+            attributes: regularAttributes
+        ))
+        if let landmark = address.add2, !landmark.isEmpty {
+            addressString.append(NSAttributedString(string: "\nLandmark: ", attributes: semiboldAttributes))
+            addressString.append(NSAttributedString(string: landmark, attributes: regularAttributes))
+        }
+        addressLbl.attributedText = addressString
+
+        if address.type == "Home" {
             addressImage.image = UIImage.init(named: "homeAddress")
         }
-        else if address.addtypes == "Work" {
+        else if address.type == "Work" {
             addressImage.image = UIImage.init(named: "officeAddress")
         } else {
             addressImage.image = UIImage.init(named: "otherAddress")
         }
-        addressTypeLbl.text = address.addtypes?.uppercased()
+        addressTypeLbl.text = address.type?.uppercased()
     }
     @IBAction func editAddressAction(sender: UIButton) {
         self.delegate?.editAddress(selectedIndex: sender.tag)

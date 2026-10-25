@@ -125,7 +125,7 @@ struct Sizes: Codable {
     let menuType: String
     let manuName: String
     let manuId: String
-    let name: String
+    var name: String
     let price: String
     var itemQty: Int
     let sizeKey: String

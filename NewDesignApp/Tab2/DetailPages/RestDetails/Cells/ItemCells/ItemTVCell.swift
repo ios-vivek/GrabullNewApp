@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Alamofire
 protocol ItemCellDelegate {
     func addItemSelection(index: IndexPath)
 }
@@ -86,27 +85,8 @@ class ItemTVCell: UITableViewCell {
         }
         */
         
-        let url = ""//"\(ServiceType.imageUrl)\(itemlist?. ?? "")"
-        AF.request( url,method: .get).response{ response in
-            switch response.result {
-            case .success(let responseData):
-                if responseData != nil {
-                    self.itemImage.image = UIImage(data: responseData!)
-                    self.itemImage.contentMode = .scaleToFill
-                    if self.itemImage.image == nil {
-                        self.itemImage.image = UIImage(named: "restaurant_placeholder")
-                        self.itemImage.contentMode = .center
-                    }
-                }else {
-                    self.itemImage.image = UIImage(named: "restaurant_placeholder")
-                    self.itemImage.contentMode = .center
-                }
-            case .failure(let error):
-                self.itemImage.image = UIImage(named: "restaurant_placeholder")
-                self.itemImage.contentMode = .center
-            }
-        }
-
+        let url = itemlist.itemImage
+        itemImage.setImage(urlString: url, placeholder: UIImage(named: "restaurant_placeholder"))
        
     }
     

@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Alamofire
 //import SkeletonView
 
 class PromoCVCell: UICollectionViewCell {
@@ -52,25 +51,7 @@ class PromoCVCell: UICollectionViewCell {
         */
         offerLbl.text = "ABC offer"
         let url = promoRestaurant.offericons
-        AF.request( url,method: .get).response{ response in
-            switch response.result {
-            case .success(let responseData):
-                if responseData != nil {
-                    self.restIconImg.image = UIImage(data: responseData!)
-                    self.restIconImg.contentMode = .scaleToFill
-                    if self.restIconImg.image == nil {
-                        self.restIconImg.image = UIImage(named: "img_small")
-                        self.restIconImg.contentMode = .center
-                    }
-                }else {
-                    self.restIconImg.image = UIImage(named: "img_small")
-                    self.restIconImg.contentMode = .center
-                }
-            case .failure(_):
-                self.restIconImg.image = UIImage(named: "img_small")
-                self.restIconImg.contentMode = .center
-            }
-        }
+        restIconImg.setImage(urlString: url, placeholder: UIImage(named: "img_small"))
         
        // self.restIconImg.image = UIImage(named: "promo_burger")
     }

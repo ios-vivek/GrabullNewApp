@@ -7,7 +7,7 @@
 
 import UIKit
 import Lottie
-class PastHistoryVC: UIViewController {
+class GroceryPastHistoryVC: UIViewController {
     
     @IBOutlet weak var emptyImageView: LottieAnimationView!
     @IBOutlet weak var emptyView: UIView!
@@ -125,11 +125,11 @@ class PastHistoryVC: UIViewController {
         let row = months.firstIndex(of: selectedMonth) ?? 0
 let montharr = ["01","02","03","04","05","06","07","08","09","10","11","12"]
 
-        var parameters = CommonAPIParams.base()
+        var parameters = CommonAPIParams.groceryBase()
         parameters.merge([
             "year" : "\(selectedYear)",
             "month" : "\(montharr[row])",
-            "dbname" : Cart.shared.dbname,
+            "dbname" : Cart.shared.dbname
         ]) { _, new in new }
         
         UtilsClass.showProgressHud(view: self.view)
@@ -140,6 +140,7 @@ let montharr = ["01","02","03","04","05","06","07","08","09","10","11","12"]
             self.noDataFoundRefersh()
             self.noDataFoundLbl.text = self.historyList.count != 0 ? "" : "You don't have any order history in \(selectedMonth)."
             self.emptyView.isHidden = self.historyList.count != 0 ? true : false
+            self.historyTblView.isHidden = !self.emptyView.isHidden
             
         } ErrorHandler: { error in
             UtilsClass.hideProgressHud(view: self.view)
@@ -147,6 +148,7 @@ let montharr = ["01","02","03","04","05","06","07","08","09","10","11","12"]
             self.historyTblView.reloadData()
             self.noDataFoundLbl.text = "You don't have any past orders."
             self.emptyView.isHidden = false
+            self.historyTblView.isHidden = !self.emptyView.isHidden
         }
     }
     
@@ -231,6 +233,7 @@ let montharr = ["01","02","03","04","05","06","07","08","09","10","11","12"]
         popupVC.modalPresentationStyle = .overCurrentContext
         popupVC.modalTransitionStyle = .crossDissolve
         popupVC.orderID = historyList[getTag].order
+        popupVC.restID = historyList[getTag].resturantID
         self.present(popupVC, animated: true)
     }
     
@@ -252,7 +255,7 @@ let montharr = ["01","02","03","04","05","06","07","08","09","10","11","12"]
             UtilsClass.hideProgressHud(view: self.view)
             let story = UIStoryboard.init(name: "OrderFlow", bundle: nil)
             let vc = story.instantiateViewController(withIdentifier: "RestDetailsVC") as! RestDetailsVC
-          //  vc.restDetailsData = success.data.restaurant
+            vc.restDetailsData = success.data.data.toCustomModel()
             self.navigationController?.pushViewController(vc, animated: true)
             
         } ErrorHandler: { error in
@@ -266,7 +269,7 @@ let montharr = ["01","02","03","04","05","06","07","08","09","10","11","12"]
     }
     
 }
-extension PastHistoryVC: UIPickerViewDataSource, UIPickerViewDelegate {
+extension GroceryPastHistoryVC: UIPickerViewDataSource, UIPickerViewDelegate {
     func numberOfComponents(in pickerView: UIPickerView) -> Int { 1 }
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         switch pickerMode {
@@ -281,7 +284,7 @@ extension PastHistoryVC: UIPickerViewDataSource, UIPickerViewDelegate {
         }
     }
 }
-extension PastHistoryVC: UITableViewDelegate, UITableViewDataSource {
+extension GroceryPastHistoryVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         noDataFoundRefersh()
             return historyList.count
@@ -292,7 +295,7 @@ extension PastHistoryVC: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "HistoryTVCell", for: indexPath) as! HistoryTVCell
             cell.selectionStyle = .none
             cell.backgroundColor = .clear
-            cell.updateUI(order: historyList[indexPath.row])
+            cell.pastOrderUpdateUI(order: historyList[indexPath.row])
             cell.rateBtn.tag = indexPath.row
             cell.rateBtn.addTarget(self, action: #selector(ratingAction), for: .touchUpInside)
             cell.reOrderBtn.tag = indexPath.row
@@ -301,11 +304,11 @@ extension PastHistoryVC: UITableViewDelegate, UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
             let vc = self.viewController(viewController: OrderDetailVC.self, storyName: StoryName.History.rawValue) as! OrderDetailVC
-            vc.hOrder = historyList[indexPath.section]
+            vc.hOrder = historyList[indexPath.row]
             self.navigationController?.pushViewController(vc, animated: true)
     }
 }
-extension PastHistoryVC: LoginSuccessDelegate {
+extension GroceryPastHistoryVC: LoginSuccessDelegate {
     func signupAction() {
         let vc = self.viewController(viewController: SignupVC.self, storyName: StoryName.Profile.rawValue) as! SignupVC
         vc.delegate = self
@@ -317,7 +320,7 @@ extension PastHistoryVC: LoginSuccessDelegate {
         callService()
     }
 }
-extension PastHistoryVC: SignupSuccessfullyDelegate {
+extension GroceryPastHistoryVC: SignupSuccessfullyDelegate {
     func signupCompleted() {
         self.noDataFoundRefersh()
         callService()

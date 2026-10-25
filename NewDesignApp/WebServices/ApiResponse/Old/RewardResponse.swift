@@ -28,11 +28,11 @@ struct RewardsLog: Codable {
     let date: String
     let gb: String
     let log: String
-    let type: RewardLogType
+    let type: String
 }
 
-enum RewardLogType: String, Codable {
-    case redeemed = "Redeemed"
-    case reward = "Reward"
-    case orderPoints = "Order Points"
-}
+//enum RewardLogType: String, Codable {
+//    case redeemed = "Redeemed"
+//    case reward = "Reward"
+//    case orderPoints = "Order Points"
+//}

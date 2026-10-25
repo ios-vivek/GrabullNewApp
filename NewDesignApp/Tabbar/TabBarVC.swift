@@ -23,7 +23,7 @@ class TabBarVC: UITabBarController {
         let restaurantVC = mainS.instantiateViewController(withIdentifier: "RestaurantVC") as! RestaurantVC
         let foodSearchVC = search.instantiateViewController(withIdentifier: "FoodSearchVC") as! FoodSearchVC
 
-        let historyVC = history.instantiateViewController(withIdentifier: "HistoryHomeVC") as! HistoryHomeVC
+        let historyVC = history.instantiateViewController(withIdentifier: "HistoryTypeVC") as! HistoryTypeVC
         let profileVC = profile.instantiateViewController(withIdentifier: "ProfileVC") as! ProfileVC
 
        // let dashBoardVCNav = UINavigationController(rootViewController: dashBoardVC)

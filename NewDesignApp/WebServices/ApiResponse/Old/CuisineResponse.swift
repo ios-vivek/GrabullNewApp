@@ -35,15 +35,13 @@ struct CuisineData: Codable {
       let cuisineHeading: String
       let cuisine: [Cuisine]
       let coupon: [Coupon]
+    let restaurant: [String]
 }
 struct Cuisine: Codable {
     let heading: String
         let url: String
         let img: String
         let imgUrl: String
-    var cuisineImage: String {
-        return OldServiceType.cuisineImageUrl + img
-    }
 }
 struct RestSlider: Codable {
     let url: String

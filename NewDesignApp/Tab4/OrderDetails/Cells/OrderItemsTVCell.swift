@@ -24,14 +24,14 @@ class OrderItemsTVCell: UITableViewCell {
         priceLbl.textColor = .white
         self.backgroundColor = kBlueColor
     }
-    func updateUI(item: OrderItems) {
+    func updateUI(item: OrderItem) {
         itemLbl.textColor = .black
         qtyLbl.textColor = .black
         priceLbl.textColor = .black
         itemLbl.attributedText = self.getAttributedString(fstring: "\(item.item)", sstring: " \(item.extra)")
         qtyLbl.text = "\(item.qty)"
-        let price = item.price * item.qty
-        priceLbl.text = "\(Cart.shared.roundValue2Digit(value: price))"
+        let price = item.price * Double(item.qty)
+        priceLbl.text = "\(Cart.shared.roundValue2Digit(value: Float(price)))"
         self.backgroundColor = .white
     }
     func getAttributedString(fstring: String, sstring: String)-> NSMutableAttributedString {

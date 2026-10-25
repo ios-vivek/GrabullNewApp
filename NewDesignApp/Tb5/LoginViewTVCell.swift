@@ -31,8 +31,8 @@ class LoginViewTVCell: UITableViewCell {
         loginBtn.setFontWithString(text: "LOGIN", fontSize: 16)
         signUpBtn.setRounded(cornerRadius: 10)
         signUpBtn.setFontWithString(text: "SIGNUP", fontSize: 16)
-        emailField.text = "webteamaaa@gmail.com"//"viveksinghrox@gmail.com"//
-        passwordField.text = "123456" //"123456"
+        //emailField.text = "webteamaaa@gmail.com"//"viveksinghrox@gmail.com"//
+       // passwordField.text = "123456" //"123456"
         emailField.setPlaceHolderColor(.gGray200)
         passwordField.setPlaceHolderColor(.gGray200)
 

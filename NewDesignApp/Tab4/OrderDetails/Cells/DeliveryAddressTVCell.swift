@@ -15,8 +15,8 @@ class DeliveryAddressTVCell: UITableViewCell {
         // Initialization code
     }
     func updateUI(order: OrderHistory) {
-        addressTypeLbl.text = "Home"
-       // addressLbl.text = "\(order.address)"
+        addressTypeLbl.text = "Deliverd at:"
+        addressLbl.text = "\(order.deliveryAddress?.fullAddress ?? "")"
     }
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)

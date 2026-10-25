@@ -18,6 +18,8 @@ class FinalOrderPageVC: UIViewController {
     @IBOutlet weak var orderSummeryLbl: UILabel!
     @IBOutlet weak var backToHomeBtn: UIButton!
     @IBOutlet weak var tbl: UITableView!
+    @IBOutlet weak var headerView: UIView!
+
 
     
     override func viewDidLoad() {
@@ -25,26 +27,26 @@ class FinalOrderPageVC: UIViewController {
 
         // Do any additional setup after loading the view.
         self.view.backgroundColor = .white
+        headerView.backgroundColor = themeBackgrounColor
         tbl.backgroundColor = .white
         UtilsClass.savePastOrderRest(pastOrderRest: PastOrderRest(restId: "\(Cart.shared.orderNumber)", count: 1))
         orderNumberLbl.text = "Order # \(Cart.shared.orderNumber)"
+        deliveryPickupTimeLbl.text = "\(Cart.shared.orderTime)"
         backToHomeBtn.backgroundColor = themeBackgrounColor
         backToHomeBtn.setRounded(cornerRadius: 10)
         backToHomeBtn.setFontWithString(text: "BACK TO HOME", fontSize: 16)
         restaurantNameLbl.text = Cart.shared.restDetails.name
-        restaurantContactLbl.text = "Restaurant Contact : \(Cart.shared.restDetails.phone)"
-        supportContactLbl.text = "Restaurant Support : \(Cart.shared.supportNumber)"
+        restaurantContactLbl.text = "Restaurant Support : \(Cart.shared.restDetails.phone)"
+        supportContactLbl.text = "Grabull Support : \(Cart.shared.supportNumber)"
         if Cart.shared.orderType == .pickup {
             orderTypeLbl.text = "Pickup from:"
             orderSummeryLbl.text = "Pickup Order Summary"
             
             let add = Cart.shared.restDetails.address + " " +  Cart.shared.restDetails.city + " " +  Cart.shared.restDetails.state + " " +  Cart.shared.restDetails.zip
             addressLbl.text = add
-            pickTime()
         } else {
             orderTypeLbl.text = "Delivery To:"
             orderSummeryLbl.text = "Delivery Order Summary"
-            deliveryTime()
             let address = Cart.shared.userAddress
 
             let parts = [
@@ -61,47 +63,6 @@ class FinalOrderPageVC: UIViewController {
                 .joined(separator: ", ")
         }
 
-    }
-    
-    func pickTime() {
-        switch Cart.shared.orderDate {
-        case .ASAP:
-           // deliveryPickupTimeLbl.text = "Order Approx. Ready for pickup within " + "\(Cart.shared.restDetails.restPickupTime)" + " Min"
-            break
-        case .Today:
-           // print(Cart.shared.selectedTime.heading)
-//            let todayDate = UtilsClass.getCurrentDateInStringDDMMM()
-//            let tempTime = todayDate + " at " + AddToCartItmesData.shared.deliveryTime
-//            estimateTimeLabel.text = "Order Approx. Ready for pickup within " + tempTime
-            deliveryPickupTimeLbl.text = "Order Approx. Ready for pickup within " + Cart.shared.selectedTime.heading
-
-            break
-        default:
-//            let tempDate = UtilsClass.getStringDateFromStringInDDMM(stringDate: AddToCartItmesData.shared.deliveryDate, stringTime: AddToCartItmesData.shared.deliveryTime) + " at " + AddToCartItmesData.shared.deliveryTime
-//            print(AddToCartItmesData.shared.deliveryTime)
-//            print(tempDate)
-
-            deliveryPickupTimeLbl.text = "Order Approx. Ready for pickup within " + Cart.shared.selectedTime.heading
-            break
-        }
-    }
-    func deliveryTime() {
-        switch Cart.shared.orderDate {
-        case .ASAP:
-           // deliveryPickupTimeLbl.text = "Order Approx. Out for Delivery within " + "\(Cart.shared.restDetails.deliverytime)" + " Min"
-                           break
-        case .Today:
-//             let todayDate = UtilsClass.getCurrentDateInStringDDMMM()
-//            let tempTime = todayDate + " at " + AddToCartItmesData.shared.deliveryTime
-            deliveryPickupTimeLbl.text = "Order Approx. Out for Delivery within " + Cart.shared.selectedTime.heading
-                           break
-        default:
-//            let tempDate = UtilsClass.getStringDateFromStringInDDMM(stringDate: AddToCartItmesData.shared.deliveryDate, stringTime: AddToCartItmesData.shared.deliveryTime) + " at " + AddToCartItmesData.shared.deliveryTime
-//            print(AddToCartItmesData.shared.deliveryTime)
-//            print(tempDate)
-            deliveryPickupTimeLbl.text = "Order Approx. Out for Delivery within " + Cart.shared.selectedTime.heading
-            break
-                       }
     }
     
     @IBAction func backToHomeNavigation () {

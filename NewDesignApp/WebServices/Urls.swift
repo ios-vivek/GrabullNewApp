@@ -8,6 +8,8 @@
 import Foundation
 import UIKit
 
+let moduleType = "Grocery"
+
 let GoogleApiKey = "AIzaSyAcpD8juDqASzLRWCdNP-ns4UzdVph1koU"
 
 struct AppConfig {
@@ -18,8 +20,13 @@ struct AppConfig {
 }
 
 struct OldServiceType {
-    static let BASE = "https://www.webapi.grabull.shop/"
+    static let BASE = "https://www.webapi.grabull.com/"
     //static let BASE = "https://www.grabull.com/web-api-ios/"
+    
+    static let groceryList = "grocery/GetAllGroceryStorte"
+    static let storeDetailByID = "grocery-details/GetGroceryStoreById"
+    
+    
     static let resturantList = "restaurant/GetAllRestaurant"
     static let cuisine = "cuisine/"
     static let restaurantDetail = "restaurant-details/GetRestaurantById"
@@ -45,6 +52,7 @@ struct OldServiceType {
     static let orderHistory = "request/OrderHistory"
     static let bookdine = "book-dine/"
     static let placeOrder = "add-order/"
+    static let stripeConfirmedOrder = "payment-confirmed/"
     static let getDineInOrders = "dine-history/"
     static let addReview = "add-reviews/"
     static let getReview = "view-reviews/"
@@ -75,6 +83,11 @@ struct OldServiceType {
     static let hiddenRestList = "hiddenRestList"
     static let favoriteRest = "favoriteRestList"
     static let hiddenRest = "hiddenRest"
+    //Delete Account
+    static let deleteAccount = "request/DeleteAccount"
+    //App Version Check
+    static let checkAppVersion = "app-version/"
+
 
 
 

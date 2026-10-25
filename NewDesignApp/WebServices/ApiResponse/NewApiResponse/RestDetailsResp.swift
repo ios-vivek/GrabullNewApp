@@ -43,9 +43,9 @@ struct RestDetailsRes: Codable {
        let dinein: String
        let catering: String
        let dineUrl: String
-       let cateringMiles: Int
-       let largeOrder: Int
-       let largeOrderCharge: Int
+       let cateringMiles: Float
+       let largeOrder: Float
+       let largeOrderCharge: Float
        let largeOrderType: String
        let cateringNotice: String
 
@@ -53,32 +53,32 @@ struct RestDetailsRes: Codable {
        let gbDelivery: String
        let gbDeliveryCharge: Double
 
-       let deliveryMiles: Int
-       let deliveryMilesWise: Int
-       let deliveryMilesList: [Int]
+       let deliveryMiles: Float
+       let deliveryMilesWise: Float
+       let deliveryMilesList: [Float]
 
        let minDelivery: Float
-       let minPickup: Int
-       let deliveryCharge: Int
+       let minPickup: Float
+       let deliveryCharge: Float
        let deliveryChargeType: String
        let deliveryTime: Int
 
        let tax: Double
-       let conv: Int
-       let gbconv: Int
-       let scharged: Double
-       let schargeo: Int
-       let schargev: Int
+       let conv: Float
+       let gbconv: Float
+       let scharged: Float
+       let schargeo: Float
+       let schargev: Float
 
        let stopToday: String
        let dineStop: String
-       let dineStopR: String
+       let dineStopR: Int
 
        let serviceFee: String
        let donateChange: String
 
        let note: String
-       let noteAmount: Int
+       let noteAmount: Float
 
        let rating: Double
        let completeMeal: [String]
@@ -119,7 +119,7 @@ struct MenuCategory: Codable {
 
 // MARK: - Menu Item
 struct MenuItem: Codable {
-    let id: String
+       let id: String
        let heading: String
        let details: String
        let status: String
@@ -144,19 +144,21 @@ struct MenuItem: Codable {
       let trayex: Int
       let trayxl: Int
     
-
+       let itemImage: String
        let minQty: Int
        let tax: Int
        let used: Int
        let completeMeal: Int
+      // let topping: [String]
 
        enum CodingKeys: String, CodingKey {
            case id, heading, details, status, bogo
            case sm, md, lg, ex, xl
            case smp, mdp, lgp, exp, xlp
-           case minQty
+           case minQty, itemImage
            case tray, traysm, traymd, traylg, trayex, trayxl
            case tax, used, completeMeal
+          // case topping
        }
     
 }

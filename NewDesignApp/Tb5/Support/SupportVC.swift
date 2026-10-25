@@ -41,7 +41,7 @@ class SupportVC: UIViewController {
         
         UtilsClass.showProgressHud(view: self.view)
         WebServices.loadDataFromServiceWithBaseResponse(parameter: parameters, servicename: OldServiceType.getSupportDetail, forModelType: SupportDetailResponse.self) { success in
-            self.supportList = success.data.data ?? [ChatData]()
+            self.supportList = success.data.data?.result ?? [ChatData]()
             self.tbl.reloadData()
             UtilsClass.hideProgressHud(view: self.view)
         } ErrorHandler: { error in

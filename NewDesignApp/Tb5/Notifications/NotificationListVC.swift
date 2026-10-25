@@ -14,6 +14,7 @@ struct NotiFicationModel: Codable {
 }
 class NotificationListVC: UIViewController {
     @IBOutlet weak var addressTbl: UITableView!
+    @IBOutlet weak var noDataFoundLbl: UILabel!
     var notificationList = [NotiFicationModel]()
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,6 +23,8 @@ class NotificationListVC: UIViewController {
         self.view.backgroundColor = .white
         addressTbl.backgroundColor = .clear
         notificationList = APPDELEGATE.getNotifications()
+        noDataFoundLbl.text = "You don't have any notifications."
+        noDataFoundLbl.isHidden = notificationList.isEmpty ? false : true
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)

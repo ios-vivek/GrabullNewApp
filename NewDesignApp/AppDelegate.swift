@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  NewDesignApp
+//  NewDesignApp piyush@grabull.com/Aryan@@79@12
 // https://www.grabull.com/web-api/
 //pass - admin / api_gb@2019
 
@@ -13,7 +13,6 @@ import UIKit
 import CoreLocation
 import IQKeyboardManagerSwift
 import UserNotifications
-import Stripe
 
 let APPDELEGATE = UIApplication.shared.delegate as! AppDelegate
 
@@ -37,10 +36,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        StripeAPI.defaultPublishableKey = "pk_test_51J8MBrSFomW9jcANOdfqJrfD5B6EMeMqc94bAqf5asZJsRiBPhl4Hn2EZaK8zWXcpb5n0g5oXgibQUbwwQexyLCF00cWpJdjK7"
-       // IQKeyboardManager.shared.enable = true
-        IQKeyboardManager.shared.enableAutoToolbar = true
+        IQKeyboardManager.shared.isEnabled = true
         IQKeyboardManager.shared.resignOnTouchOutside = true
+        IQKeyboardManager.shared.enableAutoToolbar = true
 
         setupLoactionManager()
         UtilsClass.getuserDetails()
@@ -69,6 +67,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             return [Cuisine]()
         }
         return user.data.cuisine
+    }
+    func getRestaurants()-> [String] {
+        guard let user = APPDELEGATE.cusines else {
+            return [String]()
+        }
+        return user.data.restaurant
     }
     func getCoupons()-> [Coupon] {
         guard let user = APPDELEGATE.cusines else {
@@ -121,15 +125,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     }
     
     func setupLoactionManager() {
-        locationManager.requestWhenInUseAuthorization();
+        locationManager.delegate = self
+        locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+        locationManager.requestWhenInUseAuthorization()
         if CLLocationManager.locationServicesEnabled() {
-            locationManager.delegate = self
-            locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
-            self.locationManager.requestAlwaysAuthorization()
             locationManager.startUpdatingLocation()
-        }
-        else{
-            print("Location service disabled");
+        } else {
+            print("Location service disabled")
         }
     }
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
@@ -330,6 +332,7 @@ extension UIApplication {
 
 import UIKit
 extension UIDevice {
+
     static var modelIdentifier: String {
         var systemInfo = utsname()
         uname(&systemInfo)
@@ -340,30 +343,47 @@ extension UIDevice {
             return identifier + String(UnicodeScalar(UInt8(value)))
         }
     }
-    
+
+
     static var modelName: String {
-        let identifier = modelIdentifier
 
-        switch identifier {
+        switch modelIdentifier {
 
-        // iPhone
+        // MARK: iPhone 14
         case "iPhone14,7": return "iPhone 14"
         case "iPhone14,8": return "iPhone 14 Plus"
         case "iPhone15,2": return "iPhone 14 Pro"
         case "iPhone15,3": return "iPhone 14 Pro Max"
 
+
+        // MARK: iPhone 15
         case "iPhone15,4": return "iPhone 15"
         case "iPhone15,5": return "iPhone 15 Plus"
         case "iPhone16,1": return "iPhone 15 Pro"
         case "iPhone16,2": return "iPhone 15 Pro Max"
 
-        // Simulator
+
+        // MARK: iPhone 16 (LATEST)
+        case "iPhone17,1": return "iPhone 16"
+        case "iPhone17,2": return "iPhone 16 Plus"
+        case "iPhone17,3": return "iPhone 16 Pro"
+        case "iPhone17,4": return "iPhone 16 Pro Max"
+
+
+        // MARK: iPhone SE
+        case "iPhone14,6": return "iPhone SE (3rd Gen)"
+
+
+        // MARK: Simulator
         case "i386", "x86_64", "arm64":
-            return "Simulator (\(ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"] ?? "Unknown"))"
+
+            let simulator = ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"] ?? "Unknown"
+
+            return "Simulator (\(simulator))"
+
 
         default:
-            return identifier
+            return modelIdentifier
         }
     }
 }
-

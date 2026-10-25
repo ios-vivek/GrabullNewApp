@@ -16,8 +16,6 @@
 			<key>UIWindowSceneSessionRoleApplication</key>
 			<array>
 				<dict>
-					<key>CFBundleDisplayName</key>
-					<string>Grabull Shop</string>
 					<key>UISceneConfigurationName</key>
 					<string>Default Configuration</string>
 					<key>UISceneDelegateClassName</key>
@@ -28,7 +26,5 @@
 			</array>
 		</dict>
 	</dict>
-	<key>CFBundleDisplayName</key>
-	<string>Grabull Shop</string>
 </dict>
 </plist>

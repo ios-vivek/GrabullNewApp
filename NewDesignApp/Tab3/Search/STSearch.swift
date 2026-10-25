@@ -7,30 +7,44 @@
 
 import UIKit
 import Speech
+import AVFoundation
 
 public class STSearch: NSObject {
 
-    public let speech_Recognizer = SFSpeechRecognizer(locale: Locale.init(identifier: "en-US"))!
+    public let speech_Recognizer = SFSpeechRecognizer(locale: Locale.init(identifier: "en-US"))
     private var request: SFSpeechAudioBufferRecognitionRequest?
     private var reco_Task: SFSpeechRecognitionTask?
     private let audio_Engine = AVAudioEngine()
 
-    public var isStop:Bool = false {
+    public var isStop: Bool = false {
         didSet {
-            //MARK: STEP-3
-            audio_Engine.inputNode.removeTap(onBus: 0)
-            audio_Engine.stop()
-            request?.endAudio()
+            stop()
         }
     }
 
-    public func initilize(_ StatusC:@escaping (_ status:SFSpeechRecognizerAuthorizationStatus)-> Void) {
-        
+    public func stop() {
+        if audio_Engine.isRunning {
+            audio_Engine.stop()
+        }
+        audio_Engine.inputNode.removeTap(onBus: 0)
+        audio_Engine.reset()
+        request?.endAudio()
+        request = nil
+        reco_Task?.cancel()
+        reco_Task = nil
+
+        do {
+            try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        } catch {
+            print("Failed to deactivate audio session: \(error)")
+        }
+    }
+
+    public func initilize(_ StatusC: @escaping (_ status: SFSpeechRecognizerAuthorizationStatus) -> Void) {
         //MARK: STEP-1
-        speech_Recognizer.delegate = self
-        SFSpeechRecognizer.requestAuthorization { (authStatus) in
-            
-            OperationQueue.main.addOperation() {
+        speech_Recognizer?.delegate = self
+        SFSpeechRecognizer.requestAuthorization { authStatus in
+            OperationQueue.main.addOperation {
                 //MARK: STEP-2
                 StatusC(authStatus)
             }
@@ -41,67 +55,75 @@ public class STSearch: NSObject {
         //MARK: STEP-4
         return self.audio_Engine.isRunning
     }
+
+    deinit {
+        stop()
+    }
 }
 
-extension STSearch : SFSpeechRecognizerDelegate {
+extension STSearch: SFSpeechRecognizerDelegate {
     
-    public func startSpeechRecording(with speechText:@escaping (_ text:String, _ status:Bool) -> ()) {
-        //MARK: STEP-5
-        if reco_Task != nil {
-            reco_Task?.cancel()
-            reco_Task = nil
+    public func startSpeechRecording(with speechText: @escaping (_ text: String, _ status: Bool) -> Void) {
+        // Stop any previous recording and safely remove existing tap
+        stop()
+
+        guard let recognizer = speech_Recognizer, recognizer.isAvailable else {
+            print("Speech recognizer is not available")
+            speechText("", false)
+            return
         }
-        //MARK: STEP-6
+
+        //MARK: Configure Audio Session
         do {
-            try AVAudioSession.sharedInstance().setCategory(.playAndRecord, mode: .default)
-            try AVAudioSession.sharedInstance().setActive(true)
+            let audioSession = AVAudioSession.sharedInstance()
+            try audioSession.setCategory(.playAndRecord, mode: .measurement, options: [.duckOthers, .defaultToSpeaker])
+            try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
         } catch {
-            print("audioSession properties weren't set because of an error.")
+            print("audioSession properties weren't set because of an error: \(error)")
         }
 
-        request = SFSpeechAudioBufferRecognitionRequest()
-        let inputNode = audio_Engine.inputNode
-
-        //MARK: STEP-7
-        guard let recognitionRequest = request else {
-            fatalError("Unable to create an SFSpeechAudioBufferRecognitionRequest object")
-        } //5
-        
+        let recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
         recognitionRequest.shouldReportPartialResults = true
-        //MARK: STEP-7
-        reco_Task = speech_Recognizer.recognitionTask(with: recognitionRequest, resultHandler: { (result, error) in
-            
-            //MARK: STEP-8
+        self.request = recognitionRequest
+
+        let inputNode = audio_Engine.inputNode
+        inputNode.removeTap(onBus: 0) // Defensive: ensure no existing tap on bus 0
+
+        reco_Task = recognizer.recognitionTask(with: recognitionRequest) { [weak self] (result, error) in
+            guard let self = self else { return }
             var isFinal = false
-            if result != nil {
-                speechText(result?.bestTranscription.formattedString ?? "",(result?.isFinal)!)
-                isFinal = (result?.isFinal)!
+            if let result = result {
+                isFinal = result.isFinal
+                speechText(result.bestTranscription.formattedString, isFinal)
             }
 
-            //MARK: STEP-10
             if error != nil || isFinal {
-                self.audio_Engine.stop()
-                inputNode.removeTap(onBus: 0)
-                
-                self.request = nil
-                self.reco_Task = nil
-                speechText("",isFinal)
+                self.stop()
+                speechText("", isFinal)
             }
-        })
+        }
         
-        //MARK: STEP-11
         let recordingFormat = inputNode.outputFormat(forBus: 0)
-        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { (buffer, when) in
-            self.request?.append(buffer)
+        guard recordingFormat.sampleRate > 0 && recordingFormat.channelCount > 0 else {
+            print("Invalid recording format: \(recordingFormat)")
+            self.stop()
+            speechText("", false)
+            return
         }
 
-        //MARK: STEP-12
+        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { [weak self] (buffer, when) in
+            self?.request?.append(buffer)
+        }
+
         audio_Engine.prepare()
         do {
             try audio_Engine.start()
         } catch {
-            print("audioEngine couldn't start because of an error.")
+            print("audioEngine couldn't start because of an error: \(error)")
+            self.stop()
+            speechText("", false)
+            return
         }
-        speechText("",false)
+        speechText("", false)
     }
 }

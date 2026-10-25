@@ -27,8 +27,8 @@ class ItemSizeSelectionPopupVC: UIViewController {
 
     var delegate: ItemAddedInCartDelegate?
 //let arr = ["Half", "Medium", "Full"]
-    var restmenu: CustMenuCategory!
-    var itemData: MenuItem!
+    var restmenu: DisplaySection!
+    //var restmenu: CustMenuCategory!
 
     var selectedSize: Int = -1
     var itemQty: Int = 1
@@ -51,11 +51,12 @@ class ItemSizeSelectionPopupVC: UIViewController {
         // Do any additional setup after loading the view.
         instructionTxtView.backgroundColor = .white
         instructionTxtView.textColor = .black
+        instructionTxtView.delegate = self
         instructionPlaceholderLbl.isHidden = false
         instructionTxtView.layer.masksToBounds = true
         instructionTxtView.layer.cornerRadius = 10
         instructionTxtView.text = ""
-        itemSelectionTbl.register(UINib(nibName: "ItemHeaderView", bundle: nil), forHeaderFooterViewReuseIdentifier: "ItemHeaderView")
+        itemSelectionTbl.register(UINib(nibName: "OptionsHeaderView", bundle: nil), forHeaderFooterViewReuseIdentifier: "OptionsHeaderView")
         itemSelectionTbl.sectionHeaderTopPadding = 0
         self.view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
         addItemView.layer.cornerRadius = 10
@@ -74,13 +75,13 @@ class ItemSizeSelectionPopupVC: UIViewController {
         cancelView.addGestureRecognizer(cancelTap)
         itemSelectionTbl.backgroundColor = .clear
         
-        itemNametLbl.text = itemData.heading
+        itemNametLbl.text = restmenu.items[0].heading
         itemNametLbl.textColor = kOrangeColor
-        itemQty = Int(itemData.minQty)
-        if Cart.shared.getAllSizes(menu: restmenu, item: itemData, isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType)).count == 1 {
+        itemQty = Int(restmenu.items[0].minQty)
+        if Cart.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType)).count == 1 {
             selectedSize = 0
             Cart.shared.itemSizes = [Sizes]()
-            Cart.shared.itemSizes.append(Cart.shared.getAllSizes(menu: restmenu, item: itemData, isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType))[selectedSize])
+            Cart.shared.itemSizes.append(Cart.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType))[selectedSize])
         } else {
             Cart.shared.itemSizes = [Sizes]()
         }
@@ -95,7 +96,9 @@ class ItemSizeSelectionPopupVC: UIViewController {
         }
         */
         self.setAmountValue()
-        getToppingFromApi()
+        //if !itemData.topping.isEmpty {
+            getToppingFromApi()
+       // }
         customQtySetup()
 
     }
@@ -160,7 +163,7 @@ class ItemSizeSelectionPopupVC: UIViewController {
         parameters.merge([
             "cust_lat" : "\(APPDELEGATE.selectedLocationAddress.latLong.latitude)",
             "cust_long" : "\(APPDELEGATE.selectedLocationAddress.latLong.longitude)",
-            "item_id": "\(itemData.id)",
+            "item_id": "\(restmenu.items[0].id)",
 
         ]) { _, new in new }
         
@@ -189,7 +192,7 @@ class ItemSizeSelectionPopupVC: UIViewController {
         self.setAmountValue()
     }
     @IBAction func minusAction() {
-        if Int(itemData.minQty) < itemQty {
+        if Int(restmenu.items[0].minQty) < itemQty {
             itemQty = itemQty - 1
         }
         self.setAmountValue()
@@ -214,10 +217,10 @@ class ItemSizeSelectionPopupVC: UIViewController {
             
         }
         
-        Cart.shared.itemData = itemData
+        Cart.shared.itemData = restmenu.items[0]
         Cart.shared.addInCart()
         Cart.shared.tempRestmenu = restmenu
-        Cart.shared.tempItemData = itemData
+        Cart.shared.tempItemData = restmenu.items[0]
                    self.dismiss(animated: true) {
                        self.delegate?.itemAddedInTheCart()
                    }
@@ -252,7 +255,7 @@ class ItemSizeSelectionPopupVC: UIViewController {
         Cart.shared.itemSizes = [Sizes]()
         
         if selectedSize >= 0 {
-            var newSize = Cart.shared.getAllSizes(menu: restmenu, item: itemData, isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType))[selectedSize]
+            var newSize = Cart.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType))[selectedSize]
             newSize.itemQty = itemQty
             Cart.shared.itemSizes.append(newSize)
         }
@@ -269,7 +272,7 @@ extension ItemSizeSelectionPopupVC: UITableViewDelegate, UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
-            return Cart.shared.getAllSizes(menu: restmenu, item: itemData, isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType)).count
+            return Cart.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType)).count
         }
         if selectedSize >= 0 {
             return self.topping[section - 1].optionList?.count ?? 0
@@ -283,7 +286,7 @@ extension ItemSizeSelectionPopupVC: UITableViewDelegate, UITableViewDataSource {
             cell.selectionStyle = .none
         cell.backgroundColor = .clear
         if indexPath.section == 0 {
-            let itemSizes = Cart.shared.getAllSizes(menu: restmenu, item: itemData, isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType))
+            let itemSizes = Cart.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType))
             cell.sizeNameLbl.text = itemSizes[indexPath.row].name
             cell.priceLbl.attributedText = cell.priceServeAttributedText(price: "\(UtilsClass.getCurrencySymbol())\(itemSizes[indexPath.row].price) ", serve: "\(itemSizes[indexPath.row].serveTray)")
             cell.updateUIForSelectSize(indexPath: indexPath, sizes: itemSizes, selectedSize: selectedSize)
@@ -292,7 +295,7 @@ extension ItemSizeSelectionPopupVC: UITableViewDelegate, UITableViewDataSource {
             if selectedSize >= 0 {
                 
             }
-            cell.updateUIForSelectOption(indexPath: indexPath, option: self.topping[indexPath.section - 1].optionList!, isChecked: Cart.shared.isAddedOption(toppingHeading: self.topping[indexPath.section - 1].heading, optionHeading: self.topping[indexPath.section - 1].optionList![indexPath.row].heading), sizes: selectedSize >= 0 ? Cart.shared.getAllSizes(menu: restmenu, item: itemData, isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType))[selectedSize] : nil)
+            cell.updateUIForSelectOption(indexPath: indexPath, option: self.topping[indexPath.section - 1].optionList!, isChecked: Cart.shared.isAddedOption(toppingHeading: self.topping[indexPath.section - 1].heading, optionHeading: self.topping[indexPath.section - 1].optionList![indexPath.row].heading), sizes: selectedSize >= 0 ? Cart.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType))[selectedSize] : nil)
          }
         else {
             cell.sizeNameLbl.text = self.topping[indexPath.row].heading
@@ -308,7 +311,7 @@ extension ItemSizeSelectionPopupVC: UITableViewDelegate, UITableViewDataSource {
         if indexPath.section == 0{
             selectedSize = indexPath.row
             Cart.shared.itemSizes = [Sizes]()
-            Cart.shared.itemSizes.append(Cart.shared.getAllSizes(menu: restmenu, item: itemData, isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType))[selectedSize])
+            Cart.shared.itemSizes.append(Cart.shared.getAllSizes(menu: restmenu, item: restmenu.items[0], isCatering: selectedMenuType == .catering ? true : false, menuType: Cart.shared.getMenuType(selectedMenuType: selectedMenuType))[selectedSize])
             Cart.shared.selectedTopping = [SelectedTopping]()
             //selectedOption = -1
         } else {
@@ -317,7 +320,7 @@ extension ItemSizeSelectionPopupVC: UITableViewDelegate, UITableViewDataSource {
             let option = SelectedOption(opID: topping[indexPath.section - 1].optionList![indexPath.row].id, optionHeading: topping[indexPath.section - 1].optionList![indexPath.row].heading, price: Cart.shared.getOptionsPrice(option: topping[indexPath.section - 1].optionList![indexPath.row], sizes: selectedSize >= 0 ? Cart.shared.itemSizes[0] : nil))
             let toppingHeading = topping[indexPath.section - 1].heading
             let selectedOption = SelectedTopping(toppingHeading: toppingHeading, option: [option])
-           let msg = Cart.shared.addAndRemoveToppins(selectedTopping: selectedOption, maxCount: Int(topping[indexPath.section - 1].restChoice))
+           let msg = Cart.shared.addAndRemoveToppins(selectedTopping: selectedOption, maxCount: topping[indexPath.section - 1].choice)
             if msg.count > 0 {
                 self.showToast(message: msg, font: .systemFont(ofSize: 14.0))
             }
@@ -333,7 +336,7 @@ extension ItemSizeSelectionPopupVC: UITableViewDelegate, UITableViewDataSource {
     }
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         if section > 0 {
-            return 50
+            return 30
     }
             return 0
         
@@ -341,18 +344,21 @@ extension ItemSizeSelectionPopupVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         if section > 0 {
             let sec = section - 1
-            let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: "ItemHeaderView") as! ItemHeaderView
+            let headerView = tableView.dequeueReusableHeaderFooterView(withIdentifier: "OptionsHeaderView") as! OptionsHeaderView
             var warningText = ""
-            /*
-            if let rq = self.topping[sec].r {
-                if rq > 0.0 {
-                    warningText = "Must Choose \(Int(rq))"
-                }
+            
+            let rq = self.topping[sec].required
+            let ch = self.topping[sec].choice
+            if rq > 0 && ch > 0 && rq == ch{
+                warningText = "Choose \(rq)"
             }
-            */
-            //headerView.headingLbl.text = "\(self.topping[sec].heading) \(warningText)"
+            else if rq > 0 {
+                warningText = "Choose at least \(rq)"
+            } else {
+                warningText = ""
+            }
+
             headerView.headingLbl.attributedText = UtilsClass.getOptionAttributedString(str1: self.topping[sec].heading, str2: " \(warningText)")
-            headerView.headingLbl.textColor = .black
             headerView.headerViewBckground.backgroundColor = UIColor.gGray100
             return headerView
     }
@@ -365,6 +371,13 @@ extension ItemSizeSelectionPopupVC: UITableViewDelegate, UITableViewDataSource {
         
 }
 extension ItemSizeSelectionPopupVC: UITextViewDelegate { //If your class is not conforms to the UITextViewDelegate protocol you will not be able to set it as delegate to UITextView
+
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        let currentText = textView.text ?? ""
+        guard let stringRange = Range(range, in: currentText) else { return true }
+        let updatedText = currentText.replacingCharacters(in: stringRange, with: text)
+        return updatedText.count <= 60
+    }
 
     func textViewDidChange(_ textView: UITextView) {
         //Handle the text changes here

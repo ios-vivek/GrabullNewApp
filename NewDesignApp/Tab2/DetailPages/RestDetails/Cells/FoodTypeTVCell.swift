@@ -45,7 +45,6 @@ class FoodTypeTVCell: UITableViewCell {
         if cateringHide {
                    menus.removeSegment(at: 1, animated: true)
                }
-
     }
     @objc func menuControlValueChanged(_ sender: UISegmentedControl) {
         self.delegate?.selectedMenuType(menuType: MenuType(rawValue: sender.selectedSegmentIndex) ?? .menu)
@@ -53,7 +52,7 @@ class FoodTypeTVCell: UITableViewCell {
     @objc func buttonTapped(sender : UIButton) {
        // self.delegate?.selectedMenuType(menuType: (sender.titleLabel?.text)!)
                 }
-    func configMenu(isActiveCatering: Bool, isActiveDineIn: Bool) {
+    func configMenu(isActiveCatering: Bool, isActiveDineIn: Bool, isDealsActive: Bool) {
         // Normal (unselected) state
         menus.setTitleTextAttributes(
             [.foregroundColor: UIColor.black],
@@ -81,6 +80,8 @@ class FoodTypeTVCell: UITableViewCell {
             cateringHide = true
             menus.removeSegment(at: 1, animated: true)
         }
+        menus.setEnabled(isDealsActive, forSegmentAt: 2)
+
   //      menus.setTitle("", forSegmentAt: 1)
   //          menus.setEnabled(false, forSegmentAt: 1)
     }
