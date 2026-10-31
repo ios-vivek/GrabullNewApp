@@ -186,7 +186,10 @@ class UtilsClass: NSObject {
         MBProgressHUD.showAdded(to: view, animated: true)
     }
     public static func hideProgressHud(view: UIView) {
-        MBProgressHUD.hide(for: view, animated: true)
+        while MBProgressHUD.hide(for: view, animated: false) {}
+        if let window = view.window {
+            while MBProgressHUD.hide(for: window, animated: false) {}
+        }
     }
     public static func getCurrencySymbol()-> String {
         let locale = Locale.current

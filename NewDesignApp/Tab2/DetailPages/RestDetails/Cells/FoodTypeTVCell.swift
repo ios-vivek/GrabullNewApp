@@ -6,6 +6,7 @@
 //
 
 import UIKit
+
 protocol MenuTypeSelectedDelegate {
     func selectedMenuType(menuType: MenuType)
 }
@@ -19,6 +20,8 @@ class FoodTypeTVCell: UITableViewCell {
     var delegate: MenuTypeSelectedDelegate?
     var cateringHide: Bool = false
     var dineinHide: Bool = false
+    var currentSelectedMenuType: MenuType = .menu
+
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -39,19 +42,59 @@ class FoodTypeTVCell: UITableViewCell {
 
         menus.addTarget(self, action: #selector(menuControlValueChanged(_:)), for: .valueChanged)
         self.backgroundColor = .white
-        if dineinHide {
-                   menus.removeSegment(at: 3, animated: true)
-               }
-        if cateringHide {
-                   menus.removeSegment(at: 1, animated: true)
-               }
     }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        menus.removeAllSegments()
+    }
+
     @objc func menuControlValueChanged(_ sender: UISegmentedControl) {
-        self.delegate?.selectedMenuType(menuType: MenuType(rawValue: sender.selectedSegmentIndex) ?? .menu)
+        guard sender.selectedSegmentIndex >= 0,
+              let title = sender.titleForSegment(at: sender.selectedSegmentIndex) else {
+            self.delegate?.selectedMenuType(menuType: .menu)
+            return
+        }
+        let menuType: MenuType
+        switch title {
+        case "Menu":
+            menuType = .menu
+        case "Catering":
+            menuType = .catering
+        case "Deals":
+            menuType = .deals
+        case "DineIn":
+            menuType = .dineIn
+        default:
+            menuType = .menu
+        }
+        self.currentSelectedMenuType = menuType
+        self.delegate?.selectedMenuType(menuType: menuType)
     }
+
     @objc func buttonTapped(sender : UIButton) {
        // self.delegate?.selectedMenuType(menuType: (sender.titleLabel?.text)!)
-                }
+    }
+
+    func selectSegment(for menuType: MenuType) {
+        let targetTitle: String
+        switch menuType {
+        case .menu: targetTitle = "Menu"
+        case .catering: targetTitle = "Catering"
+        case .deals: targetTitle = "Deals"
+        case .dineIn: targetTitle = "DineIn"
+        }
+        for i in 0..<menus.numberOfSegments {
+            if menus.titleForSegment(at: i) == targetTitle {
+                menus.selectedSegmentIndex = i
+                return
+            }
+        }
+        if menus.numberOfSegments > 0 {
+            menus.selectedSegmentIndex = 0
+        }
+    }
+
     func configMenu(isActiveCatering: Bool, isActiveDineIn: Bool, isDealsActive: Bool) {
         // Normal (unselected) state
         menus.setTitleTextAttributes(
@@ -70,27 +113,38 @@ class FoodTypeTVCell: UITableViewCell {
             [.foregroundColor: UIColor.lightGray],
             for: .disabled
         )
-       // menus.setEnabled(isActiveCatering, forSegmentAt: 1)
-       // menus.setEnabled(isActiveDineIn, forSegmentAt: 3)
-        if !isActiveDineIn && !dineinHide {
-            dineinHide = true
-            menus.removeSegment(at: 3, animated: true)
-        }
-        if !isActiveCatering && !cateringHide {
-            cateringHide = true
-            menus.removeSegment(at: 1, animated: true)
-        }
-        menus.setEnabled(isDealsActive, forSegmentAt: 2)
 
-  //      menus.setTitle("", forSegmentAt: 1)
-  //          menus.setEnabled(false, forSegmentAt: 1)
+        menus.removeAllSegments()
+
+        // 0: Menu is always present
+        menus.insertSegment(withTitle: "Menu", at: menus.numberOfSegments, animated: false)
+
+        // Catering is present only if active
+        if isActiveCatering {
+            menus.insertSegment(withTitle: "Catering", at: menus.numberOfSegments, animated: false)
+        }
+
+        // Deals is always present, but enabled/disabled based on isDealsActive
+        let dealsIndex = menus.numberOfSegments
+        menus.insertSegment(withTitle: "Deals", at: dealsIndex, animated: false)
+        menus.setEnabled(isDealsActive, forSegmentAt: dealsIndex)
+
+        // DineIn is present only if active
+        if isActiveDineIn {
+            menus.insertSegment(withTitle: "DineIn", at: menus.numberOfSegments, animated: false)
+        }
+
+        if !isDealsActive && currentSelectedMenuType == .deals {
+            currentSelectedMenuType = .menu
+        }
+
+        selectSegment(for: currentSelectedMenuType)
     }
-    func updateUI(menuType: [String] , selectedMenuType: MenuType) {
-//        if !Cart.shared.tempRestDetails.ordertypes.contains("Catering"){
-//            self.menus.setEnabled(false, forSegmentAt: 1)
-//    }
 
-        self.menus.selectedSegmentIndex = selectedMenuType.rawValue
+    func updateUI(menuType: [String] , selectedMenuType: MenuType) {
+        self.currentSelectedMenuType = selectedMenuType
+        selectSegment(for: selectedMenuType)
+
         menu1.backgroundColor = .gGray100
         menu2.backgroundColor = .gGray100
         menu3.backgroundColor = .gGray100
@@ -133,9 +187,8 @@ class FoodTypeTVCell: UITableViewCell {
                 }
             }
         }
-        
-        
     }
+
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 

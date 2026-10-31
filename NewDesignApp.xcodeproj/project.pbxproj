@@ -1767,7 +1767,7 @@
 				CODE_SIGN_ENTITLEMENTS = NewDesignApp/NewDesignApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.1;
+				CURRENT_PROJECT_VERSION = 1.0;
 				DEVELOPMENT_TEAM = 6J7UZY2EAL;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NewDesignApp/Info.plist;
@@ -1787,7 +1787,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.7;
+				MARKETING_VERSION = 5.9;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grabull;
 				PRODUCT_NAME = Grabull;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1806,7 +1806,7 @@
 				CODE_SIGN_ENTITLEMENTS = NewDesignApp/NewDesignApp.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.1;
+				CURRENT_PROJECT_VERSION = 1.0;
 				DEVELOPMENT_TEAM = 6J7UZY2EAL;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = NewDesignApp/Info.plist;
@@ -1826,7 +1826,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 5.7;
+				MARKETING_VERSION = 5.9;
 				PRODUCT_BUNDLE_IDENTIFIER = com.grabull;
 				PRODUCT_NAME = Grabull;
 				PROVISIONING_PROFILE_SPECIFIER = "";
