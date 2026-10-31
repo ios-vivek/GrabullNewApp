@@ -1,5 +1,5 @@
 //
-//  SearchDetailVC.swift
+//  GroceryVC.swift
 //  NewDesignApp
 //
 //  Created by Vivek SIngh on 29/01/25.
@@ -16,8 +16,18 @@ class GroceryVC: UIViewController {
 
     @IBOutlet weak var homeCollection: UICollectionView!
     
+    private var lastLat: Double = APPDELEGATE.selectedLocationAddress.latLong.latitude
+    private var lastLong: Double = APPDELEGATE.selectedLocationAddress.latLong.longitude
+    private var lastAddress: String = UtilsClass.getFullAddress()
+
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        lastLat = APPDELEGATE.selectedLocationAddress.latLong.latitude
+        lastLong = APPDELEGATE.selectedLocationAddress.latLong.longitude
+        lastAddress = UtilsClass.getFullAddress()
+
+        NotificationCenter.default.addObserver(self, selector: #selector(locationUpdatedNotification(_:)), name: Notification.Name("location"), object: nil)
 
         // Do any additional setup after loading the view.
         cartLabel.textColor = kOrangeColor
@@ -29,23 +39,55 @@ class GroceryVC: UIViewController {
         cartView.addGestureRecognizer(cartTap)
         setupBindings()
     }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: Notification.Name("location"), object: nil)
+    }
+
+    @objc func locationUpdatedNotification(_ notification: Notification) {
+        lastLat = APPDELEGATE.selectedLocationAddress.latLong.latitude
+        lastLong = APPDELEGATE.selectedLocationAddress.latLong.longitude
+        lastAddress = UtilsClass.getFullAddress()
+        getGroceryDataFromApi(forceRefresh: true)
+    }
+
     @objc func cartTapAction() {
         // handling code
         let vc = self.viewController(viewController: GroceryCartVC.self, storyName: StoryName.Grocery.rawValue) as! GroceryCartVC
         self.navigationController?.pushViewController(vc, animated: true)
     }
+
     @IBAction func backAction() {
         self.navigationController?.popViewController(animated: true)
     }
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if viewModel.storeList.count == 0 {
-            UtilsClass.showProgressHud(view: self.view)
-            viewModel.getStorelistFromApi()
-        }
         cartLabel.text = "\(GroceryCartData.shared.cartItems.count)"
 
+        let currentLat = APPDELEGATE.selectedLocationAddress.latLong.latitude
+        let currentLong = APPDELEGATE.selectedLocationAddress.latLong.longitude
+        let currentAddress = UtilsClass.getFullAddress()
+
+        let locationChanged = (currentLat != lastLat || currentLong != lastLong || currentAddress != lastAddress)
+
+        if locationChanged {
+            lastLat = currentLat
+            lastLong = currentLong
+            lastAddress = currentAddress
+            getGroceryDataFromApi(forceRefresh: true)
+        } else if viewModel.storeList.count == 0 && !viewModel.gotResponseFromService {
+            getGroceryDataFromApi(forceRefresh: false)
+        }
     }
+
+    func getGroceryDataFromApi(forceRefresh: Bool = false) {
+        guard !viewModel.isFetchingStores else { return }
+        self.homeCollection.reloadData()
+        UtilsClass.showProgressHud(view: self.view)
+        viewModel.getStorelistFromApi(forceRefresh: forceRefresh)
+    }
+
     private func setupBindings() {
         viewModel.onUpdate = { [weak self] in
             guard let self = self else { return }
@@ -55,6 +97,7 @@ class GroceryVC: UIViewController {
         viewModel.onError = { [weak self] _ in
             guard let self = self else { return }
             UtilsClass.hideProgressHud(view: self.view)
+            self.homeCollection.reloadData()
         }
     }
 
@@ -107,7 +150,7 @@ extension GroceryVC: UICollectionViewDelegate,UICollectionViewDataSource{
         1
     }
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        if viewModel.storeList.count == 0 &&  self.viewModel.gotResponseFromService {
+        if viewModel.storeList.count == 0 && self.viewModel.gotResponseFromService {
             return 1
         }
         return viewModel.storeList.count
@@ -115,15 +158,16 @@ extension GroceryVC: UICollectionViewDelegate,UICollectionViewDataSource{
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-            if viewModel.storeList.count > 0 {
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "StoreCVCell", for: indexPath as IndexPath) as! StoreCVCell
-                    cell.updateStoreUI(index: indexPath.row, store: viewModel.storeList[indexPath.row])
-                cell.backgroundColor = .white
-                return cell;
-            } else {
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "NoRestFoundCVCell", for: indexPath as IndexPath) as! NoRestFoundCVCell
-                return cell
-            }
+        if viewModel.storeList.count > 0 {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "StoreCVCell", for: indexPath as IndexPath) as! StoreCVCell
+            cell.updateStoreUI(index: indexPath.row, store: viewModel.storeList[indexPath.row])
+            cell.backgroundColor = .white
+            return cell
+        } else {
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "NoRestFoundCVCell", for: indexPath as IndexPath) as! NoRestFoundCVCell
+            cell.isHidden = !self.viewModel.gotResponseFromService
+            return cell
+        }
         
     }
     
@@ -131,10 +175,10 @@ extension GroceryVC: UICollectionViewDelegate,UICollectionViewDataSource{
         if viewModel.storeList.count > 0 {
             let store = self.viewModel.storeList[indexPath.row]
             self.getRestDetailFromApi(restid: store.rid, dbname: store.dbname, storeImage: store.fullImageURL)
-        } else {
-                let vc = self.viewController(viewController: LocationVC.self, storyName: StoryName.Location.rawValue) as! LocationVC
+        } else if viewModel.gotResponseFromService {
+            let vc = self.viewController(viewController: LocationVC.self, storyName: StoryName.Location.rawValue) as! LocationVC
             vc.fromSearch = true
-                self.navigationController?.pushViewController(vc, animated: true)
+            self.navigationController?.pushViewController(vc, animated: true)
         }
     }
     
@@ -143,11 +187,13 @@ extension GroceryVC: UICollectionViewDelegate,UICollectionViewDataSource{
                         sizeForItemAt indexPath: IndexPath) -> CGSize {
         let width = collectionView.frame.width
       
-            if viewModel.storeList.count > 0 {
-                return CGSize(width: width/2 , height: 240)
-            } else {
-                return CGSize(width: width , height: 300)
-            }
+        if viewModel.storeList.count > 0 {
+            return CGSize(width: width/2 , height: 240)
+        } else if viewModel.gotResponseFromService {
+            return CGSize(width: width , height: 300)
+        } else {
+            return .zero
+        }
     }
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
@@ -155,4 +201,3 @@ extension GroceryVC: UICollectionViewDelegate,UICollectionViewDataSource{
         return 0
     }
 }
-    

@@ -151,6 +151,11 @@ class RestDetailsVC: UIViewController, ItemCellDelegate, ItemAddedInCartDelegate
         }
         Cart.shared.tempRestDetails = restDetailsData!
 
+        if self.restData == nil || (self.restData?.restImgUrl.isEmpty ?? true), let res = self.restDetailsRes {
+            let imgUrl = (res.imgurl) + (res.img ?? "")
+            self.restData = RestData(dbname: Cart.shared.dbname, restID: res.rid, restImgUrl: imgUrl)
+        }
+
         if restDetailsData!.dinein == "Yes" {
             isReservationAvailable = true
         }
@@ -265,7 +270,13 @@ class RestDetailsVC: UIViewController, ItemCellDelegate, ItemAddedInCartDelegate
                 .compactMap { $0.itemImage }
                 .filter { !$0.isEmpty } ?? []
         ))
-        galleryImages.append(self.restData?.restImgUrl ?? "")
+        var topImage = self.restData?.restImgUrl ?? ""
+        if topImage.isEmpty, let res = self.restDetailsRes, let img = res.img, !img.isEmpty {
+            topImage = res.imgurl + img
+        }
+        if !topImage.isEmpty {
+            galleryImages.append(topImage)
+        }
     }
     func getMenuList() {
         if selectedMenuType == .menu {
@@ -475,7 +486,11 @@ extension RestDetailsVC: UITableViewDelegate, UITableViewDataSource {
             let cell = tableView.dequeueReusableCell(withIdentifier: "RestDetailTVCell", for: indexPath) as! RestDetailTVCell
             cell.selectionStyle = .none
             cell.delegate = self
-            cell.updateUI(data: self.restDetailsData, restImage: restData?.restImgUrl ?? "", galleryImages: self.galleryImages)
+            var topImage = self.restData?.restImgUrl ?? ""
+            if topImage.isEmpty, let res = self.restDetailsRes, let img = res.img, !img.isEmpty {
+                topImage = res.imgurl + img
+            }
+            cell.updateUI(data: self.restDetailsData, restImage: topImage, galleryImages: self.galleryImages)
             return cell
         case RestaurentDetailsSection.Deals.rawValue:
             let cell = tableView.dequeueReusableCell(withIdentifier: "DealsTVCell", for: indexPath) as! DealsTVCell

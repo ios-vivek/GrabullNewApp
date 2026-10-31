@@ -51,6 +51,11 @@ class RestaurantVC: UIViewController {
     var selectedCuisines = -1
     var coupons = [Coupon]()
     var gotResponse = false
+    private var isFetchingRestaurants = false
+
+    private var lastLat: Double = APPDELEGATE.selectedLocationAddress.latLong.latitude
+    private var lastLong: Double = APPDELEGATE.selectedLocationAddress.latLong.longitude
+    private var lastAddress: String = UtilsClass.getFullAddress()
     
     let strings = ["\'food\'".translated(), "\'restaurants\'".translated(), "\'groceries\'".translated(), "\'beverages\'".translated(), "\'bread\'".translated(), "\'pizza\'".translated(), "\'biryani\'".translated(), "\'burger\'".translated(), "\'bajji\'".translated(), "\'noodles\'".translated(), "\'soup\'".translated(), "\'sandwich\'".translated(), "\'biscuits\'".translated(), "\'chocolates\'".translated()]
 
@@ -60,6 +65,12 @@ class RestaurantVC: UIViewController {
     override func viewDidLoad() {
 
         super.viewDidLoad()
+
+        lastLat = APPDELEGATE.selectedLocationAddress.latLong.latitude
+        lastLong = APPDELEGATE.selectedLocationAddress.latLong.longitude
+        lastAddress = UtilsClass.getFullAddress()
+
+        NotificationCenter.default.addObserver(self, selector: #selector(locationUpdatedNotification(_:)), name: Notification.Name("location"), object: nil)
 
         homeCollection.backgroundColor = .white
         homeCollection.register(UINib(nibName: "HeaderCollectionView", bundle: nil), forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: "HeaderCollectionView") //elementKindSectionFooter for footerview
@@ -86,6 +97,21 @@ class RestaurantVC: UIViewController {
         serachField.setPlaceHolderColor(.gGray200)
 
     }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: Notification.Name("location"), object: nil)
+    }
+
+    @objc func locationUpdatedNotification(_ notification: Notification) {
+        lastLat = APPDELEGATE.selectedLocationAddress.latLong.latitude
+        lastLong = APPDELEGATE.selectedLocationAddress.latLong.longitude
+        lastAddress = UtilsClass.getFullAddress()
+        self.locationButton.setTitle(LocationManagerClass.shared.firstAddress, for: .normal)
+        self.headingLabel.text = LocationManagerClass.shared.secondAddress
+        self.checkViewHidden()
+        self.getRestDataFromApi(forceRefresh: true)
+    }
+
     func getdata() {
         self.cuisineList = APPDELEGATE.getCousins()
         self.cuisineHeading = APPDELEGATE.getCusineheading()
@@ -112,6 +138,18 @@ class RestaurantVC: UIViewController {
         cartLbl.text = "\(Cart.shared.cartData.count)"
         themeSet()
         animateListOfLabels()
+
+        let currentLat = APPDELEGATE.selectedLocationAddress.latLong.latitude
+        let currentLong = APPDELEGATE.selectedLocationAddress.latLong.longitude
+        let currentAddress = UtilsClass.getFullAddress()
+
+        let locationChanged = (currentLat != lastLat || currentLong != lastLong || currentAddress != lastAddress)
+        if locationChanged {
+            lastLat = currentLat
+            lastLong = currentLong
+            lastAddress = currentAddress
+            getRestDataFromApi(forceRefresh: true)
+        }
     }
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
@@ -151,11 +189,11 @@ class RestaurantVC: UIViewController {
         }
     }
 
-    func getRestDataFromApi() {
+    func getRestDataFromApi(forceRefresh: Bool = false) {
         var cuisine = ""
         if selectedCuisines >= 0 {
             cuisine = cuisineList[self.selectedCuisines].heading
-            if self.restList.count > 0 {
+            if self.restList.count > 0 && !forceRefresh {
                 let sortedList = sortRestaurants(by: cuisine, in: restList)
                 self.restList = sortedList
                 self.setAllRestdata()
@@ -163,26 +201,42 @@ class RestaurantVC: UIViewController {
             }
         }
        
-           if restList.isEmpty {
-               UtilsClass.showProgressHud(view: view)
-           }
+        if forceRefresh {
+            self.gotResponse = false
+            self.restList.removeAll()
+            self.topRestList.removeAll()
+            self.deliciousRestList.removeAll()
+            self.inspiredRestList.removeAll()
+            self.promoRestList.removeAll()
+            self.homeCollection.reloadData()
+        } else if !gotResponse {
+            self.restList.removeAll()
+            self.homeCollection.reloadData()
+        } else if !restList.isEmpty && !forceRefresh {
+            return
+        }
 
-           viewModel.fetchRestaurants(cuisine: cuisine) { [weak self] result in
-               guard let self else { return }
-               UtilsClass.hideProgressHud(view: self.view)
+        guard !isFetchingRestaurants else { return }
+        isFetchingRestaurants = true
 
-               switch result {
-               case .success(let restaurants):
-                   self.restList = restaurants
-                   self.setAllRestdata()
-                   self.gotResponse = true
+        UtilsClass.showProgressHud(view: view)
 
-               case .failure:
-                   self.restList.removeAll()
-                   self.setAllRestdata()
-                   self.gotResponse = true
-               }
-           }
+        viewModel.fetchRestaurants(cuisine: cuisine) { [weak self] result in
+            guard let self = self else { return }
+            self.isFetchingRestaurants = false
+            UtilsClass.hideProgressHud(view: self.view)
+
+            self.gotResponse = true
+            switch result {
+            case .success(let restaurants):
+                self.restList = restaurants
+                self.setAllRestdata()
+
+            case .failure:
+                self.restList.removeAll()
+                self.setAllRestdata()
+            }
+        }
         
     }
     func sortRestaurants(by cuisine: String, in list: [Restaurant]) -> [Restaurant] {
@@ -294,7 +348,7 @@ class RestaurantVC: UIViewController {
         if rest.favorite == "Yes" {
             favStr = OldServiceType.removeFavorite
         }
-        let parameters: [String: AnyObject] = [
+        let parameters: [String: AnyObject] = [\
             "api_id" : AppConfig.API_ID as AnyObject,
             "api_key" : AppConfig.OldAPI_KEY as AnyObject,
             "devicetoken" : AppConfig.DeviceToken as AnyObject,
@@ -353,8 +407,8 @@ class RestaurantVC: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         self.locationButton.setTitle(LocationManagerClass.shared.firstAddress, for: .normal)
-                self.headingLabel.text = LocationManagerClass.shared.secondAddress
-                self.checkViewHidden()
+        self.headingLabel.text = LocationManagerClass.shared.secondAddress
+        self.checkViewHidden()
 
         serachField.delegate = self
         let profileTap = UITapGestureRecognizer(target: self, action: #selector(profileTapAction(_:)))
@@ -362,8 +416,10 @@ class RestaurantVC: UIViewController {
        
         let serachTap = UITapGestureRecognizer(target: self, action: #selector(searchTapAction))
         serachImage.addGestureRecognizer(serachTap)
-        getRestDataFromApi()
 
+        if !gotResponse && !isFetchingRestaurants {
+            getRestDataFromApi(forceRefresh: false)
+        }
 
     }
     @objc func profileTapAction(_ sender: UITapGestureRecognizer? = nil) {
@@ -449,7 +505,7 @@ class RestaurantVC: UIViewController {
         }
     } 
     func getRestDetailFromApi(restData: RestData) {
-        Cart.shared.dbname = restData.dbname//"grabull_strore1"//dbname
+        Cart.shared.dbname = restData.dbname//\"grabull_strore1\"//dbname
         var parameters = CommonAPIParams.base()
         parameters.merge([
             "rest_id" : restData.restID
@@ -655,7 +711,13 @@ extension RestaurantVC: UICollectionViewDelegate,UICollectionViewDataSource{
         case .inspired:
             return inspiredRestList.count > 0 ? 1 : 0
         case .localTitle:
-            return 1
+            if restList.count > 0 {
+                return 1
+            } else if gotResponse {
+                return 1
+            } else {
+                return 0
+            }
         case .localRestaurants:
             return self.restList.count
         case .dineInTitle:
@@ -706,8 +768,9 @@ extension RestaurantVC: UICollectionViewDelegate,UICollectionViewDataSource{
             return cell
            case .inspired:
             if inspiredRestList.count == 0 {
-                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "NoRestFoundCVCell", for: indexPath as IndexPath) as! NoRestFoundCVCell
-                    return cell
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "InspiredFromPastCVCell", for: indexPath as IndexPath) as! InspiredFromPastCVCell
+                cell.backgroundColor = .white
+                return cell
             } else {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "InspiredFromPastCVCell", for: indexPath as IndexPath) as! InspiredFromPastCVCell
                 cell.backgroundColor = .white
@@ -724,7 +787,7 @@ extension RestaurantVC: UICollectionViewDelegate,UICollectionViewDataSource{
             } else {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "NoRestFoundCVCell", for: indexPath as IndexPath) as! NoRestFoundCVCell
                 cell.isHidden = !self.gotResponse
-                    return cell
+                return cell
             }
            case .localRestaurants:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeRestCVCell", for: indexPath as IndexPath) as! HomeRestCVCell
@@ -742,7 +805,7 @@ extension RestaurantVC: UICollectionViewDelegate,UICollectionViewDataSource{
                 return titleCell;
             } else {
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "NoRestFoundCVCell", for: indexPath as IndexPath) as! NoRestFoundCVCell
-                    return cell
+                return cell
             }
            case .dineInRestaurants:
                 let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "HomeRestCVCell", for: indexPath as IndexPath) as! HomeRestCVCell
@@ -764,7 +827,7 @@ extension RestaurantVC: UICollectionViewDelegate,UICollectionViewDataSource{
             UtilsClass.saveInspairedPast(restID: rest.rid)
             self.getRestDetailFromApi(restData: RestData(dbname: rest.dbname, restID: rest.rid, restImgUrl: rest.restBannerImage))
         case .localTitle:
-            if restList.count == 0 {
+            if restList.count == 0 && gotResponse {
                 self.moveToLocationPage()
             }
         default:
@@ -796,8 +859,10 @@ extension RestaurantVC: UICollectionViewDelegate,UICollectionViewDataSource{
         case .localTitle:
             if restList.count > 0 {
                 return CGSize(width: width , height: 60)
-            } else {
+            } else if gotResponse {
                 return CGSize(width: width , height: 300)
+            } else {
+                return CGSize(width: width, height: 0)
             }
         case .localRestaurants:
             return CGSize(width: width/2 , height: 240)
